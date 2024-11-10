@@ -1,15 +1,13 @@
 from flask import Flask, redirect, render_template, flash, request, url_for
 from app.forms import AirNomadSocietyForm
-import requests
 from flask_bootstrap import Bootstrap5
 from app.utils import generate_token
 from flask_wtf.csrf import CSRFProtect
-from app.constants import GMAIL, GMAIL_PWD, ANS_GMAIL, ANS_GMAIL_PWD
 from database import db, create_all, AirNomads
 import os
 
 
-app = Flask(__name__, template_folder="../templates")
+app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DB_URI")
 db.init_app(app)

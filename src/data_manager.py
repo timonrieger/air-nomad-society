@@ -13,7 +13,7 @@ import os, requests
 # # the sys.path.
 # sys.path.append(parent)
 
-from app.app import app, db, AirNomads
+from app import app, db, AirNomads
 from app.constants import NPOINT
 
 class DataManager:
