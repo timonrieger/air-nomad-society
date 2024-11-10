@@ -1,0 +1,12 @@
+Flask==2.3.2
+WTForms==3.1.2
+Flask_WTF==1.2.1
+Werkzeug==3.0.2
+Requests==2.31.0
+Bootstrap_Flask==2.2.0
+gunicorn==22.0.0
+email-validator==2.1.1
+psycopg2-binary==2.9.9
+flask-caching==2.3.0
+python-dotenv==0.19.1
+git+https://git@github.com/timonrieger/database-service.git

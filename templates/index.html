@@ -1,0 +1,363 @@
+{% extends "layout.html"%} {% from 'bootstrap5/form.html' import render_form %}
+{% block title %}Personalized Flight Deals via Email | Air Nomad Society{%
+endblock %} {% block description %} Join to receive weekly emails with flight
+deals. One email per week, focused on delivering relevant flight information
+directly to your inbox. {% endblock %} {% block content %}
+<h1 class="display-5">Air Nomad Society</h1>
+<p class="lead my-4">
+  Get the best flight deals directly in your inbox, fully automated, just one
+  email per week.
+</p>
+<a href="{{ url_for('subscribe') }}"
+  ><button type="button" class="btn btn-warning my-3">
+    <strong>Subscribe For Free</strong>
+  </button></a
+>
+<br /><br /><br />
+<!-- Benefits -->
+<div class="container marketing">
+  <!-- START THE FEATURETTES -->
+  <h2 class="pb-2 border-bottom border-3 border-3">Benefits</h2>
+
+  <div class="row featurette py-5">
+    <div
+      class="col-md-7"
+      style="
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      "
+    >
+      <h2 class="featurette-heading fw-normal lh-1" style="margin-bottom: 20px">
+        Get <span style="color: #a5c9e1">Personalized </span>Flight Deals
+      </h2>
+      <p class="lead">
+        Deals are tailored based on your preferences. No need for frequent
+        searches - you'll get flight options that fit your travel interests.
+      </p>
+    </div>
+    <div class="col-md-5 hover-grow">
+      <svg
+        class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto"
+        style="border-radius: 20px"
+        width="400"
+        height="200"
+        xmlns="http://www.w3.org/2000/svg"
+        role="img"
+        aria-label="Placeholder: 500x500"
+        preserveAspectRatio="xMidYMid slice"
+        focusable="false"
+      >
+        <title>Mountain with ocean view</title>
+        <rect width="100%" height="100%" fill="var(--bs-secondary-bg)"></rect>
+        <image
+          height="100%"
+          width="100%"
+          preserveAspectRatio="xMidYMid slice"
+          href="https://images.unsplash.com/photo-1567927663055-efed28734f1f?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8cmVpc2VufGVufDB8fDB8fHww"
+        ></image>
+      </svg>
+    </div>
+  </div>
+
+  <hr class="featurette-divider" />
+
+  <div class="row featurette py-5">
+    <div
+      class="col-md-7 order-md-2"
+      style="
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      "
+    >
+      <h2 class="featurette-heading fw-normal lh-1" style="margin-bottom: 20px">
+        Discover <span style="color: #a5c9e1">Unusual </span>Destinations
+      </h2>
+      <p class="lead">
+        Find unique travel spots easily. Alongside deals for favorite
+        destinations, discover new places you may not have considered.
+      </p>
+    </div>
+    <div class="col-md-5 order-md-1 hover-grow">
+      <svg
+        class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto"
+        style="border-radius: 20px"
+        width="400"
+        height="200"
+        xmlns="http://www.w3.org/2000/svg"
+        role="img"
+        aria-label="Placeholder: 500x500"
+        preserveAspectRatio="xMidYMid slice"
+        focusable="false"
+      >
+        <title>Sailing boat on the ocean</title>
+        <rect width="100%" height="100%" fill="var(--bs-secondary-bg)"></rect>
+        <image
+          height="100%"
+          width="100%"
+          preserveAspectRatio="xMidYMid slice"
+          href="https://images.unsplash.com/photo-1615449551620-d4b780ef9387?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cmVpc2VufGVufDB8fDB8fHww"
+        ></image>
+      </svg>
+    </div>
+  </div>
+
+  <hr class="featurette-divider" />
+
+  <div class="row featurette py-5">
+    <div
+      class="col-md-7"
+      style="
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      "
+    >
+      <h2 class="featurette-heading fw-normal lh-1" style="margin-bottom: 20px">
+        No More <span style="color: #a5c9e1">Lengthy </span>Flight Searches
+      </h2>
+      <p class="lead">
+        With a single weekly email, get relevant flight details without needing
+        to conduct lengthy searches.
+      </p>
+    </div>
+    <div class="col-md-5 hover-grow">
+      <svg
+        class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto"
+        style="border-radius: 20px"
+        width="400"
+        height="200"
+        xmlns="http://www.w3.org/2000/svg"
+        role="img"
+        aria-label="Placeholder: 500x500"
+        preserveAspectRatio="xMidYMid slice"
+        focusable="false"
+      >
+        <title>Beach</title>
+        <rect width="100%" height="100%" fill="var(--bs-secondary-bg)"></rect>
+        <image
+          height="100%"
+          width="100%"
+          preserveAspectRatio="xMidYMid slice"
+          href="https://images.unsplash.com/photo-1609948679766-a6d38be3bae4?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fHJlaXNlbnxlbnwwfHwwfHx8MA%3D%3D"
+        ></image>
+      </svg>
+    </div>
+  </div>
+
+  <!-- /END THE FEATURETTES -->
+</div>
+<br /><br /><br />
+<!-- FAQ -->
+<div class="container py-3 text-left" id="faq">
+  <h2 class="pb-2 border-bottom border-3">FAQ</h2>
+  <div class="row featurette py-5">
+    <div class="col-md-7">
+      <p>
+        <button
+          class="btn btn-outline-light link-unstyled"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#question1"
+          aria-expanded="false"
+          aria-controls="collapseWidthExample"
+        >
+          What is the pricing for Air Nomad Society?
+        </button>
+      </p>
+      <div>
+        <div class="collapse pb-4" id="question1">
+          <div class="card card-body answer">
+            Air Nomad Society is completely free to join and use.
+          </div>
+        </div>
+      </div>
+
+      <p>
+        <button
+          class="btn btn-outline-light link-unstyled"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#question2"
+          aria-expanded="false"
+          aria-controls="collapseWidthExample"
+        >
+          What is the difference to Skyscanner and Co.?
+        </button>
+      </p>
+      <div>
+        <div class="collapse pb-4" id="question2">
+          <div class="card card-body answer">
+            <p>
+              Unlike traditional platforms, Air Nomad Society offers a direct
+              approach. Deals are curated for you and sent automatically, so you
+              don't need to actively search or compare.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <p>
+        <button
+          class="btn btn-outline-light link-unstyled"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#question3"
+          aria-expanded="false"
+          aria-controls="collapseWidthExample"
+        >
+          How often will I receive flight deal emails?
+        </button>
+      </p>
+      <div>
+        <div class="collapse pb-4" id="question3">
+          <div class="card card-body answer">
+            Flight deal emails are sent once a week, covering deals for both
+            favorite and random destinations.
+          </div>
+        </div>
+      </div>
+
+      <p>
+        <button
+          class="btn btn-outline-light link-unstyled"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#question4"
+          aria-expanded="false"
+          aria-controls="collapseWidthExample"
+        >
+          What does "Favorite Destinations" mean?
+        </button>
+      </p>
+      <div>
+        <div class="collapse pb-4" id="question4">
+          <div class="card card-body answer">
+            Mark certain countries as favorites to receive deals specifically
+            for those locations each week.
+          </div>
+        </div>
+      </div>
+
+      <p>
+        <button
+          class="btn btn-outline-light link-unstyled"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#question5"
+          aria-expanded="false"
+          aria-controls="collapseWidthExample"
+        >
+          Will I get flight deals for non-favorite destinations?
+        </button>
+      </p>
+      <div>
+        <div class="collapse pb-4" id="question5">
+          <div class="card card-body answer">
+            Even if you haven't marked certain places as favorites, you'll still
+            get occasional deals for random destinations.
+          </div>
+        </div>
+      </div>
+
+      <p>
+        <button
+          class="btn btn-outline-light link-unstyled"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#question6"
+          aria-expanded="false"
+          aria-controls="collapseWidthExample"
+        >
+          How far ahead do the flight deals cover?
+        </button>
+      </p>
+      <div>
+        <div class="collapse pb-4" id="question6">
+          <div class="card card-body answer">
+            Deals cover flights up to 180 days in advance, giving you time to
+            plan.
+          </div>
+        </div>
+      </div>
+
+      <p>
+        <button
+          class="btn btn-outline-light link-unstyled"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#question7"
+          aria-expanded="false"
+          aria-controls="collapseWidthExample"
+        >
+          What is next after joining?
+        </button>
+      </p>
+      <div>
+        <div class="collapse pb-4" id="question7">
+          <div class="card card-body answer">
+            Sit back and relax while the flight deals come straight to your
+            inbox. No additional steps required.
+          </div>
+        </div>
+      </div>
+
+      <p>
+        <button
+          class="btn btn-outline-light link-unstyled"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#question8"
+          aria-expanded="false"
+          aria-controls="collapseWidthExample"
+        >
+          How can I update my profile?
+        </button>
+      </p>
+      <div>
+        <div class="collapse pb-4" id="question8">
+          <div class="card card-body answer">
+            You can update your preferences whenever necessary via a link at the
+            bottom of each email.
+          </div>
+        </div>
+      </div>
+
+      <p>
+        <button
+          class="btn btn-outline-light link-unstyled"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#question10"
+          aria-expanded="false"
+          aria-controls="collapseWidthExample"
+        >
+          How will the email look like?
+        </button>
+      </p>
+      <div>
+        <div class="collapse pb-4" id="question10">
+          <div class="card card-body answer">
+            <a href="{{ url_for('example') }}" class="links" target="_blank"
+              >Take a look </a
+            >There is a sample email you can preview to see the layout and
+            style. Just note that actual deals in the sample may not be active.
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-5 hover-grow">
+      <img
+        class="card rounded-4"
+        style="opacity: 0.8; max-width: 100%; max-height: 100%"
+        alt="Ocean view with sunset"
+        src="https://images.unsplash.com/photo-1586348943529-beaae6c28db9?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fG5hdHVyZXxlbnwwfHwwfHx8MA%3D%3D"
+      />
+    </div>
+  </div>
+</div>
+{% endblock %}

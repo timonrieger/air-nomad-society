@@ -1,0 +1,71 @@
+{% extends "layout.html"%}
+
+{% from 'bootstrap5/form.html' import render_field %}
+
+{% block title %}Subscribe | Air Nomad Society{% endblock %}
+
+{% block description %}
+    Join the Air Nomad Society and receive the best flight deals directly in your inbox. Sign up now for free!.
+{% endblock %}
+
+{% block content %}
+
+    {% if get_flashed_messages() %}
+            {% for category, message in get_flashed_messages(with_categories=true) %}
+                {% if category == 'success' %}
+                    <div class="alert alert-success flash my-4" role="alert">
+                        <h5>{{ message }}</h5>
+                    </div>
+                {% elif category == 'error' %}
+                    <div class="alert alert-danger flash my-4" role="alert">
+                         <h5>{{ message }}</h5>
+                    </div>
+                {% elif category == 'not_sent' %}
+                  <div class="alert alert-danger flash mt-5" role="alert">
+                     <h5>{{ message }} <a href="mailto:airnomadsociety@gmail.com?subject=Air Nomad Society - Confirm me please&body=The confirmation email could not be sent, therefore please confirm me manually with {{ form.email.data }}." class="alert-link">email</a>.</h5>
+                  </div>
+                {% else %}
+                    <div class="alert alert-light flash my-4" role="alert">
+                         <h5>{{ message }}</h5>
+                    </div>
+                {% endif %}
+            {% endfor %}
+    {% else %}
+    <h1 class="display-5">Become an Air Nomad</h1>
+    <a href="{{ url_for('home') }}" class="links">Go back</a>
+    <div class="py-5">
+        <li>Take a look at a <a href="{{ url_for('example') }}" class="links" target="_blank">sample email</a>.</li>
+        <li>Create a username for personalized emails.</li>
+        <li class="py-1">Enter your email address where you wish to receive emails.</li>
+        <li>Select your departure city or the nearest major city.</li>
+        <li class="py-1">Choose your preferred currency for price listings.</li>
+        <li>Specify your trip duration by setting a range for the number of nights per location.</li>
+        <li class="py-1">Select multiple favorite countries (use <code>cmd</code> on Mac or <code>ctrl</code> on Windows while clicking).</li>
+    </div>
+    {% endif %}
+    {% if show_form %}
+    <form method="post">
+        {{ form.hidden_tag() }}
+        <dl>
+            {{ render_field(form.username) }}
+            <!-- Always include the email field, but hide it when updating -->
+            {% if update %}
+                <input type="hidden" name="email" value="{{ form.email.data }}">
+            {% else %}
+                {{ render_field(form.email) }}
+            {% endif %}
+            {{ render_field(form.departure_city) }}
+            {{ render_field(form.currency) }}
+            {{ render_field(form.min_nights) }}
+            {{ render_field(form.max_nights) }}
+            {{ render_field(form.favorite_countries) }}
+        </dl>
+        {% if update %}
+            {{ render_field(form.update) }}
+        {% else %}
+            {{ render_field(form.join) }}
+        {% endif %}
+    </form>
+    {% endif %}
+
+{% endblock %}
