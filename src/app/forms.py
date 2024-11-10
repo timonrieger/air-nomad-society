@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms.validators import DataRequired, Email, Length, NumberRange, ValidationError
 from wtforms import StringField, SelectField, IntegerField, SelectMultipleField, SubmitField
-from app.constants import DEPARTURE_CHOICES, COUNTRY_CHOICES, CURRENCY_CHOICES
+from src.app.constants import DEPARTURE_CHOICES, COUNTRY_CHOICES, CURRENCY_CHOICES
 
 STRING_FIELD_STYLE = "width: 40%; height: 33px; margin: auto; display: block"
 TEXT_AREA_STYLE = "width: 40%; height: 100px; margin: auto; display: block"

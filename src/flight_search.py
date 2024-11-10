@@ -16,7 +16,7 @@ import os
 from datetime import datetime
 import requests, time
 from src.flight_data import FlightData
-from app.constants import TEQUILA_API_KEY, TEQUILA_ENDPOINT
+from src.app.constants import TEQUILA_API_KEY, TEQUILA_ENDPOINT
 
 class FlightSearch:
     # This class is responsible for talking to the Flight Search API.

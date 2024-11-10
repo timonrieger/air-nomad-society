@@ -15,7 +15,7 @@ import os
 import smtplib, random
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from app.constants import ANS_GMAIL, ANS_GMAIL_PWD
+from src.app.constants import ANS_GMAIL, ANS_GMAIL_PWD
 
 class NotificationManager:
     #This class is responsible for sending notifications with the deal flight details.
