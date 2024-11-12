@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 import random
-from src.data_manager import DataManager
-from src.flight_search import FlightSearch
-from src.notification_manager import NotificationManager
+from data_manager import DataManager
+from flight_search import FlightSearch
+from notification_manager import NotificationManager
 
 data_manager = DataManager()
 flight_search = FlightSearch()

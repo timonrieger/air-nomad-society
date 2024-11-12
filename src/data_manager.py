@@ -13,8 +13,8 @@ import os, requests
 # # the sys.path.
 # sys.path.append(parent)
 
-from app import app, db, AirNomads
-from src.app.constants import NPOINT
+from src.app import app, AirNomads
+from src.utility.constants import NPOINT
 
 class DataManager:
     # This class is responsible for talking to the Google Sheet and the Database.

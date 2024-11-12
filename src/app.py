@@ -1,7 +1,7 @@
 from flask import Flask, redirect, render_template, flash, request, url_for
-from src.app.forms import AirNomadSocietyForm
+from src.utility.forms import AirNomadSocietyForm
 from flask_bootstrap import Bootstrap5
-from src.app.utils import generate_token
+from src.utility.helpers import generate_token
 from flask_wtf.csrf import CSRFProtect
 from database import db, create_all, AirNomads
 import os
