@@ -20,10 +20,6 @@
                     <div class="alert alert-danger flash my-4" role="alert">
                          <h5>{{ message }}</h5>
                     </div>
-                {% elif category == 'not_sent' %}
-                  <div class="alert alert-danger flash mt-5" role="alert">
-                     <h5>{{ message }} <a href="mailto:airnomadsociety@gmail.com?subject=Air Nomad Society - Confirm me please&body=The confirmation email could not be sent, therefore please confirm me manually with {{ form.email.data }}." class="alert-link">email</a>.</h5>
-                  </div>
                 {% else %}
                     <div class="alert alert-light flash my-4" role="alert">
                          <h5>{{ message }}</h5>

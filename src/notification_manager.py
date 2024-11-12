@@ -1,16 +1,16 @@
 import sys
 import os
 
-# # getting the name of the directory where this file is present.
-# current = os.path.dirname(os.path.realpath(__file__))
+# getting the name of the directory where this file is present.
+current = os.path.dirname(os.path.realpath(__file__))
 
-# # Getting the parent directory name
-# # where the current directory is present.
-# parent = os.path.dirname(current)
+# Getting the parent directory name
+# where the current directory is present.
+parent = os.path.dirname(current)
 
-# # adding the parent directory to
-# # the sys.path.
-# sys.path.append(parent)
+# adding the parent directory to
+# the sys.path.
+sys.path.append(parent)
 
 import smtplib, random
 from email.mime.multipart import MIMEMultipart

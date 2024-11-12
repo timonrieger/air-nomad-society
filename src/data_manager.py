@@ -1,20 +1,20 @@
 import sys
 import os, requests
 
-# # getting the name of the directory
-# # where the this file is present.
-# current = os.path.dirname(os.path.realpath(__file__))
+# getting the name of the directory
+# where the this file is present.
+current = os.path.dirname(os.path.realpath(__file__))
 
-# # Getting the parent directory name
-# # where the current directory is present.
-# parent = os.path.dirname(current)
+# Getting the parent directory name
+# where the current directory is present.
+parent = os.path.dirname(current)
 
-# # adding the parent directory to
-# # the sys.path.
-# sys.path.append(parent)
+# adding the parent directory to
+# the sys.path.
+sys.path.append(parent)
 
-from src.app import app, AirNomads
-from src.utility.constants import NPOINT
+from app import app, AirNomads
+from utility.constants import NPOINT
 
 class DataManager:
     # This class is responsible for talking to the Google Sheet and the Database.

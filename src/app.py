@@ -7,7 +7,7 @@ from database import db, create_all, AirNomads
 import os
 
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="../templates")
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DB_URI")
 db.init_app(app)
