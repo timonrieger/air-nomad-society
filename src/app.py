@@ -5,6 +5,7 @@ from src.utility.helpers import generate_token
 from flask_wtf.csrf import CSRFProtect
 from database import db, create_all, AirNomads
 import os
+from flask_caching import Cache
 
 
 app = Flask(__name__, template_folder="../templates", static_folder="../static")
@@ -16,11 +17,14 @@ bootstrap = Bootstrap5(app)
 csrf = CSRFProtect()
 csrf.init_app(app)
 
+cache = Cache(app, config={'CACHE_TYPE': 'SimpleCache'})
+
 with app.app_context():
     create_all(app)
     
 
-@app.route("/", methods=["POST", "GET"])
+@app.route("/", methods=["GET"])
+@cache.cached(timeout=60 * 60 * 24 * 7 * 52)
 def home():
     return render_template("index.html")
 
