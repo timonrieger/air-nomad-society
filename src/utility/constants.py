@@ -4,13 +4,13 @@ import os
 
 dotenv.load_dotenv()
 
-GMAIL = os.getenv("GMAIL")
-GMAIL_PWD = os.getenv("GMAIL_PWD")
 NPOINT = os.getenv("NPOINT")
-ANS_GMAIL = os.getenv("ANS_GMAIL")
-ANS_GMAIL_PWD = os.getenv("ANS_GMAIL_PWD")
 TEQUILA_ENDPOINT = "https://api.tequila.kiwi.com"
 TEQUILA_API_KEY = os.getenv("TEQUILA_API_KEY")
+SMTP_EMAIL=os.getenv("SMTP_EMAIL")
+SMTP_PWD=os.getenv("SMTP_PWD")
+SMTP_SERVER=os.getenv("SMTP_SERVER")
+SMTP_PORT=int(os.getenv("SMTP_PORT"))
 
 npoint_data = requests.get(url=NPOINT).json()
 

@@ -15,7 +15,7 @@ sys.path.append(parent)
 import smtplib, random
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from utility.constants import ANS_GMAIL, ANS_GMAIL_PWD
+from utility.constants import SMTP_EMAIL, SMTP_PWD, SMTP_PORT, SMTP_SERVER
 
 class NotificationManager:
     #This class is responsible for sending notifications with the deal flight details.
@@ -93,7 +93,7 @@ class NotificationManager:
 
         # Create a multipart message
         msg = MIMEMultipart()
-        msg['From'] = f"Air Nomad Society <{ANS_GMAIL}>"
+        msg['From'] = f"Air Nomad Society <{SMTP_EMAIL}>"
         msg['To'] = user["email"]
         msg['Subject'] = "Weekly Flight Deals!"
         # Read HTML file
@@ -109,8 +109,8 @@ class NotificationManager:
 
         msg.attach(html_part)
 
-        with smtplib.SMTP_SSL(host="smtp.gmail.com") as connection:
-            connection.login(user=ANS_GMAIL, password=ANS_GMAIL_PWD)
+        with smtplib.SMTP_SSL(host=SMTP_SERVER, port=SMTP_PORT) as connection:
+            connection.login(user=SMTP_EMAIL, password=SMTP_PWD)
             connection.send_message(msg)
             connection.close()
 
