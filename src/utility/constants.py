@@ -4,6 +4,9 @@ import os
 
 dotenv.load_dotenv()
 
+SECRET_KEY = os.getenv("SECRET_KEY") 
+DB_URI = os.getenv("DB_URI") 
+
 NPOINT = os.getenv("NPOINT")
 TEQUILA_ENDPOINT = "https://api.tequila.kiwi.com"
 TEQUILA_API_KEY = os.getenv("TEQUILA_API_KEY")
@@ -17,3 +20,5 @@ npoint_data = requests.get(url=NPOINT).json()
 DEPARTURE_CHOICES = [f"{city['city']} | {city['code']}" for city in npoint_data['cities']]
 CURRENCY_CHOICES = npoint_data["currencies"]
 COUNTRY_CHOICES = [country["country"] for country in npoint_data["countries"]]
+ENVIRONMENT=os.getenv("ENVIRONMENT")
+MY_UUID=os.getenv("MY_UUID")

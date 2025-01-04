@@ -6,11 +6,11 @@ from flask_wtf.csrf import CSRFProtect
 from database import db, create_all, AirNomads
 import os
 from flask_caching import Cache
-
+from src.utility.constants import DB_URI, SECRET_KEY
 
 app = Flask(__name__, template_folder="../templates", static_folder="../static")
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DB_URI")
+app.config['SECRET_KEY'] = SECRET_KEY
+app.config["SQLALCHEMY_DATABASE_URI"] = DB_URI
 db.init_app(app)
 bootstrap = Bootstrap5(app)
 

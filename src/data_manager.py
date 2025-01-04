@@ -14,10 +14,10 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from app import app, AirNomads
-from utility.constants import NPOINT
+from utility.constants import NPOINT, ENVIRONMENT, MY_UUID
 
 class DataManager:
-    # This class is responsible for talking to the Google Sheet and the Database.
+    '''This class is responsible for talking to npoint and the database.'''
 
     def __init__(self):
         self.destination_data = {}
@@ -26,7 +26,10 @@ class DataManager:
 
     def get_user_data(self):
         with app.app_context():
-            user_data = AirNomads.query.all()
+            if ENVIRONMENT == "dev":
+                user_data = [AirNomads.query.filter_by(id=MY_UUID).first()]
+            else:
+                user_data = AirNomads.query.all()
         self.user_data = [{"token": user.token, "id": user.id, "username": user.username, "email": user.email,
                            "departureCity": user.departure_city, "departureIata": user.departure_iata,
                            "currency": user.currency, "nightsFrom": user.min_nights, "nightsTo": user.max_nights,
