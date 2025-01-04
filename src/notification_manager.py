@@ -109,7 +109,8 @@ class NotificationManager:
 
         msg.attach(html_part)
 
-        with smtplib.SMTP_SSL(host=SMTP_SERVER, port=SMTP_PORT) as connection:
+        with smtplib.SMTP(host=SMTP_SERVER, port=SMTP_PORT) as connection:
+            connection.starttls()
             connection.login(user=SMTP_EMAIL, password=SMTP_PWD)
             connection.send_message(msg)
             connection.close()
