@@ -46,5 +46,6 @@ class AirNomadSocietyForm(FlaskForm):
     min_days_ahead = IntegerField(label="Search From (Days Ahead)", validators=[DataRequired(), NumberRange(min=1, max=365, message="Set between 1 and 365 days.")], render_kw={"style": f"{STRING_FIELD_STYLE}"})
     max_days_ahead = IntegerField(label="Search To (Days Ahead)", validators=[DataRequired(), NumberRange(min=1, max=365, message="Set between 1 and 365 days."), ValidateMaxDaysAheadGreaterThanMin()], render_kw={"style": f"{STRING_FIELD_STYLE}"})
     favorite_countries = SelectMultipleField(label="Favorite destinations", choices=COUNTRY_CHOICES, validators=[DataRequired()], render_kw={"style": f"{SELECT_MULTIPLE_STYLE}; f{SUBMIT_STYLE}"})
+    excluded_countries = SelectMultipleField(label="Exclude from gems (optional)", choices=COUNTRY_CHOICES, validators=[], render_kw={"style": f"{SELECT_MULTIPLE_STYLE}"})
     join = SubmitField(label="Join Air Nomad Society")
     update = SubmitField(label="Update Preferences")

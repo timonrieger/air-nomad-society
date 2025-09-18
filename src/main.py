@@ -13,11 +13,15 @@ data_manager.get_destination_data()
 data_manager.get_images()
 
 for user in data_manager.user_data:
-    selected_gems = random.sample(data_manager.destination_data, 5)
+    # Filter out excluded countries from gems selection
+    available_destinations = [dest for dest in data_manager.destination_data 
+                             if dest['country'] not in user["excludedCountries"]]
+    
+    selected_gems = random.sample(available_destinations, min(5, len(available_destinations)))
     added_new_item = False
     for index, item in enumerate(selected_gems):
         while item['country'] in user["dreamPlaces"]:
-            new_item = random.choice(data_manager.destination_data)
+            new_item = random.choice(available_destinations)
             if new_item['country'] not in [item['country'] for item in selected_gems]:
                 selected_gems[index] = new_item
                 added_new_item = True

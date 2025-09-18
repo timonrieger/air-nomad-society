@@ -34,7 +34,8 @@ class DataManager:
                            "departureCity": user.departure_city, "departureIata": user.departure_iata,
                            "currency": user.currency, "nightsFrom": user.min_nights, "nightsTo": user.max_nights,
                            "minDaysAhead": user.min_days_ahead, "maxDaysAhead": user.max_days_ahead,
-                           "dreamPlaces": user.travel_countries.split(",")} for user in user_data]
+                           "dreamPlaces": user.travel_countries.split(","),
+                           "excludedCountries": user.excluded_countries.split(",") if user.excluded_countries else []} for user in user_data]
         return self.user_data
 
     def get_destination_data(self):

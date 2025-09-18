@@ -57,7 +57,8 @@ def subscribe():
                 max_nights=member.max_nights,
                 min_days_ahead=member.min_days_ahead,
                 max_days_ahead=member.max_days_ahead,
-                favorite_countries=[country.strip() for country in member.travel_countries.split(",")]
+                favorite_countries=[country.strip() for country in member.travel_countries.split(",")],
+                excluded_countries=[country.strip() for country in (member.excluded_countries.split(",") if member.excluded_countries else [])]
             )
             db.session.delete(member)
             db.session.commit()
@@ -77,7 +78,8 @@ def subscribe():
                 max_nights=member.max_nights,
                 min_days_ahead=member.min_days_ahead,
                 max_days_ahead=member.max_days_ahead,
-                favorite_countries=[country.strip() for country in member.travel_countries.split(",")]
+                favorite_countries=[country.strip() for country in member.travel_countries.split(",")],
+                excluded_countries=[country.strip() for country in (member.excluded_countries.split(",") if member.excluded_countries else [])]
             )
             flash("Your profile is ready for updates. Please make any changes as needed.", category="success")
             return render_template("subscribe.html", form=form, show_form=True, update=True)
@@ -88,6 +90,7 @@ def subscribe():
     if form.validate_on_submit() and request.method == 'POST':
         already_member = AirNomads.query.where(AirNomads.email == form.email.data).scalar()
         favorite_countries = ",".join([country for country in form.favorite_countries.data])
+        excluded_countries = ",".join([country for country in form.excluded_countries.data]) if form.excluded_countries.data else None
         if already_member:
             already_member.username = form.username.data
             already_member.departure_city = form.departure_city.data.split(" | ")[0]
@@ -98,6 +101,7 @@ def subscribe():
             already_member.min_days_ahead = form.min_days_ahead.data
             already_member.max_days_ahead = form.max_days_ahead.data
             already_member.travel_countries = favorite_countries
+            already_member.excluded_countries = excluded_countries
             db.session.commit()
             flash("Your preferences were changed successfully.", category="success")
             return render_template("subscribe.html", form=form, update=True)
@@ -113,6 +117,7 @@ def subscribe():
                 min_days_ahead=form.min_days_ahead.data,
                 max_days_ahead=form.max_days_ahead.data,
                 travel_countries=favorite_countries,
+                excluded_countries=excluded_countries,
                 token=generate_token()
             )
             db.session.add(new_member)

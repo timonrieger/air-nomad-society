@@ -38,6 +38,7 @@
         <li>Specify your trip duration by setting a range for the number of nights per location.</li>
         <li class="py-1">Set your search range by choosing how many days ahead to start and end your flight search.</li>
         <li>Select multiple favorite countries (use <code>cmd</code> on Mac or <code>ctrl</code> on Windows while clicking).</li>
+        <li class="py-1">Optionally exclude countries from gems (random discoveries) - these will still appear in your dream destinations.</li>
     </div>
     {% endif %}
     {% if show_form %}
@@ -58,6 +59,7 @@
             {{ render_field(form.min_days_ahead) }}
             {{ render_field(form.max_days_ahead) }}
             {{ render_field(form.favorite_countries) }}
+            {{ render_field(form.excluded_countries) }}
         </dl>
         {% if update %}
             {{ render_field(form.update) }}
