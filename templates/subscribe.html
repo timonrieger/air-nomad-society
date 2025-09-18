@@ -36,7 +36,8 @@
         <li>Select your departure city or the nearest major city.</li>
         <li class="py-1">Choose your preferred currency for price listings.</li>
         <li>Specify your trip duration by setting a range for the number of nights per location.</li>
-        <li class="py-1">Select multiple favorite countries (use <code>cmd</code> on Mac or <code>ctrl</code> on Windows while clicking).</li>
+        <li class="py-1">Set your search range by choosing how many days ahead to start and end your flight search.</li>
+        <li>Select multiple favorite countries (use <code>cmd</code> on Mac or <code>ctrl</code> on Windows while clicking).</li>
     </div>
     {% endif %}
     {% if show_form %}
@@ -54,6 +55,8 @@
             {{ render_field(form.currency) }}
             {{ render_field(form.min_nights) }}
             {{ render_field(form.max_nights) }}
+            {{ render_field(form.min_days_ahead) }}
+            {{ render_field(form.max_days_ahead) }}
             {{ render_field(form.favorite_countries) }}
         </dl>
         {% if update %}

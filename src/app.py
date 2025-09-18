@@ -55,6 +55,8 @@ def subscribe():
                 currency=member.currency,
                 min_nights=member.min_nights,
                 max_nights=member.max_nights,
+                min_days_ahead=member.min_days_ahead,
+                max_days_ahead=member.max_days_ahead,
                 favorite_countries=[country.strip() for country in member.travel_countries.split(",")]
             )
             db.session.delete(member)
@@ -73,6 +75,8 @@ def subscribe():
                 currency=member.currency,
                 min_nights=member.min_nights,
                 max_nights=member.max_nights,
+                min_days_ahead=member.min_days_ahead,
+                max_days_ahead=member.max_days_ahead,
                 favorite_countries=[country.strip() for country in member.travel_countries.split(",")]
             )
             flash("Your profile is ready for updates. Please make any changes as needed.", category="success")
@@ -91,6 +95,8 @@ def subscribe():
             already_member.currency = form.currency.data
             already_member.min_nights = form.min_nights.data
             already_member.max_nights = form.max_nights.data
+            already_member.min_days_ahead = form.min_days_ahead.data
+            already_member.max_days_ahead = form.max_days_ahead.data
             already_member.travel_countries = favorite_countries
             db.session.commit()
             flash("Your preferences were changed successfully.", category="success")
@@ -104,6 +110,8 @@ def subscribe():
                 currency=form.currency.data,
                 min_nights=form.min_nights.data,
                 max_nights=form.max_nights.data,
+                min_days_ahead=form.min_days_ahead.data,
+                max_days_ahead=form.max_days_ahead.data,
                 travel_countries=favorite_countries,
                 token=generate_token()
             )

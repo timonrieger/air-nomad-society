@@ -9,16 +9,31 @@ SELECT_MULTIPLE_STYLE = "width: 40%; height: 200px; margin: auto; display: block
 SUBMIT_STYLE = "margin-bottom: 10px"
 
 class ValidateMaxNightsGreaterThanMin:
-    def __init__(self, message=None):
-        if not message:
-            message = 'Maximum nights must be greater than minimum nights.'
-        self.message = message
-
     def __call__(self, form, field):
         min_nights = form.min_nights.data
         max_nights = field.data
         if max_nights <= min_nights:
-            raise ValidationError(self.message)
+            raise ValidationError('Maximum nights must be greater than minimum nights.')
+
+
+class ValidateMaxDaysAheadGreaterThanMin:
+    def __call__(self, form, field):
+        min_days_ahead = form.min_days_ahead.data
+        max_days_ahead = field.data
+        if max_days_ahead <= min_days_ahead:
+            raise ValidationError('Maximum days ahead must be greater than minimum days ahead.')
+
+
+class ValidateMaxNightsWithinSearchRange:
+    def __call__(self, form, field):
+        min_days_ahead = form.min_days_ahead.data
+        max_days_ahead = form.max_days_ahead.data
+        max_nights = field.data
+        
+        if min_days_ahead and max_days_ahead:
+            search_range_days = max_days_ahead - min_days_ahead
+            if max_nights > search_range_days:
+                raise ValidationError(f'Maximum nights ({max_nights}) cannot exceed the search range duration ({search_range_days} days).')
 
 
 class AirNomadSocietyForm(FlaskForm):
@@ -27,7 +42,9 @@ class AirNomadSocietyForm(FlaskForm):
     departure_city = SelectField(label="Departure City", choices=DEPARTURE_CHOICES, validators=[DataRequired()], render_kw={"style": f"{STRING_FIELD_STYLE}"})
     currency = SelectField(label="Currency", choices=CURRENCY_CHOICES, validators=[DataRequired()], render_kw={"style": f"{STRING_FIELD_STYLE}"})
     min_nights = IntegerField(label="Minimum Nights", validators=[DataRequired(), NumberRange(min=1, message="Set to 1 or above.")], render_kw={"style": f"{STRING_FIELD_STYLE}"})
-    max_nights = IntegerField(label="Maximum Nights", validators=[DataRequired(), NumberRange(min=1, max=180, message="Set to 180 or lower."), ValidateMaxNightsGreaterThanMin()], render_kw={"style": f"{STRING_FIELD_STYLE}"})
+    max_nights = IntegerField(label="Maximum Nights", validators=[DataRequired(), NumberRange(min=1, message="Set to 1 or above."), ValidateMaxNightsGreaterThanMin(), ValidateMaxNightsWithinSearchRange()], render_kw={"style": f"{STRING_FIELD_STYLE}"})
+    min_days_ahead = IntegerField(label="Search From (Days Ahead)", validators=[DataRequired(), NumberRange(min=1, max=365, message="Set between 1 and 365 days.")], render_kw={"style": f"{STRING_FIELD_STYLE}"})
+    max_days_ahead = IntegerField(label="Search To (Days Ahead)", validators=[DataRequired(), NumberRange(min=1, max=365, message="Set between 1 and 365 days."), ValidateMaxDaysAheadGreaterThanMin()], render_kw={"style": f"{STRING_FIELD_STYLE}"})
     favorite_countries = SelectMultipleField(label="Favorite destinations", choices=COUNTRY_CHOICES, validators=[DataRequired()], render_kw={"style": f"{SELECT_MULTIPLE_STYLE}; f{SUBMIT_STYLE}"})
     join = SubmitField(label="Join Air Nomad Society")
     update = SubmitField(label="Update Preferences")

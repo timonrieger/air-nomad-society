@@ -36,8 +36,8 @@ for user in data_manager.user_data:
             flight = flight_search.check_flight(
                 departure_iata_code=user["departureIata"],
                 arrival_iata_code=destination["code"],
-                from_time=datetime.now() + timedelta(days=1),
-                to_time=datetime.now() + timedelta(days=182),
+                from_time=datetime.now() + timedelta(days=user["minDaysAhead"]),
+                to_time=datetime.now() + timedelta(days=user["maxDaysAhead"]),
                 min_nights=user["nightsFrom"],
                 max_nights=user["nightsTo"],
                 currency=user["currency"].upper()
@@ -66,8 +66,8 @@ for user in data_manager.user_data:
         flight = flight_search.check_flight(
             departure_iata_code=user["departureIata"],
             arrival_iata_code=destination["code"],
-            from_time=datetime.now() + timedelta(days=1),
-            to_time=datetime.now() + timedelta(days=182),
+            from_time=datetime.now() + timedelta(days=user["minDaysAhead"]),
+            to_time=datetime.now() + timedelta(days=user["maxDaysAhead"]),
             min_nights=user["nightsFrom"],
             max_nights=user["nightsTo"],
             currency=user["currency"].upper()
