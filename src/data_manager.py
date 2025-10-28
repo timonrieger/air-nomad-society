@@ -1,5 +1,5 @@
 import sys
-import os, requests
+import os, json
 
 # getting the name of the directory
 # where the this file is present.
@@ -14,10 +14,10 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from app import app, AirNomads
-from utility.constants import NPOINT, ENVIRONMENT, MY_UUID
+from utility.constants import ENVIRONMENT, MY_UUID, DATA_FILE_PATH
 
 class DataManager:
-    '''This class is responsible for talking to npoint and the database.'''
+    '''This class is responsible for loading data from local JSON file and the database.'''
 
     def __init__(self):
         self.destination_data = {}
@@ -39,9 +39,15 @@ class DataManager:
         return self.user_data
 
     def get_destination_data(self):
-        self.destination_data = requests.get(url=NPOINT).json()["countries"]
+        # Load data from local JSON file instead of NPOINT
+        with open(DATA_FILE_PATH, 'r') as f:
+            data = json.load(f)
+        self.destination_data = data["countries"]
         return self.destination_data
 
     def get_images(self):
-        self.image_data = requests.get(url=NPOINT).json()["images"]
+        # Load data from local JSON file instead of NPOINT
+        with open(DATA_FILE_PATH, 'r') as f:
+            data = json.load(f)
+        self.image_data = data["images"]
         return self.image_data
