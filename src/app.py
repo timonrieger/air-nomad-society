@@ -4,7 +4,6 @@ from flask_bootstrap import Bootstrap5
 from src.utility.helpers import generate_token
 from flask_wtf.csrf import CSRFProtect
 from database import db, create_all, AirNomads
-import os
 from flask_caching import Cache
 from src.utility.constants import DB_URI, SECRET_KEY
 

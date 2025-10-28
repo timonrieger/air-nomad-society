@@ -1,22 +1,7 @@
-import sys
-import os
-
-# getting the name of the directory
-# where the this file is present.
-current = os.path.dirname(os.path.realpath(__file__))
-
-# Getting the parent directory name
-# where the current directory is present.
-parent = os.path.dirname(current)
-
-# adding the parent directory to
-# the sys.path.
-sys.path.append(parent)
-
 from datetime import datetime
 import requests, time
-from flight_data import FlightData
-from utility.constants import TEQUILA_API_KEY, TEQUILA_ENDPOINT
+from src.flight_data import FlightData
+from src.utility.constants import TEQUILA_API_KEY, TEQUILA_ENDPOINT
 
 class FlightSearch:
     # This class is responsible for talking to the Flight Search API.

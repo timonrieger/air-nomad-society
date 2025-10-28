@@ -1,20 +1,5 @@
-import sys
-import os
-
-# getting the name of the directory
-# where the this file is present.
-current = os.path.dirname(os.path.realpath(__file__))
-
-# Getting the parent directory name
-# where the current directory is present.
-parent = os.path.dirname(current)
-
-# adding the parent directory to
-# the sys.path.
-sys.path.append(parent)
-
-from app import app, AirNomads
-from utility.constants import ENVIRONMENT, MY_UUID, JSON_DATA
+from src.app import app, AirNomads
+from src.utility.constants import ENVIRONMENT, MY_UUID, JSON_DATA
 
 class DataManager:
     '''This class is responsible for loading data from local JSON file and the database.'''

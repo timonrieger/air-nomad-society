@@ -1,21 +1,7 @@
-import sys
-import os
-
-# getting the name of the directory where this file is present.
-current = os.path.dirname(os.path.realpath(__file__))
-
-# Getting the parent directory name
-# where the current directory is present.
-parent = os.path.dirname(current)
-
-# adding the parent directory to
-# the sys.path.
-sys.path.append(parent)
-
 import smtplib, random
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from utility.constants import SMTP_EMAIL, SMTP_PWD, SMTP_PORT, SMTP_SERVER
+from src.utility.constants import SMTP_EMAIL, SMTP_PWD, SMTP_PORT, SMTP_SERVER
 
 class NotificationManager:
     #This class is responsible for sending notifications with the deal flight details.
