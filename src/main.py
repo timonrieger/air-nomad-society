@@ -1,5 +1,13 @@
+import sys
+import os
 from datetime import datetime, timedelta
 import random
+
+# Add project root to Python path so src.* imports work
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
 from src.data_manager import DataManager
 from src.flight_search import FlightSearch
 from src.notification_manager import NotificationManager
