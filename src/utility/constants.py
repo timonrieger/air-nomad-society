@@ -1,30 +1,24 @@
-import json
-import dotenv
-import os
+"""Legacy shim: exposes the old constant names, sourced from `ans.config`
+and `ans.refdata`. Dies with the `src/` tree at the end of Phase 0."""
 
-dotenv.load_dotenv()
+from ans import refdata
+from ans.config import get_settings
 
-SECRET_KEY = os.getenv("SECRET_KEY")
-DB_URI = os.getenv("DB_URI")
+_settings = get_settings()
 
-with open(
-    os.path.join(
-        os.path.dirname(os.path.dirname(__file__)), "..", "static", "data.json"
-    ),
-    "r",
-) as f:
-    local_data = json.load(f)
+SECRET_KEY = _settings.secret_key
+DB_URI = _settings.db_uri
 
-TEQUILA_ENDPOINT = "https://api.tequila.kiwi.com"
-TEQUILA_API_KEY = os.getenv("TEQUILA_API_KEY")
-SMTP_EMAIL = os.getenv("SMTP_EMAIL")
-SMTP_PWD = os.getenv("SMTP_PWD")
-SMTP_SERVER = os.getenv("SMTP_SERVER")
-SMTP_PORT = int(os.getenv("SMTP_PORT"))
+TEQUILA_ENDPOINT = _settings.tequila_endpoint
+TEQUILA_API_KEY = _settings.tequila_api_key
+SMTP_EMAIL = _settings.smtp_email
+SMTP_PWD = _settings.smtp_pwd
+SMTP_SERVER = _settings.smtp_server
+SMTP_PORT = _settings.smtp_port
 
-JSON_DATA = local_data
-DEPARTURE_CHOICES = [f"{city['city']} | {city['code']}" for city in JSON_DATA["cities"]]
-CURRENCY_CHOICES = JSON_DATA["currencies"]
-COUNTRY_CHOICES = [country["country"] for country in JSON_DATA["countries"]]
-ENVIRONMENT = os.getenv("ENVIRONMENT")
-MY_UUID = os.getenv("MY_UUID")
+JSON_DATA = refdata.load().model_dump()
+DEPARTURE_CHOICES = refdata.departure_choices()
+CURRENCY_CHOICES = refdata.currency_choices()
+COUNTRY_CHOICES = refdata.country_choices()
+ENVIRONMENT = _settings.environment
+MY_UUID = _settings.my_uuid
