@@ -1,7 +1,9 @@
 from datetime import datetime
-import requests, time
+import requests
+import time
 from src.flight_data import FlightData
 from src.utility.constants import TEQUILA_API_KEY, TEQUILA_ENDPOINT
+
 
 class FlightSearch:
     # This class is responsible for talking to the Flight Search API.
@@ -9,7 +11,16 @@ class FlightSearch:
     def __init__(self):
         self.flight_search = {}
 
-    def check_flight(self, departure_iata_code, arrival_iata_code, from_time, to_time, min_nights, max_nights, currency):
+    def check_flight(
+        self,
+        departure_iata_code,
+        arrival_iata_code,
+        from_time,
+        to_time,
+        min_nights,
+        max_nights,
+        currency,
+    ):
         search_endpoint = f"{TEQUILA_ENDPOINT}/search"
         headers = {"apikey": TEQUILA_API_KEY}
         query = {
@@ -21,7 +32,7 @@ class FlightSearch:
             "nights_in_dst_to": max_nights,
             "one_for_city": 1,
             "max_sector_stopovers": 0,
-            "curr": currency
+            "curr": currency,
         }
         repeat = True
         repeat_round = 0
@@ -33,7 +44,9 @@ class FlightSearch:
             except IndexError:
                 try:
                     query["max_sector_stopovers"] = 1
-                    response = requests.get(url=search_endpoint, params=query, headers=headers)
+                    response = requests.get(
+                        url=search_endpoint, params=query, headers=headers
+                    )
                     data = response.json()["data"][0]
                 except IndexError:
                     repeat = False
@@ -55,13 +68,17 @@ class FlightSearch:
                         arrival_city=data["cityTo"],
                         arrival_iata_code=data["flyTo"],
                         arrival_country=data["countryTo"]["name"],
-                        from_date=datetime.fromtimestamp(data["route"][0]["dTime"]).strftime("%d.%m.%Y"),
-                        to_date=datetime.fromtimestamp(data["route"][2]["aTime"]).strftime("%d.%m.%Y"),
+                        from_date=datetime.fromtimestamp(
+                            data["route"][0]["dTime"]
+                        ).strftime("%d.%m.%Y"),
+                        to_date=datetime.fromtimestamp(
+                            data["route"][2]["aTime"]
+                        ).strftime("%d.%m.%Y"),
                         stop_overs=1,
                         via_city=data["route"][0]["cityTo"],
                         link=data["deep_link"],
                         currency=currency,
-                        distance=data["distance"]
+                        distance=data["distance"],
                     )
                     repeat = False
                     return flight_data
@@ -81,12 +98,16 @@ class FlightSearch:
                     arrival_city=data["cityTo"],
                     arrival_iata_code=data["flyTo"],
                     arrival_country=data["countryTo"]["name"],
-                    from_date=datetime.fromtimestamp(data["route"][0]["dTime"]).strftime("%d.%m.%Y"),
-                    to_date=datetime.fromtimestamp(data["route"][1]["aTime"]).strftime("%d.%m.%Y"),
+                    from_date=datetime.fromtimestamp(
+                        data["route"][0]["dTime"]
+                    ).strftime("%d.%m.%Y"),
+                    to_date=datetime.fromtimestamp(data["route"][1]["aTime"]).strftime(
+                        "%d.%m.%Y"
+                    ),
                     via_city=False,
                     link=data["deep_link"],
                     currency=currency,
-                    distance=data["distance"]
+                    distance=data["distance"],
                 )
                 repeat = False
                 return flight_data
@@ -100,7 +121,10 @@ class FlightSearch:
         location_nr = 0
         while not matched_country:
             try:
-                if response.json()["locations"][location_nr]["country"]["name"] == country_name:
+                if (
+                    response.json()["locations"][location_nr]["country"]["name"]
+                    == country_name
+                ):
                     matched_country = True
                     code = response.json()["locations"][location_nr]["code"]
                 else:
@@ -110,6 +134,7 @@ class FlightSearch:
                 matched_country = True
 
         return code
+
 
 ############### test flight search api ################
 # location_endpoint = f"{TEQUILA_ENDPOINT}/locations/query"

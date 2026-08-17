@@ -22,15 +22,20 @@ data_manager.get_images()
 
 for user in data_manager.user_data:
     # Filter out excluded countries from gems selection
-    available_destinations = [dest for dest in data_manager.destination_data 
-                             if dest['country'] not in user["excludedCountries"]]
-    
-    selected_gems = random.sample(available_destinations, min(5, len(available_destinations)))
+    available_destinations = [
+        dest
+        for dest in data_manager.destination_data
+        if dest["country"] not in user["excludedCountries"]
+    ]
+
+    selected_gems = random.sample(
+        available_destinations, min(5, len(available_destinations))
+    )
     added_new_item = False
     for index, item in enumerate(selected_gems):
-        while item['country'] in user["dreamPlaces"]:
+        while item["country"] in user["dreamPlaces"]:
             new_item = random.choice(available_destinations)
-            if new_item['country'] not in [item['country'] for item in selected_gems]:
+            if new_item["country"] not in [item["country"] for item in selected_gems]:
                 selected_gems[index] = new_item
                 added_new_item = True
                 break  # Exit the inner while loop
@@ -52,7 +57,7 @@ for user in data_manager.user_data:
                 to_time=datetime.now() + timedelta(days=user["maxDaysAhead"]),
                 min_nights=user["nightsFrom"],
                 max_nights=user["nightsTo"],
-                currency=user["currency"].upper()
+                currency=user["currency"].upper(),
             )
             if flight is None:
                 continue
@@ -70,7 +75,7 @@ for user in data_manager.user_data:
                         "from_dt": flight.from_date[0],
                         "to_dt": flight.to_date[0],
                         "link": flight.link,
-                        "stop_over": flight.via_city
+                        "stop_over": flight.via_city,
                     }
                 )
 
@@ -82,7 +87,7 @@ for user in data_manager.user_data:
             to_time=datetime.now() + timedelta(days=user["maxDaysAhead"]),
             min_nights=user["nightsFrom"],
             max_nights=user["nightsTo"],
-            currency=user["currency"].upper()
+            currency=user["currency"].upper(),
         )
         if flight is None:
             continue
@@ -100,8 +105,13 @@ for user in data_manager.user_data:
                     "from_dt": flight.from_date[0],
                     "to_dt": flight.to_date[0],
                     "link": flight.link,
-                    "stop_over": flight.via_city
+                    "stop_over": flight.via_city,
                 }
             )
 
-    notification_manager.send_weekly_email(user=user, dream_flights=dream_places, random_flights=gem_places, image_data=data_manager.image_data)
+    notification_manager.send_weekly_email(
+        user=user,
+        dream_flights=dream_places,
+        random_flights=gem_places,
+        image_data=data_manager.image_data,
+    )
