@@ -20,10 +20,11 @@ Follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/
 
 Air Nomad Society emails personalized flight deals to subscribers.
 
+- `ans/` — the typed core: settings, providers, selection, email rendering, digest CLI
 - `src/app.py` — Flask web app (subscribe / update / unsubscribe), deployed on Vercel
-- `src/main.py` — the digest job that searches flights and sends the emails
 - `static/data.json` — reference data: countries, cities, currencies, per-country image URLs
+- `ans/templates/digest.html.j2` — the email; kept byte-identical to the legacy markup,
+  excluded from whitespace fixers
 
-The refactor currently underway is planned in `docs/refactor-plan.md`. The legacy `src/`
-tree is excluded from `ty` until Phase 0 migrates it module by module; drop those
-exclusions as you go rather than adding new ones.
+The refactor currently underway is planned in `docs/refactor-plan.md`. `src/app.py` is
+the only remaining `ty` exclusion; it is replaced in Phase 1, don't add new exclusions.

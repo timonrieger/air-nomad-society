@@ -93,21 +93,28 @@ Moving from Actions to dramatiq workers becomes a new entrypoint file, not a rew
 
 Flask keeps running on Vercel throughout. Cron moves to GitHub Actions.
 
-- [ ] `pyproject.toml` + `uv`, replacing `requirements.txt`
-- [ ] ruff + mypy + pre-commit hooks
-- [ ] GitHub Actions CI: lint, typecheck, test on PR
-- [ ] `pydantic-settings` config — no import-time crashes, `.env.example`
-- [ ] `FlightProvider` protocol + `TequilaProvider` + `FakeProvider`
-- [ ] Fix `FlightData` tuple bug; convert to a pydantic model
-- [ ] Extract `main.py` logic into pure, tested functions (selection, diversity, ranking)
-- [ ] Rewrite emails as Jinja/MJML templates — removes the shared-file bug
-- [ ] Break `data_manager.py`'s dependency on `src.app`
-- [ ] `python -m ans.cli digest` entrypoint
-- [ ] GitHub Actions scheduled workflow replacing the current cron
-- [ ] `docker-compose.yml` for local dev (Postgres, Redis) — written now so Phase 2 is a config change, not a rewrite
-- [ ] Request timeouts, structured logging, per-user error isolation
+- [x] `pyproject.toml` + `uv`, replacing `requirements.txt`
+- [x] ruff + ty + pre-commit hooks (mirroring immichpy's stack)
+- [x] GitHub Actions CI: lint, typecheck, test on PR
+- [x] `pydantic-settings` config — no import-time crashes, `.env.example`
+- [x] `FlightProvider` protocol + `TequilaProvider` + `FakeProvider`
+- [x] Fix `FlightData` tuple bug; convert to a pydantic model
+- [x] Extract `main.py` logic into pure, tested functions (selection)
+- [x] Rewrite emails as a Jinja template — removes the shared-file bug
+      (byte-verified against the legacy output)
+- [x] Break the digest job's dependency on `src.app`
+- [x] `python -m ans.cli digest` entrypoint
+- [x] GitHub Actions scheduled workflow replacing the current cron
+      (`digest.yml`, Mondays 05:00 UTC; needs the secrets listed there)
+- [x] `docker-compose.yml` for local dev (Postgres, Redis)
+- [x] Request timeouts, structured logging, per-user error isolation
 
-Exit criteria: the weekly digest runs from GitHub Actions, selection logic has test coverage against `FakeProvider`, and CI is green on PRs.
+Exit criteria met: the weekly digest runs from GitHub Actions, selection and
+digest logic are tested against `FakeProvider`, and CI is green on PRs.
+
+Left deliberately out of Phase 0: ranking/diversity logic (needs the
+`SentDeal` table, Phase 1) and fixing `src/app.py`'s type errors (the file is
+replaced by FastAPI in Phase 1; it stays the only `ty` exclusion).
 
 ## Phase 1 — schema + API + frontend
 
