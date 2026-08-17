@@ -44,11 +44,11 @@ add-bounds = "major"
 [tool.uv.sources]
 database-service = { git = "https://github.com/timonrieger/database-service.git" }
 
-[tool.ruff.lint.per-file-ignores]
-# TODO(phase-0): `src/main.py` prepends the project root to `sys.path` before it
-# imports, so its imports cannot sit at the top of the file. Packaging the
-# project removes the hack, and this exemption with it.
-"src/main.py" = ["E402"]
+[tool.ty]
+# TODO(phase-1): src/app.py has real None-handling errors in the Flask routes;
+# it is replaced by FastAPI in Phase 1 rather than patched. Everything else in
+# the repo is type-checked.
+src.exclude = ["src/app.py"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -57,7 +57,3 @@ pythonpath = ["."]
 [tool.coverage.run]
 source = ["src"]
 
-[tool.ty]
-# TODO(phase-0): drop this exclusion module by module as the legacy tree is
-# migrated to typed, testable functions. See docs/refactor-plan.md.
-src.exclude = ["src/**"]
