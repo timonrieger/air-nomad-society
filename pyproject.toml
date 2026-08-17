@@ -56,4 +56,3 @@ pythonpath = ["."]
 
 [tool.coverage.run]
 source = ["src"]
-

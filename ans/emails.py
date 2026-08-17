@@ -22,7 +22,8 @@ FALLBACK_IMAGE = (
 
 # The template is converted 1:1 from the legacy f-strings, which never
 # escaped anything; autoescape stays off to keep the output identical.
-_env = Environment(loader=FileSystemLoader(TEMPLATE_DIR), autoescape=False)  # noqa: S701
+# Revisit when usernames become untrusted input in Phase 1.
+_env = Environment(loader=FileSystemLoader(TEMPLATE_DIR), autoescape=False)  # noqa: S701 # nosec B701
 
 
 def _present(
@@ -51,7 +52,7 @@ def render_digest(
     base_url: str,
     rng: random.Random | None = None,
 ) -> str:
-    picker = rng or random.Random()
+    picker = rng or random.Random()  # nosec B311 # picks photos, not secrets
     return _env.get_template("digest.html.j2").render(
         username=username,
         token=token,

@@ -29,6 +29,9 @@ repos:
     hooks:
       - id: bandit
         exclude: "^tests"
+        # B101: asserts as guards are the house style (see CLAUDE.md); the
+        # app doesn't run under python -O.
+        args: [--skip, B101]
 
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.30.0
