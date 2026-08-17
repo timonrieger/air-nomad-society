@@ -2,11 +2,15 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
+      # The digest template is converted 1:1 from the legacy email markup and
+      # kept byte-identical; whitespace fixers must not touch it.
       - id: trailing-whitespace
+        exclude: "^ans/templates/"
       - id: check-toml
       - id: check-yaml
       - id: check-json
       - id: end-of-file-fixer
+        exclude: "^ans/templates/"
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.15.20
