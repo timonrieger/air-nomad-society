@@ -46,5 +46,5 @@ run = "uv run flask --app src.app run --debug"
 description = "Run the Flask development server"
 
 [tasks.digest]
-run = "uv run python -m src.main"
+run = "uv run python -m ans.cli digest"
 description = "Run the flight digest job once against the configured database"
