@@ -9,6 +9,8 @@ repos:
       - id: check-toml
       - id: check-yaml
       - id: check-json
+        # tsconfig is JSONC (comments allowed), not strict JSON
+        exclude: "tsconfig.json$"
       - id: end-of-file-fixer
         exclude: "^src/app/templates/"
 

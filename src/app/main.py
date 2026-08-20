@@ -18,7 +18,11 @@ app.include_router(refdata.router)
 # The frontend is a prebuilt static site calling this API from the browser.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[get_settings().public_base_url, "http://localhost:5173"],
+    allow_origins=[
+        get_settings().public_base_url,
+        "http://localhost:5173",  # vite dev
+        "http://localhost:4173",  # vite preview
+    ],
     allow_methods=["*"],
     allow_headers=["*"],
 )

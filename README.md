@@ -8,7 +8,7 @@ Air Nomad Society is a platform that allows you to get the best flight deals dir
 - `src/app/services/` — domain logic: flight providers, selection, email rendering, JWT tokens
 - `src/app/cli.py` — the digest job; `.github/workflows/digest.yml` runs it weekly (Mondays 05:00 UTC)
 - `alembic/` — migrations for the `air_nomads` table this repo owns
-- `web/` — SvelteKit frontend (landing + subscription pages, bits-ui components), calls the API server-side via `API_URL`
+- `src/web/` — SvelteKit frontend (landing + subscription pages; bits-ui + Tailwind), prerendered to static files, calls the API from the browser via `VITE_API_URL`
 
 See [docs/refactor-plan.md](docs/refactor-plan.md) for the refactor roadmap.
 

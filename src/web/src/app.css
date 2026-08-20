@@ -1,0 +1,63 @@
+@import 'tailwindcss';
+
+@theme {
+	--color-surface: #101014;
+	--color-raised: #1a1a21;
+	--color-line: #2c2c35;
+	--color-ink: #e8e8ec;
+	--color-ink-muted: #a0a0ab;
+	--color-accent: #7747ff;
+	--color-accent-bright: #8f66ff;
+}
+
+@layer base {
+	body {
+		@apply bg-surface text-ink antialiased;
+	}
+
+	a {
+		@apply text-accent-bright hover:underline;
+	}
+}
+
+@layer components {
+	.btn {
+		@apply inline-block cursor-pointer rounded-lg bg-accent px-5 py-2.5 font-semibold text-white transition-colors hover:bg-accent-bright hover:no-underline disabled:cursor-default disabled:opacity-60;
+	}
+
+	.input {
+		@apply w-full rounded-lg border border-line bg-raised px-3 py-2 text-base text-ink focus:outline-2 focus:outline-accent;
+	}
+
+	.banner {
+		@apply my-5 rounded-lg border px-4 py-3;
+	}
+
+	.banner-success {
+		@apply border-green-600 text-green-500;
+	}
+
+	.banner-error {
+		@apply border-red-500 text-red-400;
+	}
+
+	.select-trigger {
+		@apply min-h-10 w-full cursor-pointer rounded-lg border border-line bg-raised px-3 py-2 text-left text-base text-ink focus:outline-2 focus:outline-accent data-placeholder:text-ink-muted;
+	}
+
+	.select-content {
+		@apply z-50 max-h-72 w-(--bits-select-anchor-width) overflow-y-auto rounded-lg border border-line bg-raised p-1;
+	}
+
+	.select-item {
+		@apply flex cursor-pointer items-center justify-between rounded-md px-3 py-1.5 text-sm data-highlighted:bg-accent data-highlighted:text-white;
+	}
+
+	.accordion-trigger {
+		@apply w-full cursor-pointer bg-raised px-5 py-3.5 text-left text-base text-ink hover:bg-[#22222b];
+	}
+
+	.accordion-content {
+		@apply px-5 py-3.5 text-ink-muted;
+	}
+}

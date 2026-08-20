@@ -141,7 +141,8 @@ magic links.
 Deferred from the original Phase 1 list:
 
 - [ ] `User 1..N Subscription` schema rewrite + migration of existing rows
-- [ ] SvelteKit on Vercel (rebuilds the deleted UI against the JSON API)
+- [x] SvelteKit on Vercel (prebuilt static site under src/web; landing +
+      subscription pages, bits-ui + Tailwind, JWT links handled client-side)
 - [ ] Continent/region reference data for the exclusion UX
 - [ ] `SentDeal` history table + city-level search + Redis result cache
 
