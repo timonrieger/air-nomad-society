@@ -17,6 +17,12 @@ def test_missing_required_field_fails_at_startup(monkeypatch) -> None:
         Settings()  # ty: ignore[missing-argument]
 
 
+def test_empty_required_field_fails_at_startup(monkeypatch) -> None:
+    monkeypatch.setenv("SECRET_KEY", "")
+    with pytest.raises(ValidationError):
+        Settings()  # ty: ignore[missing-argument]
+
+
 def test_reads_environment_variables(monkeypatch) -> None:
     monkeypatch.setenv("SMTP_PORT", "465")
     monkeypatch.setenv("ENVIRONMENT", "dev")

@@ -11,7 +11,11 @@ class Settings(BaseSettings):
     misconfigured deployment fails at startup rather than at the point of use.
     """
 
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    # env_ignore_empty: an empty env var (unset GitHub secret, blank .env
+    # line) counts as unset, so required fields fail loudly at startup.
+    model_config = SettingsConfigDict(
+        env_file=".env", env_ignore_empty=True, extra="ignore"
+    )
 
     secret_key: str
     db_uri: str
