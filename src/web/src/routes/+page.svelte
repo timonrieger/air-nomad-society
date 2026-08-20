@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { Accordion } from 'bits-ui';
-
 	const features = [
 		{
 			title: 'Get Personalized Flight Deals',
@@ -83,14 +81,16 @@
 
 <section>
 	<h2 class="mt-12 mb-4 text-2xl font-semibold">FAQ</h2>
-	<Accordion.Root type="single" class="divide-y divide-line overflow-hidden rounded-xl border border-line">
-		{#each faq as item, i (item.q)}
-			<Accordion.Item value={`q${i}`}>
-				<Accordion.Header>
-					<Accordion.Trigger class="accordion-trigger">{item.q}</Accordion.Trigger>
-				</Accordion.Header>
-				<Accordion.Content class="accordion-content">{item.a}</Accordion.Content>
-			</Accordion.Item>
+	<div class="divide-y divide-line overflow-hidden rounded-xl border border-line">
+		{#each faq as item (item.q)}
+			<details name="faq">
+				<summary
+					class="cursor-pointer list-none bg-raised px-5 py-3.5 text-base text-ink hover:bg-gray-800 [&::-webkit-details-marker]:hidden"
+				>
+					{item.q}
+				</summary>
+				<p class="px-5 py-3.5 text-ink-muted">{item.a}</p>
+			</details>
 		{/each}
-	</Accordion.Root>
+	</div>
 </section>

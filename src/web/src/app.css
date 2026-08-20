@@ -70,11 +70,11 @@
 		@apply z-50 max-w-64 rounded-md border border-line bg-raised px-2.5 py-1.5 text-xs text-ink shadow-lg;
 	}
 
-	.accordion-trigger {
-		@apply w-full cursor-pointer bg-raised px-5 py-3.5 text-left text-base text-ink hover:bg-gray-800;
+	.page-title {
+		@apply mt-10 text-3xl font-bold;
 	}
 
-	.accordion-content {
-		@apply px-5 py-3.5 text-ink-muted;
+	.nav-link {
+		@apply text-ink-muted hover:text-ink hover:no-underline;
 	}
 }
