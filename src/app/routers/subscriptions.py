@@ -5,10 +5,10 @@ from pydantic import BaseModel, EmailStr, Field, field_validator, model_validato
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from src.db import AirNomads, get_session
-from src.models.subscriber import Subscriber
-from src.services import refdata
-from src.services.tokens import Action, verify_token
+from src.app.db import AirNomads, get_session
+from src.app.models.subscriber import Subscriber
+from src.app.services import refdata
+from src.app.services.tokens import Action, verify_token
 
 router = APIRouter()
 

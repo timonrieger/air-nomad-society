@@ -1,10 +1,10 @@
 from datetime import date, datetime
 from typing import Any
 
-from src.models.flights import SearchQuery
-from src.services.providers import FlightProvider
-from src.services.providers.fake import FakeProvider
-from src.services.providers.tequila import TequilaProvider
+from src.app.models.flights import SearchQuery
+from src.app.services.providers import FlightProvider
+from src.app.services.providers.fake import FakeProvider
+from src.app.services.providers.tequila import TequilaProvider
 
 QUERY = SearchQuery(
     origin_iata="FRA",
@@ -51,7 +51,7 @@ def test_direct_flight_maps_fields(monkeypatch) -> None:
         ]
     )
     monkeypatch.setattr(
-        "src.services.providers.tequila.requests.get",
+        "src.app.services.providers.tequila.requests.get",
         lambda *a, **k: ResponseStub({"data": [direct]}),
     )
     provider: FlightProvider = TequilaProvider("https://t", "key")
@@ -80,7 +80,7 @@ def test_stopover_escalation_and_via_city(monkeypatch) -> None:
             return ResponseStub({"data": []})
         return ResponseStub({"data": [with_stop]})
 
-    monkeypatch.setattr("src.services.providers.tequila.requests.get", fake_get)
+    monkeypatch.setattr("src.app.services.providers.tequila.requests.get", fake_get)
     deal = TequilaProvider("https://t", "key").search_cheapest(QUERY)
     assert calls == [0, 1]
     assert deal is not None
@@ -89,9 +89,9 @@ def test_stopover_escalation_and_via_city(monkeypatch) -> None:
 
 
 def test_rate_limited_then_empty_returns_none(monkeypatch) -> None:
-    monkeypatch.setattr("src.services.providers.tequila.time.sleep", lambda s: None)
+    monkeypatch.setattr("src.app.services.providers.tequila.time.sleep", lambda s: None)
     monkeypatch.setattr(
-        "src.services.providers.tequila.requests.get",
+        "src.app.services.providers.tequila.requests.get",
         lambda *a, **k: ResponseStub({"error": "rate limited"}, status_code=429),
     )
     assert TequilaProvider("https://t", "key").search_cheapest(QUERY) is None

@@ -10,8 +10,8 @@ from functools import lru_cache
 from sqlalchemy import Engine, Integer, String, create_engine, select
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
 
-from src.config import Settings, get_settings
-from src.models.subscriber import Subscriber
+from src.app.config import Settings, get_settings
+from src.app.models.subscriber import Subscriber
 
 
 class Base(DeclarativeBase): ...

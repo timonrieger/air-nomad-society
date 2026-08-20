@@ -41,9 +41,22 @@ description = "Run pre-commit hooks, ignoring failures"
 run = "uv run pytest"
 description = "Run tests"
 
+# Port 8000 on purpose: macOS AirPlay squats on 5000.
 [tasks.dev]
-run = "uv run uvicorn src.main:app --reload --port 5000"
+run = "uv run uvicorn src.app.main:app --reload --port 8000"
 description = "Run the API dev server"
+
+[tasks.web-dev]
+run = "pnpm --dir src/web dev"
+description = "Run the SvelteKit dev server (talks to the API via VITE_API_URL, default localhost:8000)"
+
+[tasks.web-check]
+run = "pnpm --dir src/web check"
+description = "Typecheck the frontend with svelte-check"
+
+[tasks.web-build]
+run = "pnpm --dir src/web build"
+description = "Build the frontend"
 
 [tasks.db-upgrade]
 run = "uv run alembic upgrade head"
@@ -54,5 +67,5 @@ run = "uv run alembic revision --autogenerate"
 description = "Autogenerate a migration from model changes (append: -- -m 'message')"
 
 [tasks.digest]
-run = "uv run python -m src.cli digest"
+run = "uv run python -m src.app.cli digest"
 description = "Run the flight digest job once against the configured database"

@@ -12,7 +12,7 @@ from typing import Any
 
 from jinja2 import Environment, FileSystemLoader
 
-from src.models.flights import FlightDeal
+from src.app.models.flights import FlightDeal
 
 TEMPLATE_DIR = Path(__file__).resolve().parent.parent / "templates"
 FALLBACK_IMAGE = (

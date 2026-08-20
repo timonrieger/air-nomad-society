@@ -2,14 +2,14 @@ import argparse
 import logging
 import sys
 
-from src.services import mailer, refdata
-from src.config import get_settings
-from src.db import load_subscribers
-from src.services.digest import build_digest
-from src.services.emails import render_digest
-from src.services.providers import FlightProvider
-from src.services.providers.tequila import TequilaProvider
-from src.services.tokens import issue_token
+from src.app.services import mailer, refdata
+from src.app.config import get_settings
+from src.app.db import load_subscribers
+from src.app.services.digest import build_digest
+from src.app.services.emails import render_digest
+from src.app.services.providers import FlightProvider
+from src.app.services.providers.tequila import TequilaProvider
+from src.app.services.tokens import issue_token
 
 logger = logging.getLogger(__name__)
 

@@ -10,7 +10,7 @@ from typing import Literal
 
 import jwt
 
-from src.config import get_settings
+from src.app.config import get_settings
 
 Action = Literal["update", "unsubscribe"]
 ALGORITHM = "HS256"

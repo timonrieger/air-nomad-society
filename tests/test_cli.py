@@ -2,10 +2,10 @@ from datetime import date
 
 import pytest
 
-import src.cli as cli
-from src.models.flights import FlightDeal
-from src.models.subscriber import Subscriber
-from src.services.providers.fake import FakeProvider
+import src.app.cli as cli
+from src.app.models.flights import FlightDeal
+from src.app.models.subscriber import Subscriber
+from src.app.services.providers.fake import FakeProvider
 
 
 @pytest.fixture(autouse=True)

@@ -4,12 +4,13 @@ Air Nomad Society is a platform that allows you to get the best flight deals dir
 
 ## Architecture
 
-- `src/main.py` — FastAPI JSON API (subscribe / update / unsubscribe via stateless JWT links), deployed on Vercel; interactive docs at `/docs`
-- `src/services/` — domain logic: flight providers, selection, email rendering, JWT tokens
-- `src/cli.py` — the digest job; `.github/workflows/digest.yml` runs it weekly (Mondays 05:00 UTC)
+- `src/app/main.py` — FastAPI JSON API (subscribe / update / unsubscribe via stateless JWT links), deployed on Vercel; interactive docs at `/docs`
+- `src/app/services/` — domain logic: flight providers, selection, email rendering, JWT tokens
+- `src/app/cli.py` — the digest job; `.github/workflows/digest.yml` runs it weekly (Mondays 05:00 UTC)
 - `alembic/` — migrations for the `air_nomads` table this repo owns
+- `web/` — SvelteKit frontend (landing + subscription pages, bits-ui components), calls the API server-side via `API_URL`
 
-The web UI was removed with the Flask app; SvelteKit rebuilds it against the API (see [docs/refactor-plan.md](docs/refactor-plan.md)).
+See [docs/refactor-plan.md](docs/refactor-plan.md) for the refactor roadmap.
 
 ## Development
 
@@ -20,7 +21,8 @@ mise run setup            # install dependencies + pre-commit hooks
 docker compose up -d      # local Postgres + Redis
 cp .env.example .env      # then fill in values
 
-mise run dev              # API dev server (uvicorn, port 5000)
+mise run dev              # API dev server (uvicorn, port 8000)
+mise run web-dev          # SvelteKit dev server (pnpm)
 mise run test             # pytest
 mise run lint             # all pre-commit hooks
 mise run digest           # run the digest job once

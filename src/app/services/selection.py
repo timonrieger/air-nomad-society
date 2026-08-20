@@ -3,7 +3,7 @@
 import random
 from collections.abc import Sequence
 
-from src.services.refdata import Country
+from src.app.services.refdata import Country
 
 GEM_COUNT = 5
 

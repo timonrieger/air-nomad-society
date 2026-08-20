@@ -5,7 +5,7 @@ from typing import Any
 
 import requests
 
-from src.models.flights import FlightDeal, SearchQuery
+from src.app.models.flights import FlightDeal, SearchQuery
 
 logger = logging.getLogger(__name__)
 

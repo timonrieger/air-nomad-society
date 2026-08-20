@@ -1,4 +1,4 @@
-from src.services import refdata
+from src.app.services import refdata
 
 
 def test_loads_and_validates() -> None:

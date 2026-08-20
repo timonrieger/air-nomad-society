@@ -1,8 +1,8 @@
 import pytest
 from sqlalchemy.orm import Session
 
-from src.config import get_settings
-from src.db import AirNomads, Base, get_engine, load_subscribers
+from src.app.config import get_settings
+from src.app.db import AirNomads, Base, get_engine, load_subscribers
 
 
 @pytest.fixture

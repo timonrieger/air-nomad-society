@@ -4,7 +4,7 @@ from collections.abc import Awaitable, Callable
 
 from fastapi import FastAPI, Request, Response
 
-from src.routers import refdata, subscriptions
+from src.app.routers import refdata, subscriptions
 
 app = FastAPI(
     title="Air Nomad Society",

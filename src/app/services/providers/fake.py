@@ -1,4 +1,4 @@
-from src.models.flights import FlightDeal, SearchQuery
+from src.app.models.flights import FlightDeal, SearchQuery
 
 
 class FakeProvider:

@@ -1,11 +1,11 @@
 import random
 from datetime import date
 
-from src.models.subscriber import Subscriber
-from src.services.digest import build_digest
-from src.models.flights import FlightDeal
-from src.services.providers.fake import FakeProvider
-from src.services.refdata import Country
+from src.app.models.subscriber import Subscriber
+from src.app.services.digest import build_digest
+from src.app.models.flights import FlightDeal
+from src.app.services.providers.fake import FakeProvider
+from src.app.services.refdata import Country
 
 DESTINATIONS = [
     Country(country="Finland", code="FI"),

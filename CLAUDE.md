@@ -20,13 +20,14 @@ Follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/
 
 Air Nomad Society emails personalized flight deals to subscribers.
 
-- `src/main.py` — FastAPI JSON API (Vercel auto-detects the `app` object)
-- `src/routers/` — endpoints; `src/services/` — domain logic; `src/models/` — pydantic models
-- `src/db.py` — SQLAlchemy models + engine; migrations live in `alembic/`
-- `src/cli.py` — the weekly digest job (`mise run digest`)
-- `src/data.json` — reference data: countries, cities, currencies, per-country image URLs
-- `src/templates/digest.html.j2` — the email; legacy markup, excluded from whitespace fixers
+- `src/app/main.py` — FastAPI JSON API (Vercel auto-detects the `app` object)
+- `src/app/routers/` — endpoints; `src/app/services/` — domain logic; `src/app/models/` — pydantic models
+- `src/app/db.py` — SQLAlchemy models + engine; migrations live in `alembic/`
+- `src/app/cli.py` — the weekly digest job (`mise run digest`)
+- `src/app/data.json` — reference data: countries, cities, currencies, per-country image URLs
+- `src/app/templates/digest.html.j2` — the email; legacy markup, excluded from whitespace fixers
+- `web/` — SvelteKit frontend (pnpm, bits-ui); server-side proxy to the API via `API_URL`, no CORS
 
-Email links are stateless JWTs (`src/services/tokens.py`). `src` is the import root
-(`from src.services import ...`). The refactor is planned in `docs/refactor-plan.md`;
+Email links are stateless JWTs (`src/app/services/tokens.py`). `src` is the import root
+(`from src.app.services import ...`). The refactor is planned in `docs/refactor-plan.md`;
 there are no `ty` exclusions — keep it that way.

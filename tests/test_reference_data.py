@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-DATA_PATH = Path(__file__).resolve().parent.parent / "src" / "data.json"
+DATA_PATH = Path(__file__).resolve().parent.parent / "src" / "app" / "data.json"
 
 
 @pytest.fixture(scope="session")

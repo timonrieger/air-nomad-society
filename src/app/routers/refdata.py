@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
-from src.services import refdata
-from src.services.refdata import City
+from src.app.services import refdata
+from src.app.services.refdata import City
 
 router = APIRouter()
 

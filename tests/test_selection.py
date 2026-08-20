@@ -1,7 +1,7 @@
 import random
 
-from src.services.refdata import Country
-from src.services.selection import favorite_destinations, select_gems
+from src.app.services.refdata import Country
+from src.app.services.selection import favorite_destinations, select_gems
 
 DESTINATIONS = [
     Country(country="Finland", code="FI"),

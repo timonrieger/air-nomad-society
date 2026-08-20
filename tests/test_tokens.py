@@ -1,7 +1,7 @@
 import pytest
 
-from src.config import get_settings
-from src.services.tokens import issue_token, verify_token
+from src.app.config import get_settings
+from src.app.services.tokens import issue_token, verify_token
 
 TEST_SECRET = "test-secret-key-of-at-least-32-bytes!"  # gitleaks:allow
 OTHER_SECRET = "other-secret-key-of-at-least-32-byte"  # gitleaks:allow
