@@ -35,6 +35,10 @@ class FlightDeal(BaseModel):
         default_factory=list,
         description="Stopover cities on the outbound leg; empty means direct",
     )
+    return_via_cities: list[str] = Field(
+        default_factory=list,
+        description="Stopover cities on the return leg; empty means direct",
+    )
     link: str = Field(description="Deep link to book this itinerary")
 
 

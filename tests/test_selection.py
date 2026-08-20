@@ -19,6 +19,7 @@ DESTINATIONS = [
 def test_score_penalizes_stopovers_duration_and_red_eyes() -> None:
     base = deal(price=100)
     assert deal_score(deal(price=100, via_cities=["Riga"])) > deal_score(base)
+    assert deal_score(deal(price=100, return_via_cities=["Oslo"])) > deal_score(base)
     assert deal_score(deal(price=100, duration_minutes=600)) > deal_score(base)
     red_eye = deal(price=100, departs_at=datetime(2026, 9, 3, 5, 30))
     assert deal_score(red_eye) > deal_score(base)

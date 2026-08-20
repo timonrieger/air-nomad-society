@@ -35,9 +35,10 @@ _env = Environment(loader=FileSystemLoader(TEMPLATE_DIR), autoescape=False)  # n
 
 def _facts(deal: FlightDeal) -> str:
     """The quality line on a deal card, e.g. "direct · 2h35 · dep 10:40"."""
-    if deal.via_cities:
-        label = "stop" if len(deal.via_cities) == 1 else "stops"
-        stops = f"{len(deal.via_cities)} {label} via {', '.join(deal.via_cities)}"
+    via = deal.via_cities + deal.return_via_cities
+    if via:
+        label = "stop" if len(via) == 1 else "stops"
+        stops = f"{len(via)} {label} via {', '.join(dict.fromkeys(via))}"
     else:
         stops = "direct"
     hours, minutes = divmod(deal.duration_minutes, 60)
@@ -50,6 +51,7 @@ def _present(
     country_images = images.get(ranked.deal.arrival_country)
     return {
         "deal": ranked.deal,
+        "source": ranked.source,
         "facts": _facts(ranked.deal),
         "image_url": rng.choice(country_images) if country_images else FALLBACK_IMAGE,
     }
@@ -72,6 +74,7 @@ def render_digest(
         update_url=f"{base_url}/subscribe?token={update_token}",
         unsubscribe_url=f"{base_url}/unsubscribe?token={unsubscribe_token}",
         flights=[_present(ranked, images, picker) for ranked in deals],
+        no_favorite_deals=all(ranked.source != "favorite" for ranked in deals),
     )
 
 

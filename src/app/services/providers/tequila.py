@@ -1,6 +1,6 @@
 import logging
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 import requests
@@ -12,14 +12,20 @@ logger = logging.getLogger(__name__)
 REQUEST_TIMEOUT = 30
 RATE_LIMIT_ATTEMPTS = 2
 RATE_LIMIT_WAIT = 10
-MAX_STOPOVERS = 1
+
+
+def _local(epoch: int) -> datetime:
+    """Tequila's dTime/aTime are local wall times encoded as UTC epochs, so
+    decoding must be UTC-fixed — the host timezone would shift the clock."""
+    return datetime.fromtimestamp(epoch, tz=timezone.utc).replace(tzinfo=None)
 
 
 class TequilaProvider:
     """Searches flights via Kiwi's Tequila API.
 
-    One price-sorted search per destination, allowing up to one stopover
-    per sector; picking the best candidate is the caller's job.
+    Two price-sorted searches per destination — direct-only, then up to one
+    stopover per sector — each returning the cheapest itinerary per city.
+    Picking the best candidate is the caller's job.
     """
 
     def __init__(self, endpoint: str, api_key: str) -> None:
@@ -30,10 +36,20 @@ class TequilaProvider:
         self._session.headers["apikey"] = api_key
 
     def search_top(self, query: SearchQuery, count: int) -> list[FlightDeal]:
-        itineraries = self._search(query, count)
-        return [self._to_deal(itinerary, query.currency) for itinerary in itineraries]
+        # The direct-only pass is not redundant: in a single price-sorted
+        # search, `count` one-stop fares can bury every direct option.
+        itineraries: dict[Any, dict[str, Any]] = {}
+        for max_stopovers in (0, 1):
+            for itinerary in self._search(query, max_stopovers, count):
+                itineraries.setdefault(itinerary["id"], itinerary)
+        return [
+            self._to_deal(itinerary, query.currency)
+            for itinerary in itineraries.values()
+        ]
 
-    def _search(self, query: SearchQuery, count: int) -> list[dict[str, Any]]:
+    def _search(
+        self, query: SearchQuery, max_stopovers: int, count: int
+    ) -> list[dict[str, Any]]:
         params = {
             "fly_from": query.origin_iata,
             "fly_to": query.destination_iata,
@@ -41,7 +57,8 @@ class TequilaProvider:
             "date_to": query.date_to.strftime("%d/%m/%Y"),
             "nights_in_dst_from": query.min_nights,
             "nights_in_dst_to": query.max_nights,
-            "max_sector_stopovers": MAX_STOPOVERS,
+            "one_for_city": 1,
+            "max_sector_stopovers": max_stopovers,
             "limit": count,
             "curr": query.currency,
         }
@@ -67,10 +84,8 @@ class TequilaProvider:
     @staticmethod
     def _to_deal(data: dict[str, Any], currency: str) -> FlightDeal:
         route = data["route"]
-        # The outbound sector runs until the leg that lands at the destination;
-        # every city visited before that is a stopover.
-        arrivals = [leg["flyTo"] for leg in route]
-        outbound = route[: arrivals.index(data["flyTo"]) + 1]
+        outbound = [leg for leg in route if leg["return"] == 0]
+        inbound = [leg for leg in route if leg["return"] == 1]
         return FlightDeal(
             price=data["price"],
             currency=currency,
@@ -79,9 +94,10 @@ class TequilaProvider:
             arrival_city=data["cityTo"],
             arrival_iata=data["flyTo"],
             arrival_country=data["countryTo"]["name"],
-            departs_at=datetime.fromtimestamp(route[0]["dTime"]),
-            returns_at=datetime.fromtimestamp(route[-1]["aTime"]),
+            departs_at=_local(outbound[0]["dTime"]),
+            returns_at=_local(route[-1]["aTime"]),
             duration_minutes=data["duration"]["departure"] // 60,
             via_cities=[leg["cityTo"] for leg in outbound[:-1]],
+            return_via_cities=[leg["cityTo"] for leg in inbound[:-1]],
             link=data["deep_link"],
         )

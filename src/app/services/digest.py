@@ -15,9 +15,8 @@ from src.app.services.selection import deal_score, favorite_destinations, select
 
 logger = logging.getLogger(__name__)
 
-# Generous because the price-sorted response can be padded with near-duplicate
-# itineraries to one city and with origin-city artifacts; the headroom keeps
-# genuinely different candidates in the pool.
+# Per stopover tier and city (the provider dedups per city), so this covers
+# every destination city of a country with headroom to spare.
 CANDIDATES_PER_COUNTRY = 30
 
 
@@ -55,8 +54,11 @@ def build_digest(
         ]
         if not candidates:
             return None
-        best = min(candidates, key=deal_score)
-        return RankedDeal(deal=best, source=source, score=deal_score(best))
+        score, best = min(
+            ((deal_score(deal), deal) for deal in candidates),
+            key=lambda scored: scored[0],
+        )
+        return RankedDeal(deal=best, source=source, score=score)
 
     favorites = set(subscriber.favorites)
     gems = select_gems(destinations, favorites, set(subscriber.excluded), rng=rng)

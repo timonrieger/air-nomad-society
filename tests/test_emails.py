@@ -2,14 +2,13 @@ import random
 
 from src.app.models.flights import DealSource, FlightDeal, RankedDeal
 from src.app.services.emails import FALLBACK_IMAGE, render_digest
-from src.app.services.selection import deal_score
 from tests.conftest import deal
 
 IMAGES = {"Finland": ["https://img.example/fi.jpg"]}
 
 
 def ranked(flight_deal: FlightDeal, source: DealSource = "favorite") -> RankedDeal:
-    return RankedDeal(deal=flight_deal, source=source, score=deal_score(flight_deal))
+    return RankedDeal(deal=flight_deal, source=source, score=0.0)
 
 
 def render(deals: list[RankedDeal]) -> str:
@@ -41,6 +40,18 @@ def test_quality_facts_line_for_direct_flight() -> None:
 def test_quality_facts_line_for_stopover_flight() -> None:
     html = render([ranked(deal(via_cities=["Riga"], duration_minutes=310))])
     assert "1 stop via Riga · 5h10 · dep 10:40" in html
+
+
+def test_quality_facts_line_counts_return_stopovers() -> None:
+    html = render([ranked(deal(via_cities=["Riga"], return_via_cities=["Oslo"]))])
+    assert "2 stops via Riga, Oslo" in html
+
+
+def test_notice_when_favorites_yield_nothing() -> None:
+    notice = "Your favorite countries came up empty"
+    assert notice in render([ranked(deal(), "discovery")])
+    assert notice not in render([ranked(deal(), "favorite")])
+    assert notice not in render([])
 
 
 def test_missing_or_empty_image_lists_fall_back() -> None:
