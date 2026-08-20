@@ -1,12 +1,17 @@
 import argparse
 import logging
 import sys
+from datetime import datetime
 
 from src.app.services import emails, mailer, refdata
 from src.app.config import get_settings
 from src.app.db import load_subscribers, purge_unconfirmed
 from src.app.services.digest import build_digest
-from src.app.services.history import RecordingProvider, record_sent_deals
+from src.app.services.history import (
+    RecordingProvider,
+    record_sent_deals,
+    route_baselines,
+)
 from src.app.services.providers import FlightProvider
 from src.app.services.providers.tequila import TequilaProvider
 from src.app.services.tokens import issue_token
@@ -28,6 +33,9 @@ def run_digest(provider: FlightProvider) -> int:
     subscribers = load_subscribers(settings.digest_only_id)
     logger.info("sending digest to %d subscribers", len(subscribers))
     recording = RecordingProvider(provider)
+    # Baselines only use observations from before this run, so the run's own
+    # candidates never anchor themselves.
+    run_started = datetime.now()
     failures = 0
     for subscriber in subscribers:
         try:
@@ -41,6 +49,12 @@ def run_digest(provider: FlightProvider) -> int:
                 unsubscribe_token=issue_token(subscriber.id, "unsubscribe"),
                 digest=result,
                 images=data.images,
+                baselines=route_baselines(
+                    subscriber.departure_iata,
+                    {ranked.deal.arrival_iata for ranked in result.deals},
+                    subscriber.currency,
+                    before=run_started,
+                ),
                 base_url=settings.public_base_url,
             )
             mailer.send_email(html, subscriber.email, emails.DIGEST_SUBJECT, settings)

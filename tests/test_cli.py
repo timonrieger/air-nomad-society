@@ -1,9 +1,11 @@
+from datetime import datetime, timedelta
+
 import pytest
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 import src.app.cli as cli
-from src.app.db import PriceObservation, SentDeal, get_engine
+from src.app.db import PriceObservation, SentDeal, get_engine, insert_rows
 from src.app.models.subscriber import Subscriber
 from tests.conftest import deal
 from tests.fakes import FakeProvider
@@ -90,6 +92,41 @@ def test_deal_fields_reach_the_email(sqlite_db, monkeypatch) -> None:
     html, recipient = captured[0]
     assert recipient == "a@example.com"
     assert "https://kiwi.com/deep" in html
+
+
+def test_price_anchor_from_earlier_runs_reaches_the_email(
+    sqlite_db, monkeypatch
+) -> None:
+    # Four observations from an earlier run anchor FRA→HEL at a 310 median.
+    week_ago = datetime.now() - timedelta(weeks=1)
+    insert_rows(
+        [
+            PriceObservation(
+                search_id="old",
+                origin_iata="FRA",
+                arrival_iata="HEL",
+                arrival_country="Finland",
+                price=price,
+                currency="EUR",
+                departs_at=datetime(2026, 9, 3, 10, 40),
+                returns_at=datetime(2026, 9, 8, 18, 5),
+                duration_minutes=155,
+                stopovers=0,
+                observed_at=week_ago,
+            )
+            for price in (300, 305, 315, 320)
+        ]
+    )
+    captured: list[str] = []
+    monkeypatch.setattr(
+        cli, "load_subscribers", lambda only_id: [subscriber("a@example.com")]
+    )
+    monkeypatch.setattr(
+        cli.mailer, "send_email", lambda html, *a, **k: captured.append(html)
+    )
+    assert cli.run_digest(FakeProvider({"FI": [deal()]})) == 0
+    assert "typically ~310 EUR (−58%)" in captured[0]
+    assert "🔥 exceptional price" in captured[0]
 
 
 def test_history_rows_written_for_candidates_and_sent_deals(

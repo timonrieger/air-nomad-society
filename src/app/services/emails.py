@@ -47,6 +47,24 @@ def _facts(deal: FlightDeal) -> str:
     return f"{stops} · {hours}h{minutes:02d} · dep {deal.departs_at:%H:%M}"
 
 
+# Savings tiers vs the route's typical price, best tier first; below the
+# smallest cut the anchor line still shows but no badge is earned.
+SAVINGS_TIERS: list[tuple[float, str]] = [
+    (0.40, "🔥 exceptional price"),
+    (0.25, "💸 great price"),
+]
+
+
+def _anchor(price: float, baseline: float, currency: str) -> tuple[str, str | None]:
+    """The "typically ~X" line and the earned tier badge, if any."""
+    savings = 1 - price / baseline
+    line = f"typically ~{baseline:.0f} {currency}"
+    if savings >= 0.01:
+        line += f" (−{savings:.0%})"
+    badge = next((label for cut, label in SAVINGS_TIERS if savings >= cut), None)
+    return line, badge
+
+
 def _window(start: date, end: date) -> str:
     """The searched departure window, e.g. "Sep 1–30" or "Sep 26 – Oct 12"."""
     if (start.year, start.month) == (end.year, end.month):
@@ -57,14 +75,27 @@ def _window(start: date, end: date) -> str:
 
 
 def _present(
-    ranked: RankedDeal, window: str, images: dict[str, list[str]], rng: random.Random
+    ranked: RankedDeal,
+    window: str,
+    images: dict[str, list[str]],
+    baselines: dict[str, float],
+    rng: random.Random,
 ) -> dict[str, Any]:
     deal = ranked.deal
     country_images = images.get(deal.arrival_country)
+    baseline = baselines.get(deal.arrival_iata)
+    anchor, tier = (
+        _anchor(deal.price, baseline, deal.currency) if baseline else (None, None)
+    )
+    badges = ["⭐ favorite" if ranked.source == "favorite" else "✨ discovery"]
+    if tier:
+        badges.append(tier)
     return {
         "deal": deal,
-        # One badge slot per card: provenance now, savings tier / freshness later.
-        "badges": ["⭐ favorite" if ranked.source == "favorite" else "✨ discovery"],
+        # One badge slot per card: provenance, then the earned savings tier;
+        # the freshness badge (#17) appends here too.
+        "badges": badges,
+        "anchor": anchor,
         # "depart", not "travel between": the window bounds outbound departures,
         # so the example trip's return may legitimately fall after it.
         "dates": f"depart {window} · e.g. {deal.departs_at:%d.%m}–{deal.returns_at:%d.%m}",
@@ -79,6 +110,7 @@ def render_digest(
     unsubscribe_token: str,
     digest: DigestResult,
     images: dict[str, list[str]],
+    baselines: dict[str, float],
     base_url: str,
     rng: random.Random | None = None,
 ) -> str:
@@ -92,7 +124,10 @@ def render_digest(
         site_url=base_url,
         update_url=f"{base_url}/subscribe?token={update_token}",
         unsubscribe_url=f"{base_url}/unsubscribe?token={unsubscribe_token}",
-        flights=[_present(ranked, window, images, picker) for ranked in digest.deals],
+        flights=[
+            _present(ranked, window, images, baselines, picker)
+            for ranked in digest.deals
+        ],
         no_favorite_deals=all(ranked.source != "favorite" for ranked in digest.deals),
     )
 
