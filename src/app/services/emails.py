@@ -28,9 +28,9 @@ FALLBACK_IMAGE = (
     "&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8VFJBVkVMfGVufDB8fDB8fHww"
 )
 
-# Rendered values are trusted internal data (usernames, provider results);
-# autoescape stays off. Revisit when usernames become untrusted input.
-_env = Environment(loader=FileSystemLoader(TEMPLATE_DIR), autoescape=False)  # noqa: S701 # nosec B701
+# Usernames come straight from the public subscribe form; autoescape keeps
+# them from injecting HTML into the emails we send.
+_env = Environment(loader=FileSystemLoader(TEMPLATE_DIR), autoescape=True)
 
 
 def _present(
