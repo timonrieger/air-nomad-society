@@ -34,7 +34,7 @@ class RecordingProvider:
                 PriceObservation(
                     search_id=search_id,
                     origin_iata=query.origin_iata,
-                    stopovers=len(deal.via_cities) + len(deal.return_via_cities),
+                    stopovers=deal.stopovers,
                     **deal.model_dump(include=OBSERVED_FIELDS),
                 )
                 for deal in deals

@@ -37,6 +37,11 @@ def upgrade() -> None:
             "observed_at", sa.DateTime(), nullable=False, server_default=sa.func.now()
         ),
     )
+    op.create_index(
+        "ix_price_observation_route",
+        "price_observation",
+        ["origin_iata", "arrival_iata", "currency"],
+    )
     op.create_table(
         "sent_deal",
         sa.Column("id", sa.Integer(), primary_key=True),
@@ -51,6 +56,9 @@ def upgrade() -> None:
         sa.Column(
             "sent_at", sa.DateTime(), nullable=False, server_default=sa.func.now()
         ),
+    )
+    op.create_index(
+        "ix_sent_deal_subscriber", "sent_deal", ["subscriber_id", "sent_at"]
     )
 
 

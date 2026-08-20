@@ -23,9 +23,10 @@ def deal_score(deal: FlightDeal) -> float:
     Lower is better. Deterministic on purpose: it is the baseline any future
     AI judge gets compared against.
     """
-    stopovers = len(deal.via_cities) + len(deal.return_via_cities)
     penalty = (
-        1.0 + STOPOVER_PENALTY * stopovers + HOURLY_PENALTY * deal.duration_minutes / 60
+        1.0
+        + STOPOVER_PENALTY * deal.stopovers
+        + HOURLY_PENALTY * deal.duration_minutes / 60
     )
     if deal.departs_at.hour not in DAYTIME_HOURS:
         penalty += RED_EYE_PENALTY

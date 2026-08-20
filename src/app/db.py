@@ -10,6 +10,7 @@ from sqlalchemy import (
     DateTime,
     Engine,
     Float,
+    Index,
     Integer,
     String,
     create_engine,
@@ -55,6 +56,9 @@ class PriceObservation(Base):
     and search_id groups the candidates of one provider call."""
 
     __tablename__ = "price_observation"
+    __table_args__ = (
+        Index("ix_price_observation_route", "origin_iata", "arrival_iata", "currency"),
+    )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     search_id: Mapped[str] = mapped_column(String)
@@ -76,6 +80,7 @@ class SentDeal(Base):
     No foreign key on purpose: history stays useful after unsubscribes."""
 
     __tablename__ = "sent_deal"
+    __table_args__ = (Index("ix_sent_deal_subscriber", "subscriber_id", "sent_at"),)
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     subscriber_id: Mapped[int] = mapped_column(Integer)
@@ -109,6 +114,8 @@ def get_session() -> Iterator[Session]:
 
 
 def insert_rows(rows: Sequence[Base]) -> None:
+    if not rows:
+        return
     with session_scope() as session:
         session.add_all(rows)
         session.commit()
