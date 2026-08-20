@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -5,10 +6,11 @@ from pydantic import BaseModel, EmailStr, Field, field_validator, model_validato
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from src.app.config import get_settings
 from src.app.db import AirNomads, get_session
 from src.app.models.subscriber import Subscriber
-from src.app.services import refdata
-from src.app.services.tokens import Action, verify_token
+from src.app.services import emails, mailer, refdata
+from src.app.services.tokens import Action, issue_token, verify_token
 
 router = APIRouter()
 
@@ -90,10 +92,32 @@ def _authorized_member(token: str, action: Action, session: Session) -> AirNomad
     return member
 
 
+def _send_confirmation(member: AirNomads) -> None:
+    settings = get_settings()
+    token = issue_token(member.id, "confirm")
+    confirm_url = f"{settings.public_base_url}/confirm?token={token}"
+    mailer.send_email(
+        emails.render_confirmation(member.username, confirm_url),
+        member.email,
+        "Confirm your subscription",
+        settings,
+    )
+
+
 @router.post("/subscribe")
 def subscribe(payload: SubscriptionIn, session: SessionDep) -> Subscriber:
-    """Create a subscription, or update it if the email is already known."""
+    """Create an unconfirmed subscription and email a confirmation link.
+
+    Re-subscribing an unconfirmed email updates the pending row and resends
+    the link (so a lost email is recoverable); a confirmed email is a 409.
+    """
     member = session.scalar(select(AirNomads).where(AirNomads.email == payload.email))
+    if member is not None and member.confirmed_at is not None:
+        raise HTTPException(
+            status_code=409,
+            detail="This email is already subscribed. Use the update link from "
+            "any digest email to change preferences.",
+        )
     if member is None:
         member = AirNomads(**_columns(payload))
         session.add(member)
@@ -102,7 +126,18 @@ def subscribe(payload: SubscriptionIn, session: SessionDep) -> Subscriber:
             setattr(member, key, value)
     session.commit()
     session.refresh(member)  # populate server defaults
+    _send_confirmation(member)
     return Subscriber.from_row(member)
+
+
+@router.get("/confirm")
+def confirm(token: str, session: SessionDep) -> dict[str, str]:
+    """GET on purpose: this is the link clicked in the confirmation email."""
+    member = _authorized_member(token, "confirm", session)
+    if member.confirmed_at is None:
+        member.confirmed_at = datetime.now()
+        session.commit()
+    return {"detail": f"Subscription confirmed for {member.email}. Happy travels!"}
 
 
 @router.get("/subscription")
@@ -115,6 +150,12 @@ def update_subscription(
     token: str, payload: SubscriptionIn, session: SessionDep
 ) -> Subscriber:
     member = _authorized_member(token, "update", session)
+    if payload.email != member.email:
+        raise HTTPException(
+            status_code=400,
+            detail="The email address cannot be changed. Unsubscribe and "
+            "subscribe again with the new address.",
+        )
     for key, value in _columns(payload).items():
         setattr(member, key, value)
     session.commit()

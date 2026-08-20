@@ -12,7 +12,7 @@ import jwt
 
 from src.app.config import get_settings
 
-Action = Literal["update", "unsubscribe"]
+Action = Literal["update", "unsubscribe", "confirm"]
 ALGORITHM = "HS256"
 
 

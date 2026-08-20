@@ -20,6 +20,7 @@ class Subscriber(BaseModel):
         description="Favorite country names, always searched for deals"
     )
     excluded: list[str] = Field(description="Country names never picked as random gems")
+    confirmed: bool = Field(description="Whether the subscriber confirmed via email")
 
     @classmethod
     def from_row(cls, row: Any) -> "Subscriber":
@@ -36,6 +37,7 @@ class Subscriber(BaseModel):
             max_days_ahead=row.max_days_ahead,
             favorites=_split(row.travel_countries),
             excluded=_split(row.excluded_countries),
+            confirmed=row.confirmed_at is not None,
         )
 
 

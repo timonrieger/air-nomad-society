@@ -4,7 +4,7 @@ import sys
 
 from src.app.services import mailer, refdata
 from src.app.config import get_settings
-from src.app.db import load_subscribers
+from src.app.db import load_subscribers, purge_unconfirmed
 from src.app.services.digest import build_digest
 from src.app.services.emails import render_digest
 from src.app.services.providers import FlightProvider
@@ -22,6 +22,9 @@ def run_digest(provider: FlightProvider) -> int:
     """
     settings = get_settings()
     data = refdata.load()
+    purged = purge_unconfirmed()
+    if purged:
+        logger.info("purged %d subscribers that never confirmed", purged)
     subscribers = load_subscribers(settings)
     logger.info("sending digest to %d subscribers", len(subscribers))
     failures = 0
@@ -37,7 +40,7 @@ def run_digest(provider: FlightProvider) -> int:
                 images=data.images,
                 base_url=settings.public_base_url,
             )
-            mailer.send_digest(html, subscriber.email, settings)
+            mailer.send_email(html, subscriber.email, "Weekly Flight Deals!", settings)
             logger.info("sent digest to %s", subscriber.email)
         except Exception:
             failures += 1

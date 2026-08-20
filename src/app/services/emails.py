@@ -62,3 +62,9 @@ def render_digest(
         gem_flights=[_present(deal, images, picker) for deal in gem_deals],
         base_url=base_url,
     )
+
+
+def render_confirmation(username: str, confirm_url: str) -> str:
+    return _env.get_template("confirm.html.j2").render(
+        username=username, confirm_url=confirm_url
+    )

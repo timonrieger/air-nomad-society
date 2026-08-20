@@ -1,8 +1,11 @@
+from datetime import datetime, timedelta
+
 import pytest
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from src.app.config import get_settings
-from src.app.db import AirNomads, Base, get_engine, load_subscribers
+from src.app.db import AirNomads, Base, get_engine, load_subscribers, purge_unconfirmed
 
 
 @pytest.fixture
@@ -17,7 +20,9 @@ def sqlite_db(tmp_path, monkeypatch):
     get_engine.cache_clear()
 
 
-def member(id: int, email: str) -> AirNomads:
+def member(
+    id: int, email: str, confirmed: bool = True, created_at: datetime | None = None
+) -> AirNomads:
     return AirNomads(
         id=id,
         username="Timon",
@@ -29,6 +34,8 @@ def member(id: int, email: str) -> AirNomads:
         max_nights=7,
         travel_countries="Finland, Japan",
         excluded_countries=None,
+        confirmed_at=datetime.now() if confirmed else None,
+        created_at=created_at or datetime.now(),
     )
 
 
@@ -57,3 +64,31 @@ def test_dev_environment_filters_to_my_uuid(sqlite_db, monkeypatch) -> None:
     get_settings.cache_clear()
     subscribers = load_subscribers(get_settings())
     assert [s.email for s in subscribers] == ["b@example.com"]
+
+
+def test_unconfirmed_subscribers_are_not_loaded(sqlite_db) -> None:
+    with Session(get_engine()) as session:
+        session.add_all(
+            [member(1, "yes@example.com"), member(2, "no@example.com", confirmed=False)]
+        )
+        session.commit()
+
+    assert [s.email for s in load_subscribers(get_settings())] == ["yes@example.com"]
+
+
+def test_purge_deletes_only_stale_unconfirmed_rows(sqlite_db) -> None:
+    stale_birth = datetime.now() - timedelta(days=8)
+    with Session(get_engine()) as session:
+        session.add_all(
+            [
+                member(1, "confirmed@example.com", created_at=stale_birth),
+                member(2, "fresh@example.com", confirmed=False),
+                member(3, "stale@example.com", confirmed=False, created_at=stale_birth),
+            ]
+        )
+        session.commit()
+
+    assert purge_unconfirmed() == 1
+    with Session(get_engine()) as session:
+        remaining = {row.email for row in session.scalars(select(AirNomads))}
+    assert remaining == {"confirmed@example.com", "fresh@example.com"}
