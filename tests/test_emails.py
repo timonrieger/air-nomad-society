@@ -1,6 +1,8 @@
 import random
 from datetime import date
 
+import pytest
+
 from src.app.models.flights import DealSource, FlightDeal, RankedDeal
 from src.app.services.digest import DigestResult
 from src.app.services.emails import FALLBACK_IMAGE, render_digest
@@ -41,7 +43,7 @@ def test_renders_deals() -> None:
 
 def test_date_window_framing() -> None:
     html = render([ranked(deal())])
-    assert "travel between Sep 1–30 · e.g. 03.09–08.09" in html
+    assert "depart Sep 1–30 · e.g. 03.09–08.09" in html
 
 
 def test_date_window_crossing_months_names_both() -> None:
@@ -50,7 +52,21 @@ def test_date_window_crossing_months_names_both() -> None:
         window_start=date(2026, 9, 26),
         window_end=date(2026, 10, 12),
     )
-    assert "travel between Sep 26 – Oct 12" in html
+    assert "depart Sep 26 – Oct 12" in html
+
+
+def test_date_window_crossing_years_names_both_years() -> None:
+    html = render(
+        [ranked(deal())],
+        window_start=date(2026, 12, 15),
+        window_end=date(2027, 1, 20),
+    )
+    assert "depart Dec 15, 2026 – Jan 20, 2027" in html
+
+
+def test_empty_digest_refuses_to_render() -> None:
+    with pytest.raises(AssertionError):
+        render([])
 
 
 def test_provenance_badges() -> None:

@@ -39,7 +39,7 @@
 		},
 		{
 			q: 'Will I get flight deals for non-favorite destinations?',
-			a: "Yes. Alongside your favorites, every email mixes in a few discovery deals — surprising destinations you haven't marked, each labeled with a discovery badge."
+			a: "Yes. Alongside your favorites, emails mix in discovery deals — surprising destinations you haven't marked, each labeled with a discovery badge."
 		},
 		{
 			q: 'How far ahead do the flight deals cover?',

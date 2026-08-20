@@ -48,25 +48,26 @@ def _facts(deal: FlightDeal) -> str:
 
 
 def _window(start: date, end: date) -> str:
-    """The searched travel window, e.g. "Sep 1–30" or "Sep 26 – Oct 12"."""
+    """The searched departure window, e.g. "Sep 1–30" or "Sep 26 – Oct 12"."""
     if (start.year, start.month) == (end.year, end.month):
         return f"{start:%b} {start.day}–{end.day}"
-    return f"{start:%b} {start.day} – {end:%b} {end.day}"
+    if start.year == end.year:
+        return f"{start:%b} {start.day} – {end:%b} {end.day}"
+    return f"{start:%b} {start.day}, {start.year} – {end:%b} {end.day}, {end.year}"
 
 
 def _present(
     ranked: RankedDeal, window: str, images: dict[str, list[str]], rng: random.Random
 ) -> dict[str, Any]:
-    country_images = images.get(ranked.deal.arrival_country)
     deal = ranked.deal
+    country_images = images.get(deal.arrival_country)
     return {
         "deal": deal,
         # One badge slot per card: provenance now, savings tier / freshness later.
         "badges": ["⭐ favorite" if ranked.source == "favorite" else "✨ discovery"],
-        "dates": (
-            f"travel between {window}"
-            f" · e.g. {deal.departs_at:%d.%m}–{deal.returns_at:%d.%m}"
-        ),
+        # "depart", not "travel between": the window bounds outbound departures,
+        # so the example trip's return may legitimately fall after it.
+        "dates": f"depart {window} · e.g. {deal.departs_at:%d.%m}–{deal.returns_at:%d.%m}",
         "facts": _facts(deal),
         "image_url": rng.choice(country_images) if country_images else FALLBACK_IMAGE,
     }
@@ -81,6 +82,8 @@ def render_digest(
     base_url: str,
     rng: random.Random | None = None,
 ) -> str:
+    # An empty digest is never sent (the cli skips it); rendering one is a bug.
+    assert digest.deals
     picker = rng or random.Random()  # nosec B311 # picks photos, not secrets
     window = _window(digest.window_start, digest.window_end)
     return _env.get_template("digest.html.j2").render(
