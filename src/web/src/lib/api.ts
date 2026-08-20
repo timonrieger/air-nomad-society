@@ -4,9 +4,6 @@ Locally it comes from the repo-root .env (vite's envDir points there);
 on Vercel from the web project's environment variables. */
 export const API_URL: string = import.meta.env.VITE_API_URL as string;
 if (!API_URL) throw new Error('VITE_API_URL was not set at build time');
-if (!/^https?:\/\//.test(API_URL))
-	// Without a scheme the browser resolves it relative to the page origin.
-	throw new Error(`VITE_API_URL must include the scheme, got "${API_URL}"`);
 
 export type RefData = {
 	cities: { city: string; code: string }[];
