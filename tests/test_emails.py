@@ -36,10 +36,10 @@ def render(dreams: list[FlightDeal], gems: list[FlightDeal]) -> str:
     )
 
 
-def test_renders_deals_with_legacy_formatting() -> None:
+def test_renders_deals() -> None:
     html = render([deal("Helsinki", "Finland", 129.99)], [])
     assert "Hi Timon!" in html
-    assert ">129 EUR</strong>" in html  # int(), like the legacy f-string
+    assert "129 EUR" in html  # int(), no decimals
     assert "03.09.2026 - 08.09.2026" in html
     assert "https://img.example/fi.jpg" in html
     assert "{{" not in html and "{%" not in html
@@ -52,7 +52,7 @@ def test_missing_or_empty_image_lists_fall_back() -> None:
 
 def test_empty_sections_render_no_flights_found() -> None:
     html = render([], [])
-    assert html.count("No Flights") == 2
+    assert html.count("No flights found") == 2
 
 
 def test_profile_links_use_base_url_and_action_tokens() -> None:
@@ -62,8 +62,9 @@ def test_profile_links_use_base_url_and_action_tokens() -> None:
     assert "ans.timonrieger.de/subscribe" not in html
 
 
-def test_alternating_layout_rows() -> None:
+def test_renders_a_card_per_deal() -> None:
     dreams = [deal("Helsinki", "Finland", 100), deal("Tokyo", "Japan", 500)]
     html = render(dreams, [])
-    assert 'class="row row-3"' in html  # even index layout
-    assert 'class="row row-4"' in html  # odd index layout
+    assert "Frankfurt &ndash; Helsinki" in html
+    assert "Frankfurt &ndash; Tokyo" in html
+    assert html.count("Book Now") == 2
