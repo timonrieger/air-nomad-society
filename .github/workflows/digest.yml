@@ -43,3 +43,4 @@ jobs:
           SMTP_PORT: ${{ secrets.SMTP_PORT || '587' }}
           ENVIRONMENT: ${{ inputs.environment || 'prod' }}
           MY_UUID: ${{ secrets.MY_UUID }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}

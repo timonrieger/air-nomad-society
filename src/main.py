@@ -25,8 +25,3 @@ async def security_headers(
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     return response
-
-
-@app.get("/")
-def root() -> dict[str, str]:
-    return {"service": "Air Nomad Society", "docs": "/docs"}
