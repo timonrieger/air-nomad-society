@@ -41,22 +41,6 @@
 </table>
 {%- endmacro %}
 
-{% macro empty_state(message) -%}
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
-  <tr>
-    <td align="center" style="background-color: {{ t.gray_100 }}; border-radius: 12px; padding: 32px 28px;">
-      <p style="margin: 0 0 8px; font-family: {{ t.font }}; font-size: 18px; font-weight: 700; color: {{ t.gray_900 }};">No flights found</p>
-      <p style="margin: 0 0 20px; font-family: {{ t.font }}; font-size: 15px; line-height: 1.5; color: {{ t.gray_500 }};">{{ message }}</p>
-      {{ button(update_url, "Update Profile") }}
-    </td>
-  </tr>
-</table>
-{%- endmacro %}
-
-{% macro section_heading(text) -%}
-<h2 style="margin: 0 0 16px; font-family: {{ t.font }}; font-size: 22px; font-weight: 700; color: {{ t.gray_900 }};">{{ text }}</h2>
-{%- endmacro %}
-
 <body style="margin: 0; padding: 0; background-color: #ffffff; -webkit-text-size-adjust: none; text-size-adjust: none;">
   <div style="display: none; max-height: 0; overflow: hidden;">Your weekly flight deals are here.</div>
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #ffffff;">
@@ -72,11 +56,19 @@
           </tr>
           <tr>
             <td>
-              {{ section_heading("This week's best deals") }}
+              <h2 style="margin: 0 0 16px; font-family: {{ t.font }}; font-size: 22px; font-weight: 700; color: {{ t.gray_900 }};">This week's best deals</h2>
               {% if flights %}
                 {% for flight in flights %}{{ deal_card(flight) }}{% endfor %}
               {% else %}
-                {{ empty_state("Unfortunately, we couldn't find any flight deals for you this week. Adding more favorite countries widens the search; you can update your profile using the button below.") }}
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
+                  <tr>
+                    <td align="center" style="background-color: {{ t.gray_100 }}; border-radius: 12px; padding: 32px 28px;">
+                      <p style="margin: 0 0 8px; font-family: {{ t.font }}; font-size: 18px; font-weight: 700; color: {{ t.gray_900 }};">No flights found</p>
+                      <p style="margin: 0 0 20px; font-family: {{ t.font }}; font-size: 15px; line-height: 1.5; color: {{ t.gray_500 }};">Unfortunately, we couldn't find any flight deals for you this week. Adding more favorite countries widens the search; you can update your profile using the button below.</p>
+                      {{ button(update_url, "Update Profile") }}
+                    </td>
+                  </tr>
+                </table>
               {% endif %}
             </td>
           </tr>

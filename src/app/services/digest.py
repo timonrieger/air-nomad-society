@@ -4,29 +4,21 @@
 import logging
 import random
 from datetime import date, timedelta
-from typing import Literal
 
 from pydantic import BaseModel
 
 from src.app.models.subscriber import Subscriber
-from src.app.models.flights import FlightDeal, SearchQuery
+from src.app.models.flights import DealSource, RankedDeal, SearchQuery
 from src.app.services.providers import FlightProvider
 from src.app.services.refdata import Country
-from src.app.services.selection import (
-    deal_score,
-    favorite_destinations,
-    pick_best,
-    select_gems,
-)
+from src.app.services.selection import deal_score, favorite_destinations, select_gems
 
 logger = logging.getLogger(__name__)
 
-CANDIDATES_PER_COUNTRY = 10
-
-
-class RankedDeal(BaseModel):
-    deal: FlightDeal
-    source: Literal["favorite", "discovery"]
+# Generous because the price-sorted response can be padded with near-duplicate
+# itineraries to one city and with origin-city artifacts; the headroom keeps
+# genuinely different candidates in the pool.
+CANDIDATES_PER_COUNTRY = 30
 
 
 class DigestResult(BaseModel):
@@ -44,7 +36,7 @@ def build_digest(
 ) -> DigestResult:
     start = today or date.today()
 
-    def best_deal(country: Country) -> FlightDeal | None:
+    def best_pick(country: Country, source: DealSource) -> RankedDeal | None:
         query = SearchQuery(
             origin_iata=subscriber.departure_iata,
             destination_iata=country.code,
@@ -57,23 +49,22 @@ def build_digest(
         candidates = [
             deal
             for deal in provider.search_top(query, CANDIDATES_PER_COUNTRY)
-            # The cheapest destination in a country can be the origin city
-            # itself (e.g. searching Germany from Frankfurt); skip those.
+            # A candidate's destination can be the origin city itself
+            # (e.g. searching Germany from Frankfurt); skip those.
             if deal.departure_city != deal.arrival_city
         ]
-        return pick_best(candidates)
+        if not candidates:
+            return None
+        best = min(candidates, key=deal_score)
+        return RankedDeal(deal=best, source=source, score=deal_score(best))
 
     favorites = set(subscriber.favorites)
     gems = select_gems(destinations, favorites, set(subscriber.excluded), rng=rng)
-    ranked = [
-        RankedDeal(deal=deal, source=source)
-        for source, countries in (
-            ("favorite", favorite_destinations(destinations, favorites)),
-            ("discovery", gems),
-        )
-        for country in countries
-        if (deal := best_deal(country))
-    ]
-    ranked.sort(key=lambda ranked_deal: deal_score(ranked_deal.deal))
-    logger.info("digest for %s: %d deals", subscriber.email, len(ranked))
-    return DigestResult(deals=ranked)
+    deals = [
+        pick
+        for country in favorite_destinations(destinations, favorites)
+        if (pick := best_pick(country, "favorite"))
+    ] + [pick for country in gems if (pick := best_pick(country, "discovery"))]
+    deals.sort(key=lambda pick: pick.score)
+    logger.info("digest for %s: %d deals", subscriber.email, len(deals))
+    return DigestResult(deals=deals)

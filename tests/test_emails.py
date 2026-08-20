@@ -1,18 +1,15 @@
 import random
-from typing import Literal
 
-from src.app.models.flights import FlightDeal
-from src.app.services.digest import RankedDeal
+from src.app.models.flights import DealSource, FlightDeal, RankedDeal
 from src.app.services.emails import FALLBACK_IMAGE, render_digest
+from src.app.services.selection import deal_score
 from tests.conftest import deal
 
 IMAGES = {"Finland": ["https://img.example/fi.jpg"]}
 
 
-def ranked(
-    flight_deal: FlightDeal, source: Literal["favorite", "discovery"] = "favorite"
-) -> RankedDeal:
-    return RankedDeal(deal=flight_deal, source=source)
+def ranked(flight_deal: FlightDeal, source: DealSource = "favorite") -> RankedDeal:
+    return RankedDeal(deal=flight_deal, source=source, score=deal_score(flight_deal))
 
 
 def render(deals: list[RankedDeal]) -> str:
@@ -38,12 +35,12 @@ def test_renders_deals() -> None:
 
 def test_quality_facts_line_for_direct_flight() -> None:
     html = render([ranked(deal())])
-    assert "direct &middot; 2h35 &middot; dep 10:40" in html
+    assert "direct · 2h35 · dep 10:40" in html
 
 
 def test_quality_facts_line_for_stopover_flight() -> None:
-    html = render([ranked(deal(stopovers=1, via_city="Riga", duration_minutes=310))])
-    assert "1 stop via Riga &middot; 5h10 &middot; dep 10:40" in html
+    html = render([ranked(deal(via_cities=["Riga"], duration_minutes=310))])
+    assert "1 stop via Riga · 5h10 · dep 10:40" in html
 
 
 def test_missing_or_empty_image_lists_fall_back() -> None:

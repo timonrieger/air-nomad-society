@@ -63,8 +63,7 @@ def test_direct_flight_maps_fields(monkeypatch) -> None:
     assert deal.departs_at == datetime(2026, 9, 3, 10, 0)
     assert deal.returns_at == datetime(2026, 9, 8, 18, 0)
     assert deal.duration_minutes == 155
-    assert deal.stopovers == 0
-    assert deal.via_city is None
+    assert deal.via_cities == []
 
 
 def test_single_search_returns_candidates_with_via_city(monkeypatch) -> None:
@@ -95,8 +94,7 @@ def test_single_search_returns_candidates_with_via_city(monkeypatch) -> None:
     assert len(captured) == 1
     assert captured[0]["max_sector_stopovers"] == 1
     assert captured[0]["limit"] == 10
-    assert [d.via_city for d in deals] == ["Riga", None]
-    assert [d.stopovers for d in deals] == [1, 0]
+    assert [d.via_cities for d in deals] == [["Riga"], []]
 
 
 def test_rate_limited_then_empty_returns_no_deals(monkeypatch) -> None:

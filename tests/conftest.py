@@ -47,7 +47,6 @@ def deal(**overrides) -> FlightDeal:
         "departs_at": datetime(2026, 9, 3, 10, 40),
         "returns_at": datetime(2026, 9, 8, 18, 5),
         "duration_minutes": 155,
-        "stopovers": 0,
         "link": "https://kiwi.com/deep",
     }
     fields.update(overrides)

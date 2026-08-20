@@ -25,17 +25,12 @@ def deal_score(deal: FlightDeal) -> float:
     """
     penalty = (
         1.0
-        + STOPOVER_PENALTY * deal.stopovers
+        + STOPOVER_PENALTY * len(deal.via_cities)
         + HOURLY_PENALTY * deal.duration_minutes / 60
     )
     if deal.departs_at.hour not in DAYTIME_HOURS:
         penalty += RED_EYE_PENALTY
     return deal.price * penalty
-
-
-def pick_best(deals: Sequence[FlightDeal]) -> FlightDeal | None:
-    """The best-scoring deal, not the cheapest."""
-    return min(deals, key=deal_score, default=None)
 
 
 def select_gems(

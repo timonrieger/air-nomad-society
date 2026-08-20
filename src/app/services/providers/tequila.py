@@ -67,7 +67,10 @@ class TequilaProvider:
     @staticmethod
     def _to_deal(data: dict[str, Any], currency: str) -> FlightDeal:
         route = data["route"]
-        outbound_stop = route[0]["flyTo"] != data["flyTo"]
+        # The outbound sector runs until the leg that lands at the destination;
+        # every city visited before that is a stopover.
+        arrivals = [leg["flyTo"] for leg in route]
+        outbound = route[: arrivals.index(data["flyTo"]) + 1]
         return FlightDeal(
             price=data["price"],
             currency=currency,
@@ -79,7 +82,6 @@ class TequilaProvider:
             departs_at=datetime.fromtimestamp(route[0]["dTime"]),
             returns_at=datetime.fromtimestamp(route[-1]["aTime"]),
             duration_minutes=data["duration"]["departure"] // 60,
-            stopovers=int(outbound_stop),
+            via_cities=[leg["cityTo"] for leg in outbound[:-1]],
             link=data["deep_link"],
-            via_city=route[0]["cityTo"] if outbound_stop else None,
         )

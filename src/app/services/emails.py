@@ -8,9 +8,8 @@ from typing import Any
 from jinja2 import Environment, FileSystemLoader
 
 from src.app.config import Settings
-from src.app.models.flights import FlightDeal
+from src.app.models.flights import FlightDeal, RankedDeal
 from src.app.services import mailer
-from src.app.services.digest import RankedDeal
 from src.app.services.tokens import issue_token
 
 TEMPLATE_DIR = Path(__file__).resolve().parent.parent / "templates"
@@ -36,11 +35,13 @@ _env = Environment(loader=FileSystemLoader(TEMPLATE_DIR), autoescape=False)  # n
 
 def _facts(deal: FlightDeal) -> str:
     """The quality line on a deal card, e.g. "direct · 2h35 · dep 10:40"."""
-    stops = "direct" if not deal.stopovers else f"1 stop via {deal.via_city}"
+    if deal.via_cities:
+        label = "stop" if len(deal.via_cities) == 1 else "stops"
+        stops = f"{len(deal.via_cities)} {label} via {', '.join(deal.via_cities)}"
+    else:
+        stops = "direct"
     hours, minutes = divmod(deal.duration_minutes, 60)
-    return (
-        f"{stops} &middot; {hours}h{minutes:02d} &middot; dep {deal.departs_at:%H:%M}"
-    )
+    return f"{stops} · {hours}h{minutes:02d} · dep {deal.departs_at:%H:%M}"
 
 
 def _present(
@@ -49,7 +50,6 @@ def _present(
     country_images = images.get(ranked.deal.arrival_country)
     return {
         "deal": ranked.deal,
-        "source": ranked.source,
         "facts": _facts(ranked.deal),
         "image_url": rng.choice(country_images) if country_images else FALLBACK_IMAGE,
     }

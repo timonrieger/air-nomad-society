@@ -60,7 +60,7 @@ def test_favorites_and_discoveries_ranked_into_one_list() -> None:
 
 
 def test_best_scoring_candidate_wins_over_cheapest() -> None:
-    cheap_stopover = deal(price=100, stopovers=1, via_city="Riga")
+    cheap_stopover = deal(price=100, via_cities=["Riga"])
     direct = deal(price=110)
     provider = FakeProvider({"FI": [cheap_stopover, direct]})
     result = build_digest(SUBSCRIBER, provider, DESTINATIONS, rng=random.Random(1))

@@ -8,4 +8,3 @@ class FlightProvider(Protocol):
 
     def search_top(self, query: SearchQuery, count: int) -> list[FlightDeal]:
         """Up to `count` itineraries, cheapest first."""
-        ...
