@@ -34,8 +34,7 @@ def run_digest(provider: FlightProvider) -> int:
                 username=subscriber.username,
                 update_token=issue_token(subscriber.id, "update"),
                 unsubscribe_token=issue_token(subscriber.id, "unsubscribe"),
-                dream_deals=result.dream_deals,
-                gem_deals=result.gem_deals,
+                deals=result.deals,
                 images=data.images,
                 base_url=settings.public_base_url,
             )

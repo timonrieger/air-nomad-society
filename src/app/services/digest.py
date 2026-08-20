@@ -1,5 +1,5 @@
-"""Builds one subscriber's digest: deals for their favorite countries plus
-randomly picked "secret gem" countries."""
+"""Builds one subscriber's digest: the best-scoring deal per searched country
+(favorites plus randomly picked "secret gem" countries), ranked into one list."""
 
 import logging
 import random
@@ -8,17 +8,22 @@ from datetime import date, timedelta
 from pydantic import BaseModel
 
 from src.app.models.subscriber import Subscriber
-from src.app.models.flights import FlightDeal, SearchQuery
+from src.app.models.flights import DealSource, RankedDeal, SearchQuery
 from src.app.services.providers import FlightProvider
 from src.app.services.refdata import Country
-from src.app.services.selection import favorite_destinations, select_gems
+from src.app.services.selection import deal_score, favorite_destinations, select_gems
 
 logger = logging.getLogger(__name__)
 
+# Per stopover tier and city (the provider dedups per city), so this covers
+# every destination city of a country with headroom to spare.
+CANDIDATES_PER_COUNTRY = 30
+
 
 class DigestResult(BaseModel):
-    dream_deals: list[FlightDeal]
-    gem_deals: list[FlightDeal]
+    """Deals across all searched countries, best score first."""
+
+    deals: list[RankedDeal]
 
 
 def build_digest(
@@ -30,33 +35,38 @@ def build_digest(
 ) -> DigestResult:
     start = today or date.today()
 
-    def deals_for(countries: list[Country]) -> list[FlightDeal]:
-        deals = []
-        for country in countries:
-            query = SearchQuery(
-                origin_iata=subscriber.departure_iata,
-                destination_iata=country.code,
-                date_from=start + timedelta(days=subscriber.min_days_ahead),
-                date_to=start + timedelta(days=subscriber.max_days_ahead),
-                min_nights=subscriber.min_nights,
-                max_nights=subscriber.max_nights,
-                currency=subscriber.currency,
-            )
-            deal = provider.search_cheapest(query)
-            # The cheapest destination in a country can be the origin city
-            # itself (e.g. searching Germany from Frankfurt); skip those.
-            if deal and deal.departure_city != deal.arrival_city:
-                deals.append(deal)
-        return deals
+    def best_pick(country: Country, source: DealSource) -> RankedDeal | None:
+        query = SearchQuery(
+            origin_iata=subscriber.departure_iata,
+            destination_iata=country.code,
+            date_from=start + timedelta(days=subscriber.min_days_ahead),
+            date_to=start + timedelta(days=subscriber.max_days_ahead),
+            min_nights=subscriber.min_nights,
+            max_nights=subscriber.max_nights,
+            currency=subscriber.currency,
+        )
+        candidates = [
+            deal
+            for deal in provider.search_top(query, CANDIDATES_PER_COUNTRY)
+            # A candidate's destination can be the origin city itself
+            # (e.g. searching Germany from Frankfurt); skip those.
+            if deal.departure_city != deal.arrival_city
+        ]
+        if not candidates:
+            return None
+        score, best = min(
+            ((deal_score(deal), deal) for deal in candidates),
+            key=lambda scored: scored[0],
+        )
+        return RankedDeal(deal=best, source=source, score=score)
 
     favorites = set(subscriber.favorites)
-    dream_deals = deals_for(favorite_destinations(destinations, favorites))
     gems = select_gems(destinations, favorites, set(subscriber.excluded), rng=rng)
-    gem_deals = deals_for(gems)
-    logger.info(
-        "digest for %s: %d dream deals, %d gem deals",
-        subscriber.email,
-        len(dream_deals),
-        len(gem_deals),
-    )
-    return DigestResult(dream_deals=dream_deals, gem_deals=gem_deals)
+    deals = [
+        pick
+        for country in favorite_destinations(destinations, favorites)
+        if (pick := best_pick(country, "favorite"))
+    ] + [pick for country in gems if (pick := best_pick(country, "discovery"))]
+    deals.sort(key=lambda pick: pick.score)
+    logger.info("digest for %s: %d deals", subscriber.email, len(deals))
+    return DigestResult(deals=deals)

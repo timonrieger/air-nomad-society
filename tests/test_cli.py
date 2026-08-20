@@ -58,7 +58,7 @@ def test_all_successful_returns_zero(monkeypatch) -> None:
 
 
 def test_deal_fields_reach_the_email(monkeypatch) -> None:
-    provider = FakeProvider({"FI": deal()})
+    provider = FakeProvider({"FI": [deal()]})
     captured: list[tuple[str, str]] = []
     monkeypatch.setattr(
         cli, "load_subscribers", lambda only_id: [subscriber("a@example.com")]

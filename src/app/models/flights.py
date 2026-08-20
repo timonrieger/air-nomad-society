@@ -1,6 +1,9 @@
-from datetime import date
+from datetime import datetime, date
+from typing import Literal
 
 from pydantic import BaseModel, Field
+
+DealSource = Literal["favorite", "discovery"]
 
 
 class SearchQuery(BaseModel):
@@ -16,7 +19,7 @@ class SearchQuery(BaseModel):
 
 
 class FlightDeal(BaseModel):
-    """The cheapest round trip a provider found for a query."""
+    """One round-trip itinerary a provider found for a query."""
 
     price: float = Field(description="Total round-trip price in `currency`")
     currency: str = Field(description="ISO 4217 currency code of the price")
@@ -25,9 +28,23 @@ class FlightDeal(BaseModel):
     arrival_city: str = Field(description="Name of the destination city")
     arrival_iata: str = Field(description="IATA code of the destination city")
     arrival_country: str = Field(description="Name of the destination country")
-    departs_on: date = Field(description="Outbound departure date")
-    returns_on: date = Field(description="Return arrival date")
-    link: str = Field(description="Deep link to book this itinerary")
-    via_city: str | None = Field(
-        default=None, description="Stopover city on the outbound leg, if any"
+    departs_at: datetime = Field(description="Outbound departure, local time")
+    returns_at: datetime = Field(description="Return arrival, local time")
+    duration_minutes: int = Field(description="Outbound leg duration in minutes")
+    via_cities: list[str] = Field(
+        default_factory=list,
+        description="Stopover cities on the outbound leg; empty means direct",
     )
+    return_via_cities: list[str] = Field(
+        default_factory=list,
+        description="Stopover cities on the return leg; empty means direct",
+    )
+    link: str = Field(description="Deep link to book this itinerary")
+
+
+class RankedDeal(BaseModel):
+    """A digest pick: the deal, where it came from, and how good it is."""
+
+    deal: FlightDeal
+    source: DealSource = Field(description="Favorite-country pick or random discovery")
+    score: float = Field(description="Deterministic deal score; lower is better")

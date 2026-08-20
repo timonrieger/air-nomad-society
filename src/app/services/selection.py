@@ -1,11 +1,35 @@
-"""Destination selection for the digest."""
+"""Destination selection and deal scoring for the digest."""
 
 import random
 from collections.abc import Sequence
 
+from src.app.models.flights import FlightDeal
 from src.app.services.refdata import Country
 
 GEM_COUNT = 5
+
+# Comfort penalties expressed as fare fractions, so the score stays
+# currency-agnostic: a stopover "costs" 25% of the ticket, every outbound
+# hour 2%, and a red-eye departure 15%.
+STOPOVER_PENALTY = 0.25
+HOURLY_PENALTY = 0.02
+RED_EYE_PENALTY = 0.15
+DAYTIME_HOURS = range(7, 21)
+
+
+def deal_score(deal: FlightDeal) -> float:
+    """Effective price of a deal — the fare inflated by comfort penalties.
+
+    Lower is better. Deterministic on purpose: it is the baseline any future
+    AI judge gets compared against.
+    """
+    stopovers = len(deal.via_cities) + len(deal.return_via_cities)
+    penalty = (
+        1.0 + STOPOVER_PENALTY * stopovers + HOURLY_PENALTY * deal.duration_minutes / 60
+    )
+    if deal.departs_at.hour not in DAYTIME_HOURS:
+        penalty += RED_EYE_PENALTY
+    return deal.price * penalty
 
 
 def select_gems(
@@ -17,8 +41,8 @@ def select_gems(
 ) -> list[Country]:
     """Pick random "secret gem" countries for a subscriber.
 
-    Gems never overlap with the subscriber's favorite countries (those get
-    their own section) or the countries they excluded.
+    Gems never overlap with the subscriber's favorite countries (those are
+    always searched) or the countries they excluded.
     """
     pool = [
         destination

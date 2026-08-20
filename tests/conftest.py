@@ -1,5 +1,5 @@
 import os
-from datetime import date
+from datetime import datetime
 
 import pytest
 
@@ -44,8 +44,9 @@ def deal(**overrides) -> FlightDeal:
         "arrival_city": "Helsinki",
         "arrival_iata": "HEL",
         "arrival_country": "Finland",
-        "departs_on": date(2026, 9, 3),
-        "returns_on": date(2026, 9, 8),
+        "departs_at": datetime(2026, 9, 3, 10, 40),
+        "returns_at": datetime(2026, 9, 8, 18, 5),
+        "duration_minutes": 155,
         "link": "https://kiwi.com/deep",
     }
     fields.update(overrides)
