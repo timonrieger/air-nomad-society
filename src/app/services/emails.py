@@ -15,14 +15,25 @@ from jinja2 import Environment, FileSystemLoader
 from src.app.models.flights import FlightDeal
 
 TEMPLATE_DIR = Path(__file__).resolve().parent.parent / "templates"
+
+# Shared brand tokens — mirrored in src/web/src/app.css (@theme). One accent,
+# one gray scale, one font stack; keep both sides in sync. Emails render on
+# white with the light end of the scale, the web on the dark end.
+TOKENS = {
+    "accent": "#7747ff",
+    "gray_100": "#f1f1f4",
+    "gray_200": "#e8e8ec",
+    "gray_500": "#6f6f7a",
+    "gray_900": "#1a1a21",
+    "font": "'Bitter', Georgia, 'Times New Roman', serif",
+}
 FALLBACK_IMAGE = (
     "https://images.unsplash.com/photo-1500835556837-99ac94a94552?w=800&auto=format"
     "&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8VFJBVkVMfGVufDB8fDB8fHww"
 )
 
-# The template is converted 1:1 from the legacy f-strings, which never
-# escaped anything; autoescape stays off to keep the output identical.
-# Revisit when usernames become untrusted input in Phase 1.
+# Rendered values are trusted internal data (usernames, provider results);
+# autoescape stays off. Revisit when usernames become untrusted input.
 _env = Environment(loader=FileSystemLoader(TEMPLATE_DIR), autoescape=False)  # noqa: S701 # nosec B701
 
 
@@ -55,6 +66,7 @@ def render_digest(
 ) -> str:
     picker = rng or random.Random()  # nosec B311 # picks photos, not secrets
     return _env.get_template("digest.html.j2").render(
+        t=TOKENS,
         username=username,
         update_token=update_token,
         unsubscribe_token=unsubscribe_token,
@@ -66,5 +78,5 @@ def render_digest(
 
 def render_confirmation(username: str, confirm_url: str) -> str:
     return _env.get_template("confirm.html.j2").render(
-        username=username, confirm_url=confirm_url
+        t=TOKENS, username=username, confirm_url=confirm_url
     )

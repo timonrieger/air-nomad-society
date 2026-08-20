@@ -1,13 +1,26 @@
 @import 'tailwindcss';
 
 @theme {
-	--color-surface: #101014;
-	--color-raised: #1a1a21;
-	--color-line: #2c2c35;
-	--color-ink: #e8e8ec;
-	--color-ink-muted: #a0a0ab;
+	/* Shared brand tokens — mirrored by TOKENS in src/app/services/emails.py.
+	   One accent, one gray scale, one font stack; keep both sides in sync. */
 	--color-accent: #7747ff;
 	--color-accent-bright: #8f66ff;
+	--color-gray-*: initial;
+	--color-gray-100: #f1f1f4;
+	--color-gray-200: #e8e8ec;
+	--color-gray-400: #a0a0ab;
+	--color-gray-500: #6f6f7a;
+	--color-gray-800: #2c2c35;
+	--color-gray-900: #1a1a21;
+	--color-gray-950: #101014;
+	--font-sans: 'Bitter', Georgia, 'Times New Roman', serif;
+
+	/* Dark-theme roles picked from the shared gray scale. */
+	--color-surface: var(--color-gray-950);
+	--color-raised: var(--color-gray-900);
+	--color-line: var(--color-gray-800);
+	--color-ink: var(--color-gray-200);
+	--color-ink-muted: var(--color-gray-400);
 }
 
 @layer base {
@@ -58,7 +71,7 @@
 	}
 
 	.accordion-trigger {
-		@apply w-full cursor-pointer bg-raised px-5 py-3.5 text-left text-base text-ink hover:bg-[#22222b];
+		@apply w-full cursor-pointer bg-raised px-5 py-3.5 text-left text-base text-ink hover:bg-gray-800;
 	}
 
 	.accordion-content {

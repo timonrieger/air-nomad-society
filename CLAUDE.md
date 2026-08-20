@@ -25,7 +25,7 @@ Air Nomad Society emails personalized flight deals to subscribers.
 - `src/app/db.py` — SQLAlchemy models + engine; migrations live in `alembic/`
 - `src/app/cli.py` — the weekly digest job (`mise run digest`)
 - `src/app/data.json` — reference data: countries, cities, currencies, per-country image URLs
-- `src/app/templates/digest.html.j2` — the email; legacy markup, excluded from whitespace fixers
+- `src/app/templates/digest.html.j2` — the digest email; shares brand tokens with the web (`TOKENS` in `src/app/services/emails.py` ↔ `@theme` in `src/web/src/app.css`)
 - `src/web/` — SvelteKit frontend (pnpm, bits-ui, Tailwind v4); fully prerendered static site, browser calls the API directly (`VITE_API_URL`, CORS on the backend)
 
 Email links are stateless JWTs (`src/app/services/tokens.py`). `src` is the import root
