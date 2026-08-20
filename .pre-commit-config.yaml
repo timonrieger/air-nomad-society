@@ -49,7 +49,3 @@ repos:
     hooks:
       - id: ty
         args: [--python, .venv]
-
-ci:
-    autoupdate_commit_msg: 'chore(deps): pre-commit autoupdate'
-    autoupdate_schedule: monthly
