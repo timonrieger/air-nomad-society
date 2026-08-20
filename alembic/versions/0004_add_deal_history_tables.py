@@ -23,13 +23,16 @@ def upgrade() -> None:
     op.create_table(
         "price_observation",
         sa.Column("id", sa.Integer(), primary_key=True),
+        sa.Column("search_id", sa.String(), nullable=False),
         sa.Column("origin_iata", sa.String(), nullable=False),
-        sa.Column("destination_iata", sa.String(), nullable=False),
+        sa.Column("arrival_iata", sa.String(), nullable=False),
         sa.Column("arrival_country", sa.String(), nullable=False),
         sa.Column("price", sa.Float(), nullable=False),
         sa.Column("currency", sa.String(), nullable=False),
         sa.Column("departs_at", sa.DateTime(), nullable=False),
         sa.Column("returns_at", sa.DateTime(), nullable=False),
+        sa.Column("duration_minutes", sa.Integer(), nullable=False),
+        sa.Column("stopovers", sa.Integer(), nullable=False),
         sa.Column(
             "observed_at", sa.DateTime(), nullable=False, server_default=sa.func.now()
         ),
@@ -38,8 +41,8 @@ def upgrade() -> None:
         "sent_deal",
         sa.Column("id", sa.Integer(), primary_key=True),
         sa.Column("subscriber_id", sa.Integer(), nullable=False),
-        sa.Column("origin_iata", sa.String(), nullable=False),
-        sa.Column("destination_iata", sa.String(), nullable=False),
+        sa.Column("departure_iata", sa.String(), nullable=False),
+        sa.Column("arrival_iata", sa.String(), nullable=False),
         sa.Column("arrival_country", sa.String(), nullable=False),
         sa.Column("price", sa.Float(), nullable=False),
         sa.Column("currency", sa.String(), nullable=False),

@@ -92,11 +92,12 @@ def test_history_rows_written_for_candidates_and_sent_deals(
         observations = session.scalars(select(PriceObservation)).all()
         sent = session.scalars(select(SentDeal)).all()
     # Every candidate is observed; only the picked winner is a sent deal.
-    assert {(o.price, o.destination_iata) for o in observations} == {
-        (100.0, "HEL"),
-        (110.0, "HEL"),
+    assert {(o.origin_iata, o.price, o.arrival_iata) for o in observations} == {
+        ("FRA", 100.0, "HEL"),
+        ("FRA", 110.0, "HEL"),
     }
-    assert observations[0].origin_iata == "FRA"
+    assert len({o.search_id for o in observations}) == 1
+    assert {o.stopovers for o in observations} == {0, 1}
     assert [(s.subscriber_id, s.price, s.source) for s in sent] == [
         (1, 110.0, "favorite")
     ]

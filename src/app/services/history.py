@@ -3,9 +3,21 @@
 Written silently from the digest job; read later by the price anchor and
 freshness features. No aggregation at write time."""
 
+from uuid import uuid4
+
 from src.app.db import PriceObservation, SentDeal, insert_rows
 from src.app.models.flights import FlightDeal, RankedDeal, SearchQuery
 from src.app.services.providers import FlightProvider
+
+OBSERVED_FIELDS = {
+    "arrival_iata",
+    "arrival_country",
+    "price",
+    "currency",
+    "departs_at",
+    "returns_at",
+    "duration_minutes",
+}
 
 
 class RecordingProvider:
@@ -16,20 +28,19 @@ class RecordingProvider:
 
     def search_top(self, query: SearchQuery, count: int) -> list[FlightDeal]:
         deals = self.inner.search_top(query, count)
-        insert_rows([_observation(deal) for deal in deals])
+        search_id = str(uuid4())
+        insert_rows(
+            [
+                PriceObservation(
+                    search_id=search_id,
+                    origin_iata=query.origin_iata,
+                    stopovers=len(deal.via_cities) + len(deal.return_via_cities),
+                    **deal.model_dump(include=OBSERVED_FIELDS),
+                )
+                for deal in deals
+            ]
+        )
         return deals
-
-
-def _observation(deal: FlightDeal) -> PriceObservation:
-    return PriceObservation(
-        origin_iata=deal.departure_iata,
-        destination_iata=deal.arrival_iata,
-        arrival_country=deal.arrival_country,
-        price=deal.price,
-        currency=deal.currency,
-        departs_at=deal.departs_at,
-        returns_at=deal.returns_at,
-    )
 
 
 def record_sent_deals(subscriber_id: int, deals: list[RankedDeal]) -> None:
@@ -37,13 +48,17 @@ def record_sent_deals(subscriber_id: int, deals: list[RankedDeal]) -> None:
         [
             SentDeal(
                 subscriber_id=subscriber_id,
-                origin_iata=ranked.deal.departure_iata,
-                destination_iata=ranked.deal.arrival_iata,
-                arrival_country=ranked.deal.arrival_country,
-                price=ranked.deal.price,
-                currency=ranked.deal.currency,
                 source=ranked.source,
                 score=ranked.score,
+                **ranked.deal.model_dump(
+                    include={
+                        "departure_iata",
+                        "arrival_iata",
+                        "arrival_country",
+                        "price",
+                        "currency",
+                    }
+                ),
             )
             for ranked in deals
         ]

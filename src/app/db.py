@@ -48,18 +48,25 @@ class AirNomads(Base):
 
 
 class PriceObservation(Base):
-    """One candidate itinerary a weekly search returned; append-only."""
+    """One candidate itinerary a weekly search returned; append-only.
+
+    Column names follow FlightDeal where the value comes from the deal;
+    origin_iata is the *search* origin (what multi-departure partitions on),
+    and search_id groups the candidates of one provider call."""
 
     __tablename__ = "price_observation"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    search_id: Mapped[str] = mapped_column(String)
     origin_iata: Mapped[str] = mapped_column(String)
-    destination_iata: Mapped[str] = mapped_column(String)
+    arrival_iata: Mapped[str] = mapped_column(String)
     arrival_country: Mapped[str] = mapped_column(String)
     price: Mapped[float] = mapped_column(Float)
     currency: Mapped[str] = mapped_column(String)
     departs_at: Mapped[datetime] = mapped_column(DateTime)
     returns_at: Mapped[datetime] = mapped_column(DateTime)
+    duration_minutes: Mapped[int] = mapped_column(Integer)
+    stopovers: Mapped[int] = mapped_column(Integer)
     observed_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 
 
@@ -72,8 +79,8 @@ class SentDeal(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     subscriber_id: Mapped[int] = mapped_column(Integer)
-    origin_iata: Mapped[str] = mapped_column(String)
-    destination_iata: Mapped[str] = mapped_column(String)
+    departure_iata: Mapped[str] = mapped_column(String)
+    arrival_iata: Mapped[str] = mapped_column(String)
     arrival_country: Mapped[str] = mapped_column(String)
     price: Mapped[float] = mapped_column(Float)
     currency: Mapped[str] = mapped_column(String)
@@ -102,8 +109,6 @@ def get_session() -> Iterator[Session]:
 
 
 def insert_rows(rows: Sequence[Base]) -> None:
-    if not rows:
-        return
     with session_scope() as session:
         session.add_all(rows)
         session.commit()
