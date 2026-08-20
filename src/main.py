@@ -4,13 +4,14 @@ from collections.abc import Awaitable, Callable
 
 from fastapi import FastAPI, Request, Response
 
-from src.routers import subscriptions
+from src.routers import refdata, subscriptions
 
 app = FastAPI(
     title="Air Nomad Society",
     description="Personalized flight deals delivered to your inbox.",
 )
 app.include_router(subscriptions.router)
+app.include_router(refdata.router)
 
 
 @app.middleware("http")
