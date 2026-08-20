@@ -10,6 +10,7 @@ from jinja2 import Environment, FileSystemLoader
 from src.app.config import Settings
 from src.app.models.flights import FlightDeal
 from src.app.services import mailer
+from src.app.services.digest import RankedDeal
 from src.app.services.tokens import issue_token
 
 TEMPLATE_DIR = Path(__file__).resolve().parent.parent / "templates"
@@ -33,12 +34,23 @@ FALLBACK_IMAGE = (
 _env = Environment(loader=FileSystemLoader(TEMPLATE_DIR), autoescape=False)  # noqa: S701 # nosec B701
 
 
+def _facts(deal: FlightDeal) -> str:
+    """The quality line on a deal card, e.g. "direct · 2h35 · dep 10:40"."""
+    stops = "direct" if not deal.stopovers else f"1 stop via {deal.via_city}"
+    hours, minutes = divmod(deal.duration_minutes, 60)
+    return (
+        f"{stops} &middot; {hours}h{minutes:02d} &middot; dep {deal.departs_at:%H:%M}"
+    )
+
+
 def _present(
-    deal: FlightDeal, images: dict[str, list[str]], rng: random.Random
+    ranked: RankedDeal, images: dict[str, list[str]], rng: random.Random
 ) -> dict[str, Any]:
-    country_images = images.get(deal.arrival_country)
+    country_images = images.get(ranked.deal.arrival_country)
     return {
-        "deal": deal,
+        "deal": ranked.deal,
+        "source": ranked.source,
+        "facts": _facts(ranked.deal),
         "image_url": rng.choice(country_images) if country_images else FALLBACK_IMAGE,
     }
 
@@ -47,8 +59,7 @@ def render_digest(
     username: str,
     update_token: str,
     unsubscribe_token: str,
-    dream_deals: list[FlightDeal],
-    gem_deals: list[FlightDeal],
+    deals: list[RankedDeal],
     images: dict[str, list[str]],
     base_url: str,
     rng: random.Random | None = None,
@@ -60,8 +71,7 @@ def render_digest(
         site_url=base_url,
         update_url=f"{base_url}/subscribe?token={update_token}",
         unsubscribe_url=f"{base_url}/unsubscribe?token={unsubscribe_token}",
-        dream_flights=[_present(deal, images, picker) for deal in dream_deals],
-        gem_flights=[_present(deal, images, picker) for deal in gem_deals],
+        flights=[_present(ranked, images, picker) for ranked in deals],
     )
 
 

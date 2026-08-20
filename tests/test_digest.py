@@ -32,21 +32,40 @@ SUBSCRIBER = Subscriber(
 )
 
 
-def test_favorites_and_gems_split_correctly() -> None:
+def test_favorites_and_discoveries_ranked_into_one_list() -> None:
     provider = FakeProvider(
         {
-            "FI": deal(arrival_iata="FI"),
-            "ES": deal(
-                arrival_iata="ES", arrival_city="Palma", arrival_country="Spain"
-            ),
+            "FI": [deal(price=200)],
+            "ES": [
+                deal(
+                    price=90,
+                    arrival_iata="ES",
+                    arrival_city="Palma",
+                    arrival_country="Spain",
+                )
+            ],
         }
     )
     result = build_digest(SUBSCRIBER, provider, DESTINATIONS, rng=random.Random(7))
-    assert [d.arrival_country for d in result.dream_deals] == ["Finland"]
+    by_country = {r.deal.arrival_country: r.source for r in result.deals}
+    assert by_country["Finland"] == "favorite"
     # Gems drawn from {Spain, Germany}: Finland is a favorite, Japan excluded.
-    assert {d.arrival_country for d in result.gem_deals} <= {"Spain", "Germany"}
+    assert set(by_country) - {"Finland"} <= {"Spain", "Germany"}
     gem_queries = {q.destination_iata for q in provider.queries} - {"FI"}
     assert gem_queries <= {"ES", "DE"}
+    # Both gems fit in the pool, so Spain is always searched; ranked by
+    # score, the cheap Spain discovery outranks the Finland favorite.
+    assert result.deals[0].deal.arrival_country == "Spain"
+    assert result.deals[0].source == "discovery"
+
+
+def test_best_scoring_candidate_wins_over_cheapest() -> None:
+    cheap_stopover = deal(price=100, stopovers=1, via_city="Riga")
+    direct = deal(price=110)
+    provider = FakeProvider({"FI": [cheap_stopover, direct]})
+    result = build_digest(SUBSCRIBER, provider, DESTINATIONS, rng=random.Random(1))
+    finland = [r for r in result.deals if r.deal.arrival_country == "Finland"]
+    assert finland[0].deal == direct
 
 
 def test_search_window_derives_from_subscriber() -> None:
@@ -62,9 +81,9 @@ def test_search_window_derives_from_subscriber() -> None:
 
 
 def test_same_city_deals_are_dropped() -> None:
-    provider = FakeProvider({"FI": deal(arrival_iata="FI", arrival_city="Frankfurt")})
+    provider = FakeProvider({"FI": [deal(arrival_city="Frankfurt")]})
     result = build_digest(SUBSCRIBER, provider, DESTINATIONS, rng=random.Random(1))
-    assert result.dream_deals == []
+    assert result.deals == []
 
 
 def test_subscriber_from_row_parses_country_lists() -> None:

@@ -1,9 +1,10 @@
-"""Builds one subscriber's digest: deals for their favorite countries plus
-randomly picked "secret gem" countries."""
+"""Builds one subscriber's digest: the best-scoring deal per searched country
+(favorites plus randomly picked "secret gem" countries), ranked into one list."""
 
 import logging
 import random
 from datetime import date, timedelta
+from typing import Literal
 
 from pydantic import BaseModel
 
@@ -11,14 +12,27 @@ from src.app.models.subscriber import Subscriber
 from src.app.models.flights import FlightDeal, SearchQuery
 from src.app.services.providers import FlightProvider
 from src.app.services.refdata import Country
-from src.app.services.selection import favorite_destinations, select_gems
+from src.app.services.selection import (
+    deal_score,
+    favorite_destinations,
+    pick_best,
+    select_gems,
+)
 
 logger = logging.getLogger(__name__)
 
+CANDIDATES_PER_COUNTRY = 10
+
+
+class RankedDeal(BaseModel):
+    deal: FlightDeal
+    source: Literal["favorite", "discovery"]
+
 
 class DigestResult(BaseModel):
-    dream_deals: list[FlightDeal]
-    gem_deals: list[FlightDeal]
+    """Deals across all searched countries, best score first."""
+
+    deals: list[RankedDeal]
 
 
 def build_digest(
@@ -30,33 +44,36 @@ def build_digest(
 ) -> DigestResult:
     start = today or date.today()
 
-    def deals_for(countries: list[Country]) -> list[FlightDeal]:
-        deals = []
-        for country in countries:
-            query = SearchQuery(
-                origin_iata=subscriber.departure_iata,
-                destination_iata=country.code,
-                date_from=start + timedelta(days=subscriber.min_days_ahead),
-                date_to=start + timedelta(days=subscriber.max_days_ahead),
-                min_nights=subscriber.min_nights,
-                max_nights=subscriber.max_nights,
-                currency=subscriber.currency,
-            )
-            deal = provider.search_cheapest(query)
+    def best_deal(country: Country) -> FlightDeal | None:
+        query = SearchQuery(
+            origin_iata=subscriber.departure_iata,
+            destination_iata=country.code,
+            date_from=start + timedelta(days=subscriber.min_days_ahead),
+            date_to=start + timedelta(days=subscriber.max_days_ahead),
+            min_nights=subscriber.min_nights,
+            max_nights=subscriber.max_nights,
+            currency=subscriber.currency,
+        )
+        candidates = [
+            deal
+            for deal in provider.search_top(query, CANDIDATES_PER_COUNTRY)
             # The cheapest destination in a country can be the origin city
             # itself (e.g. searching Germany from Frankfurt); skip those.
-            if deal and deal.departure_city != deal.arrival_city:
-                deals.append(deal)
-        return deals
+            if deal.departure_city != deal.arrival_city
+        ]
+        return pick_best(candidates)
 
     favorites = set(subscriber.favorites)
-    dream_deals = deals_for(favorite_destinations(destinations, favorites))
     gems = select_gems(destinations, favorites, set(subscriber.excluded), rng=rng)
-    gem_deals = deals_for(gems)
-    logger.info(
-        "digest for %s: %d dream deals, %d gem deals",
-        subscriber.email,
-        len(dream_deals),
-        len(gem_deals),
-    )
-    return DigestResult(dream_deals=dream_deals, gem_deals=gem_deals)
+    ranked = [
+        RankedDeal(deal=deal, source=source)
+        for source, countries in (
+            ("favorite", favorite_destinations(destinations, favorites)),
+            ("discovery", gems),
+        )
+        for country in countries
+        if (deal := best_deal(country))
+    ]
+    ranked.sort(key=lambda ranked_deal: deal_score(ranked_deal.deal))
+    logger.info("digest for %s: %d deals", subscriber.email, len(ranked))
+    return DigestResult(deals=ranked)

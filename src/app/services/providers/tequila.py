@@ -12,13 +12,14 @@ logger = logging.getLogger(__name__)
 REQUEST_TIMEOUT = 30
 RATE_LIMIT_ATTEMPTS = 2
 RATE_LIMIT_WAIT = 10
+MAX_STOPOVERS = 1
 
 
 class TequilaProvider:
     """Searches flights via Kiwi's Tequila API.
 
-    Direct flights are preferred; if none exist the search is retried
-    allowing one stopover per sector.
+    One price-sorted search per destination, allowing up to one stopover
+    per sector; picking the best candidate is the caller's job.
     """
 
     def __init__(self, endpoint: str, api_key: str) -> None:
@@ -28,14 +29,11 @@ class TequilaProvider:
         self._session = requests.Session()
         self._session.headers["apikey"] = api_key
 
-    def search_cheapest(self, query: SearchQuery) -> FlightDeal | None:
-        for max_stopovers in (0, 1):
-            itineraries = self._search(query, max_stopovers)
-            if itineraries:
-                return self._to_deal(itineraries[0], query.currency)
-        return None
+    def search_top(self, query: SearchQuery, count: int) -> list[FlightDeal]:
+        itineraries = self._search(query, count)
+        return [self._to_deal(itinerary, query.currency) for itinerary in itineraries]
 
-    def _search(self, query: SearchQuery, max_stopovers: int) -> list[dict[str, Any]]:
+    def _search(self, query: SearchQuery, count: int) -> list[dict[str, Any]]:
         params = {
             "fly_from": query.origin_iata,
             "fly_to": query.destination_iata,
@@ -43,8 +41,8 @@ class TequilaProvider:
             "date_to": query.date_to.strftime("%d/%m/%Y"),
             "nights_in_dst_from": query.min_nights,
             "nights_in_dst_to": query.max_nights,
-            "one_for_city": 1,
-            "max_sector_stopovers": max_stopovers,
+            "max_sector_stopovers": MAX_STOPOVERS,
+            "limit": count,
             "curr": query.currency,
         }
         # A response without a "data" key means we got rate limited: back off
@@ -78,8 +76,10 @@ class TequilaProvider:
             arrival_city=data["cityTo"],
             arrival_iata=data["flyTo"],
             arrival_country=data["countryTo"]["name"],
-            departs_on=datetime.fromtimestamp(route[0]["dTime"]).date(),
-            returns_on=datetime.fromtimestamp(route[-1]["aTime"]).date(),
+            departs_at=datetime.fromtimestamp(route[0]["dTime"]),
+            returns_at=datetime.fromtimestamp(route[-1]["aTime"]),
+            duration_minutes=data["duration"]["departure"] // 60,
+            stopovers=int(outbound_stop),
             link=data["deep_link"],
             via_city=route[0]["cityTo"] if outbound_stop else None,
         )

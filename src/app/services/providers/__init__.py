@@ -4,6 +4,8 @@ from src.app.models.flights import FlightDeal, SearchQuery
 
 
 class FlightProvider(Protocol):
-    """Anything that can find the cheapest round trip for a query."""
+    """Anything that can find round-trip candidates for a query."""
 
-    def search_cheapest(self, query: SearchQuery) -> FlightDeal | None: ...
+    def search_top(self, query: SearchQuery, count: int) -> list[FlightDeal]:
+        """Up to `count` itineraries, cheapest first."""
+        ...
