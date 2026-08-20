@@ -5,6 +5,12 @@ on:
     # Mondays 05:00 UTC. GitHub delays scheduled runs by up to ~15 minutes.
     - cron: "0 5 * * 1"
   workflow_dispatch:
+    inputs:
+      environment:
+        description: "dev sends only to the subscriber with id MY_UUID"
+        type: choice
+        options: [dev, prod]
+        default: dev
 
 permissions:
   contents: read
@@ -35,3 +41,7 @@ jobs:
           SMTP_PWD: ${{ secrets.SMTP_PWD }}
           SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
           SMTP_PORT: ${{ secrets.SMTP_PORT || '587' }}
+          # Scheduled runs have no inputs and fall back to prod; manual runs
+          # default to dev so a dispatch can't accidentally email everyone.
+          ENVIRONMENT: ${{ inputs.environment || 'prod' }}
+          MY_UUID: ${{ secrets.MY_UUID }}
