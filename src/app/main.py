@@ -1,9 +1,11 @@
-"""The ASGI entrypoint; Vercel auto-detects `app` here."""
+"""The ASGI entrypoint; pinned for Vercel via [tool.vercel] in pyproject."""
 
 from collections.abc import Awaitable, Callable
 
 from fastapi import FastAPI, Request, Response
+from fastapi.middleware.cors import CORSMiddleware
 
+from src.app.config import get_settings
 from src.app.routers import refdata, subscriptions
 
 app = FastAPI(
@@ -12,6 +14,14 @@ app = FastAPI(
 )
 app.include_router(subscriptions.router)
 app.include_router(refdata.router)
+
+# The frontend is a prebuilt static site calling this API from the browser.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[get_settings().public_base_url, "http://localhost:5173"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.middleware("http")
