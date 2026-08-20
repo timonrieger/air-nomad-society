@@ -1,27 +1,11 @@
 from datetime import datetime, timedelta
 
-from src.app.db import PriceObservation, insert_rows
+from src.app.db import insert_rows
 from src.app.services.history import BASELINE_WINDOW_WEEKS, route_baselines
+from tests.conftest import observation
 
+# A week after the default observation() stamp, so seeded rows land in-window.
 RUN_STARTED = datetime(2026, 9, 1, 6, 0)
-
-
-def observation(**overrides) -> PriceObservation:
-    fields: dict = {
-        "search_id": "s1",
-        "origin_iata": "FRA",
-        "arrival_iata": "HEL",
-        "arrival_country": "Finland",
-        "price": 100.0,
-        "currency": "EUR",
-        "departs_at": datetime(2026, 9, 3, 10, 40),
-        "returns_at": datetime(2026, 9, 8, 18, 5),
-        "duration_minutes": 155,
-        "stopovers": 0,
-        "observed_at": RUN_STARTED - timedelta(weeks=1),
-    }
-    fields.update(overrides)
-    return PriceObservation(**fields)
 
 
 def baselines(arrival_iatas: set[str] | None = None) -> dict[str, float]:

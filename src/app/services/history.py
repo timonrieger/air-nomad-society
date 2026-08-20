@@ -29,17 +29,20 @@ OBSERVED_FIELDS = {
 
 
 class RecordingProvider:
-    """Wraps a provider and logs every candidate it returns."""
+    """Wraps a provider and logs every candidate it returns.
+
+    started_at marks the run boundary: every observation this instance writes
+    is stamped at or after it by the same clock (not the DB server default,
+    whose clock can sit behind), so route_baselines(before=started_at) sees
+    exactly the earlier runs."""
 
     def __init__(self, inner: FlightProvider) -> None:
         self.inner = inner
+        self.started_at = datetime.now()
 
     def search_top(self, query: SearchQuery, count: int) -> list[FlightDeal]:
         deals = self.inner.search_top(query, count)
         search_id = str(uuid4())
-        # Stamped here, not by the DB server default: route_baselines compares
-        # observed_at against this process's clock to exclude the current run,
-        # and the server clock (second-resolution in SQLite) can sit behind it.
         observed_at = datetime.now()
         insert_rows(
             [

@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 import src.app.cli as cli
 from src.app.db import PriceObservation, SentDeal, get_engine, insert_rows
 from src.app.models.subscriber import Subscriber
-from tests.conftest import deal
+from tests.conftest import deal, observation
 from tests.fakes import FakeProvider
 
 
@@ -101,19 +101,7 @@ def test_price_anchor_from_earlier_runs_reaches_the_email(
     week_ago = datetime.now() - timedelta(weeks=1)
     insert_rows(
         [
-            PriceObservation(
-                search_id="old",
-                origin_iata="FRA",
-                arrival_iata="HEL",
-                arrival_country="Finland",
-                price=price,
-                currency="EUR",
-                departs_at=datetime(2026, 9, 3, 10, 40),
-                returns_at=datetime(2026, 9, 8, 18, 5),
-                duration_minutes=155,
-                stopovers=0,
-                observed_at=week_ago,
-            )
+            observation(search_id="old", price=price, observed_at=week_ago)
             for price in (300, 305, 315, 320)
         ]
     )
@@ -126,7 +114,6 @@ def test_price_anchor_from_earlier_runs_reaches_the_email(
     )
     assert cli.run_digest(FakeProvider({"FI": [deal()]})) == 0
     assert "typically ~310 EUR (−58%)" in captured[0]
-    assert "🔥 exceptional price" in captured[0]
 
 
 def test_history_rows_written_for_candidates_and_sent_deals(

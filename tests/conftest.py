@@ -4,8 +4,9 @@ from datetime import datetime
 import pytest
 
 from src.app.config import Settings, get_settings
-from src.app.db import Base, get_engine
+from src.app.db import Base, PriceObservation, get_engine
 from src.app.models.flights import FlightDeal
+from src.app.services.history import OBSERVED_FIELDS
 
 TEST_SECRET = "test-secret-key-of-at-least-32-bytes!"  # gitleaks:allow
 
@@ -60,3 +61,20 @@ def deal(**overrides) -> FlightDeal:
     }
     fields.update(overrides)
     return FlightDeal(**fields)
+
+
+def observation(
+    search_id: str = "s1",
+    origin_iata: str = "FRA",
+    stopovers: int = 0,
+    observed_at: datetime = datetime(2026, 8, 25, 6, 0),
+    **deal_overrides,
+) -> PriceObservation:
+    """A PriceObservation built from deal(), the way RecordingProvider does."""
+    return PriceObservation(
+        search_id=search_id,
+        origin_iata=origin_iata,
+        stopovers=stopovers,
+        observed_at=observed_at,
+        **deal(**deal_overrides).model_dump(include=OBSERVED_FIELDS),
+    )

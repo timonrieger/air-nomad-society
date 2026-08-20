@@ -1,7 +1,6 @@
 import argparse
 import logging
 import sys
-from datetime import datetime
 
 from src.app.services import emails, mailer, refdata
 from src.app.config import get_settings
@@ -33,9 +32,6 @@ def run_digest(provider: FlightProvider) -> int:
     subscribers = load_subscribers(settings.digest_only_id)
     logger.info("sending digest to %d subscribers", len(subscribers))
     recording = RecordingProvider(provider)
-    # Baselines only use observations from before this run, so the run's own
-    # candidates never anchor themselves.
-    run_started = datetime.now()
     failures = 0
     for subscriber in subscribers:
         try:
@@ -49,11 +45,13 @@ def run_digest(provider: FlightProvider) -> int:
                 unsubscribe_token=issue_token(subscriber.id, "unsubscribe"),
                 digest=result,
                 images=data.images,
+                # before=started_at: the run's own candidates never anchor
+                # themselves.
                 baselines=route_baselines(
                     subscriber.departure_iata,
                     {ranked.deal.arrival_iata for ranked in result.deals},
                     subscriber.currency,
-                    before=run_started,
+                    before=recording.started_at,
                 ),
                 base_url=settings.public_base_url,
             )
