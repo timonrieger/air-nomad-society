@@ -4,7 +4,7 @@ from datetime import datetime
 import pytest
 
 from src.app.config import Settings, get_settings
-from src.app.db import get_engine
+from src.app.db import Base, get_engine
 from src.app.models.flights import FlightDeal
 
 TEST_SECRET = "test-secret-key-of-at-least-32-bytes!"  # gitleaks:allow
@@ -20,6 +20,15 @@ for var, value in {
     "SMTP_SERVER": "smtp.example.com",
 }.items():
     os.environ.setdefault(var, value)
+
+
+@pytest.fixture
+def sqlite_db(tmp_path, monkeypatch):
+    """A file-backed sqlite database with the full schema created."""
+    monkeypatch.setenv("DB_URI", f"sqlite:///{tmp_path}/test.db")
+    get_settings.cache_clear()
+    get_engine.cache_clear()
+    Base.metadata.create_all(get_engine())
 
 
 @pytest.fixture(autouse=True)

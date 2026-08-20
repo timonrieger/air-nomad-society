@@ -1,19 +1,9 @@
 from datetime import datetime, timedelta
 
-import pytest
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from src.app.config import get_settings
-from src.app.db import AirNomads, Base, get_engine, load_subscribers, purge_unconfirmed
-
-
-@pytest.fixture
-def sqlite_db(tmp_path, monkeypatch):
-    monkeypatch.setenv("DB_URI", f"sqlite:///{tmp_path}/test.db")
-    get_settings.cache_clear()
-    get_engine.cache_clear()
-    Base.metadata.create_all(get_engine())
+from src.app.db import AirNomads, get_engine, load_subscribers, purge_unconfirmed
 
 
 def member(

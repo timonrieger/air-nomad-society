@@ -35,10 +35,10 @@ _env = Environment(loader=FileSystemLoader(TEMPLATE_DIR), autoescape=False)  # n
 
 def _facts(deal: FlightDeal) -> str:
     """The quality line on a deal card, e.g. "direct · 2h35 · dep 10:40"."""
-    via = deal.via_cities + deal.return_via_cities
-    if via:
-        label = "stop" if len(via) == 1 else "stops"
-        stops = f"{len(via)} {label} via {', '.join(dict.fromkeys(via))}"
+    if deal.stopovers:
+        label = "stop" if deal.stopovers == 1 else "stops"
+        via = dict.fromkeys(deal.via_cities + deal.return_via_cities)
+        stops = f"{deal.stopovers} {label} via {', '.join(via)}"
     else:
         stops = "direct"
     hours, minutes = divmod(deal.duration_minutes, 60)

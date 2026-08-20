@@ -1,6 +1,6 @@
 """Database access: schema, engine, and session plumbing for `air_nomads`."""
 
-from collections.abc import Iterator
+from collections.abc import Iterator, Sequence
 from contextlib import contextmanager
 from datetime import datetime, timedelta
 from functools import lru_cache
@@ -9,6 +9,8 @@ from sqlalchemy import (
     CursorResult,
     DateTime,
     Engine,
+    Float,
+    Index,
     Integer,
     String,
     create_engine,
@@ -46,6 +48,52 @@ class AirNomads(Base):
     confirmed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
 
 
+class PriceObservation(Base):
+    """One candidate itinerary a weekly search returned; append-only.
+
+    Column names follow FlightDeal where the value comes from the deal;
+    origin_iata is the *search* origin (what multi-departure partitions on),
+    and search_id groups the candidates of one provider call."""
+
+    __tablename__ = "price_observation"
+    __table_args__ = (
+        Index("ix_price_observation_route", "origin_iata", "arrival_iata", "currency"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    search_id: Mapped[str] = mapped_column(String)
+    origin_iata: Mapped[str] = mapped_column(String)
+    arrival_iata: Mapped[str] = mapped_column(String)
+    arrival_country: Mapped[str] = mapped_column(String)
+    price: Mapped[float] = mapped_column(Float)
+    currency: Mapped[str] = mapped_column(String)
+    departs_at: Mapped[datetime] = mapped_column(DateTime)
+    returns_at: Mapped[datetime] = mapped_column(DateTime)
+    duration_minutes: Mapped[int] = mapped_column(Integer)
+    stopovers: Mapped[int] = mapped_column(Integer)
+    observed_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+
+
+class SentDeal(Base):
+    """One deal actually emailed to a subscriber; append-only.
+
+    No foreign key on purpose: history stays useful after unsubscribes."""
+
+    __tablename__ = "sent_deal"
+    __table_args__ = (Index("ix_sent_deal_subscriber", "subscriber_id", "sent_at"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    subscriber_id: Mapped[int] = mapped_column(Integer)
+    departure_iata: Mapped[str] = mapped_column(String)
+    arrival_iata: Mapped[str] = mapped_column(String)
+    arrival_country: Mapped[str] = mapped_column(String)
+    price: Mapped[float] = mapped_column(Float)
+    currency: Mapped[str] = mapped_column(String)
+    source: Mapped[str] = mapped_column(String)
+    score: Mapped[float] = mapped_column(Float)
+    sent_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+
+
 @lru_cache
 def get_engine() -> Engine:
     return create_engine(get_settings().db_uri, pool_pre_ping=True)
@@ -63,6 +111,14 @@ def get_session() -> Iterator[Session]:
     """The same session lifecycle in the generator form FastAPI's Depends needs."""
     with session_scope() as session:
         yield session
+
+
+def insert_rows(rows: Sequence[Base]) -> None:
+    if not rows:
+        return
+    with session_scope() as session:
+        session.add_all(rows)
+        session.commit()
 
 
 def load_subscribers(only_id: int | None = None) -> list[Subscriber]:

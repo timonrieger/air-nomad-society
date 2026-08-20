@@ -41,6 +41,11 @@ class FlightDeal(BaseModel):
     )
     link: str = Field(description="Deep link to book this itinerary")
 
+    @property
+    def stopovers(self) -> int:
+        """Total stopovers across both legs; 0 means direct both ways."""
+        return len(self.via_cities) + len(self.return_via_cities)
+
 
 class RankedDeal(BaseModel):
     """A digest pick: the deal, where it came from, and how good it is."""
