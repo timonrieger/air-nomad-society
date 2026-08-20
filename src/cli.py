@@ -9,6 +9,7 @@ from src.services.digest import build_digest
 from src.services.emails import render_digest
 from src.services.providers import FlightProvider
 from src.services.providers.tequila import TequilaProvider
+from src.services.tokens import issue_token
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +30,8 @@ def run_digest(provider: FlightProvider) -> int:
             result = build_digest(subscriber, provider, data.countries)
             html = render_digest(
                 username=subscriber.username,
-                token=subscriber.token,
+                update_token=issue_token(subscriber.id, "update"),
+                unsubscribe_token=issue_token(subscriber.id, "unsubscribe"),
                 dream_deals=result.dream_deals,
                 gem_deals=result.gem_deals,
                 images=data.images,

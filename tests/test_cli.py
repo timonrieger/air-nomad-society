@@ -1,9 +1,18 @@
 from datetime import date
 
+import pytest
+
 import src.cli as cli
-from src.models.subscriber import Subscriber
 from src.models.flights import FlightDeal
+from src.models.subscriber import Subscriber
 from src.services.providers.fake import FakeProvider
+
+
+@pytest.fixture(autouse=True)
+def fake_tokens(monkeypatch):
+    monkeypatch.setattr(
+        cli, "issue_token", lambda subscriber_id, action: f"{action}-{subscriber_id}"
+    )
 
 
 def subscriber(email: str) -> Subscriber:

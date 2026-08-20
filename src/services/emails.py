@@ -45,7 +45,8 @@ def _present(
 
 def render_digest(
     username: str,
-    token: str,
+    update_token: str,
+    unsubscribe_token: str,
     dream_deals: list[FlightDeal],
     gem_deals: list[FlightDeal],
     images: dict[str, list[str]],
@@ -55,7 +56,8 @@ def render_digest(
     picker = rng or random.Random()  # nosec B311 # picks photos, not secrets
     return _env.get_template("digest.html.j2").render(
         username=username,
-        token=token,
+        update_token=update_token,
+        unsubscribe_token=unsubscribe_token,
         dream_flights=[_present(deal, images, picker) for deal in dream_deals],
         gem_flights=[_present(deal, images, picker) for deal in gem_deals],
         base_url=base_url,

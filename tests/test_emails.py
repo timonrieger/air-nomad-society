@@ -26,7 +26,8 @@ IMAGES = {"Finland": ["https://img.example/fi.jpg"]}
 def render(dreams: list[FlightDeal], gems: list[FlightDeal]) -> str:
     return render_digest(
         username="Timon",
-        token="tok123",
+        update_token="upd123",
+        unsubscribe_token="unsub123",
         dream_deals=dreams,
         gem_deals=gems,
         images=IMAGES,
@@ -54,10 +55,10 @@ def test_empty_sections_render_no_flights_found() -> None:
     assert html.count("No Flights") == 2
 
 
-def test_profile_links_use_base_url_and_token() -> None:
+def test_profile_links_use_base_url_and_action_tokens() -> None:
     html = render([], [])
-    assert "https://example.test/subscribe?token=tok123" in html
-    assert "https://example.test/unsubscribe?token=tok123" in html
+    assert "https://example.test/subscribe?token=upd123" in html
+    assert "https://example.test/unsubscribe?token=unsub123" in html
     assert "ans.timonrieger.de/subscribe" not in html
 
 
