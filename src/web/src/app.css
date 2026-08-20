@@ -53,6 +53,10 @@
 		@apply flex cursor-pointer items-center justify-between rounded-md px-3 py-1.5 text-sm data-highlighted:bg-accent data-highlighted:text-white;
 	}
 
+	.tooltip {
+		@apply z-50 max-w-64 rounded-md border border-line bg-raised px-2.5 py-1.5 text-xs text-ink shadow-lg;
+	}
+
 	.accordion-trigger {
 		@apply w-full cursor-pointer bg-raised px-5 py-3.5 text-left text-base text-ink hover:bg-[#22222b];
 	}

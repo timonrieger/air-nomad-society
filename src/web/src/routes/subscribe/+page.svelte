@@ -123,52 +123,43 @@
 	</div>
 {/if}
 
-{#if !updating}
-	<ul class="mt-4 list-disc pl-5 text-ink-muted [&>li]:my-1.5">
-		<li>Create a username for personalized emails.</li>
-		<li>Enter the email address where you wish to receive deals.</li>
-		<li>Select your departure city or the nearest major city.</li>
-		<li>Choose your preferred currency for price listings.</li>
-		<li>Set a range for the number of nights per trip.</li>
-		<li>Choose how many days ahead your flight search starts and ends.</li>
-		<li>Pick your favorite countries — you get deals for these every week.</li>
-		<li>
-			Optionally exclude countries from gems (random discoveries) — they still appear in your
-			favorites.
-		</li>
-	</ul>
-{/if}
-
 <form onsubmit={submit}>
 	<div class="my-6 grid gap-4 sm:grid-cols-2">
-		<Field label="Username">
+		<Field required label="Username" hint="Used to personalize your emails.">
 			<input class="input" required minlength="3" maxlength="20" bind:value={username} />
 		</Field>
-		<Field label={updating ? 'Email (cannot be changed)' : 'Email'}>
+		<Field
+			required
+			label={updating ? 'Email (cannot be changed)' : 'Email'}
+			hint="Where your weekly deals land."
+		>
 			<input class="input" type="email" required disabled={updating} bind:value={email} />
 		</Field>
-		<Field label="Departure city">
+		<Field required label="Departure city" hint="Your city, or the nearest major one.">
 			<SelectMenu items={cityItems} placeholder="Select a city" bind:value={departureIata} />
 		</Field>
-		<Field label="Currency">
+		<Field required label="Currency" hint="Prices are shown in this currency.">
 			<SelectMenu items={currencyItems} placeholder="Select a currency" bind:value={currency} />
 		</Field>
-		<Field label="Minimum nights">
+		<Field required label="Minimum nights" hint="Shortest trip length, in nights.">
 			<input class="input" type="number" min="1" required bind:value={minNights} />
 		</Field>
-		<Field label="Maximum nights">
+		<Field required label="Maximum nights" hint="Longest trip length, in nights.">
 			<input class="input" type="number" min="1" required bind:value={maxNights} />
 		</Field>
-		<Field label="Search from (days ahead)">
+		<Field required label="Search from (days ahead)" hint="Search starts this many days from now.">
 			<input class="input" type="number" min="1" max="365" required bind:value={minDaysAhead} />
 		</Field>
-		<Field label="Search to (days ahead)">
+		<Field required label="Search to (days ahead)" hint="Search ends this many days from now.">
 			<input class="input" type="number" min="1" max="365" required bind:value={maxDaysAhead} />
 		</Field>
-		<Field label="Favorite destinations">
+		<Field required label="Favorite destinations" hint="You get deals for these every week.">
 			<SelectMenu items={countryItems} placeholder="Select countries" multiple bind:value={favorites} />
 		</Field>
-		<Field label="Exclude from gems (optional)">
+		<Field
+			label="Exclude from gems"
+			hint="Never picked as random gems. Favorites are unaffected."
+		>
 			<SelectMenu items={countryItems} placeholder="Select countries" multiple bind:value={excluded} />
 		</Field>
 	</div>
