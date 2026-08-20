@@ -24,6 +24,8 @@ class DigestResult(BaseModel):
     """Deals across all searched countries, best score first."""
 
     deals: list[RankedDeal]
+    window_start: date
+    window_end: date
 
 
 def build_digest(
@@ -34,13 +36,15 @@ def build_digest(
     today: date | None = None,
 ) -> DigestResult:
     start = today or date.today()
+    window_start = start + timedelta(days=subscriber.min_days_ahead)
+    window_end = start + timedelta(days=subscriber.max_days_ahead)
 
     def best_pick(country: Country, source: DealSource) -> RankedDeal | None:
         query = SearchQuery(
             origin_iata=subscriber.departure_iata,
             destination_iata=country.code,
-            date_from=start + timedelta(days=subscriber.min_days_ahead),
-            date_to=start + timedelta(days=subscriber.max_days_ahead),
+            date_from=window_start,
+            date_to=window_end,
             min_nights=subscriber.min_nights,
             max_nights=subscriber.max_nights,
             currency=subscriber.currency,
@@ -69,4 +73,4 @@ def build_digest(
     ] + [pick for country in gems if (pick := best_pick(country, "discovery"))]
     deals.sort(key=lambda pick: pick.score)
     logger.info("digest for %s: %d deals", subscriber.email, len(deals))
-    return DigestResult(deals=deals)
+    return DigestResult(deals=deals, window_start=window_start, window_end=window_end)

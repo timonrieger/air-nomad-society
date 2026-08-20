@@ -32,11 +32,14 @@ def run_digest(provider: FlightProvider) -> int:
     for subscriber in subscribers:
         try:
             result = build_digest(subscriber, recording, data.countries)
+            if not result.deals:
+                logger.info("no deals for %s, skipping digest", subscriber.email)
+                continue
             html = emails.render_digest(
                 username=subscriber.username,
                 update_token=issue_token(subscriber.id, "update"),
                 unsubscribe_token=issue_token(subscriber.id, "unsubscribe"),
-                deals=result.deals,
+                digest=result,
                 images=data.images,
                 base_url=settings.public_base_url,
             )
