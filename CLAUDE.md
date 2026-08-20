@@ -20,11 +20,13 @@ Follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/
 
 Air Nomad Society emails personalized flight deals to subscribers.
 
-- `ans/` — the typed core: settings, providers, selection, email rendering, digest CLI
-- `src/app.py` — Flask web app (subscribe / update / unsubscribe), deployed on Vercel
-- `static/data.json` — reference data: countries, cities, currencies, per-country image URLs
-- `ans/templates/digest.html.j2` — the email; kept byte-identical to the legacy markup,
-  excluded from whitespace fixers
+- `src/main.py` — FastAPI JSON API (Vercel auto-detects the `app` object)
+- `src/routers/` — endpoints; `src/services/` — domain logic; `src/models/` — pydantic models
+- `src/db.py` — SQLAlchemy models + engine; migrations live in `alembic/`
+- `src/cli.py` — the weekly digest job (`mise run digest`)
+- `src/data.json` — reference data: countries, cities, currencies, per-country image URLs
+- `src/templates/digest.html.j2` — the email; legacy markup, excluded from whitespace fixers
 
-The refactor currently underway is planned in `docs/refactor-plan.md`. `src/app.py` is
-the only remaining `ty` exclusion; it is replaced in Phase 1, don't add new exclusions.
+Email links are stateless JWTs (`src/services/tokens.py`). `src` is the import root
+(`from src.services import ...`). The refactor is planned in `docs/refactor-plan.md`;
+there are no `ty` exclusions — keep it that way.

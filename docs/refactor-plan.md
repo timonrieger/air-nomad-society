@@ -62,15 +62,21 @@ Gap 7 is the only item that genuinely requires FastAPI + workers + Svelte.
 
 ## Target shape
 
+Revised in Phase 1: instead of an apps/packages monorepo, `src` is the import
+root of a single conventional FastAPI layout (SvelteKit joins later as a
+sibling directory; workers become new entrypoints over the same services):
+
 ```
-apps/
-  api/        FastAPI — auth, subscription CRUD, itinerary endpoints, SSE
-  web/        SvelteKit
-  worker/     dramatiq actors (thin wrappers, no logic)
-packages/
-  core/       domain models + pure logic: selection, diversity, ranking, jobs
-  providers/  FlightProvider protocol + tequila/amadeus/fake adapters; email
-  db/         SQLAlchemy 2.0 Mapped[] models + Alembic
+src/
+  main.py     FastAPI app (Vercel auto-detects), security headers, routers
+  config.py   pydantic-settings
+  db.py       SQLAlchemy 2.0 models (vendored), engine, session
+  cli.py      digest entrypoint (GitHub Actions cron)
+  routers/    subscription API
+  services/   domain logic: refdata, selection, digest, emails, mailer,
+              tokens (JWT links), providers (FlightProvider protocol)
+  models/     pydantic domain models
+alembic/      migrations, URL from src.config
 ```
 
 ### The seam that makes migration cheap
@@ -82,7 +88,7 @@ Jobs stay transport-agnostic:
 async def run_digest(sub_id: UUID, deps: Deps) -> DigestResult: ...
 ```
 
-- **Now:** GitHub Actions cron → `python -m ans.cli digest --due`
+- **Now:** GitHub Actions cron → `python -m src.cli digest`
 - **Later:** `@dramatiq.actor` wrapping the identical function
 
 Moving from Actions to dramatiq workers becomes a new entrypoint file, not a rewrite. Same principle for `FlightProvider` — swapping Tequila for Amadeus touches one adapter.
@@ -116,17 +122,30 @@ Left deliberately out of Phase 0: ranking/diversity logic (needs the
 `SentDeal` table, Phase 1) and fixing `src/app.py`'s type errors (the file is
 replaced by FastAPI in Phase 1; it stays the only `ty` exclusion).
 
-## Phase 1 — schema + API + frontend
+## Phase 1 — API-first port (done)
 
-- [ ] Alembic; `User 1..N Subscription` model
-- [ ] Migration for existing subscribers (one subscription each, preserving current settings)
-- [ ] FastAPI replaces Flask; existing token links must keep working
-- [ ] SvelteKit on Vercel
-- [ ] Magic-link auth (fits an email product; no password storage)
+Scope was revised during implementation: structural port first, UI allowed to
+break until Svelte, identity via stateless JWTs instead of stored tokens or
+magic links.
+
+- [x] FastAPI replaces Flask — pure JSON API (`/subscribe`, `/subscription`,
+      `/unsubscribe`), `/docs` as the interim UI
+- [x] Alembic, plain setup (the shared DB now holds only `air_nomads`);
+      baseline 0001 + 0002 drops the token column
+- [x] `database-service` vendored: this repo owns the `AirNomads` model,
+      engine and session plumbing
+- [x] Stateless JWT email links (HS256 over SECRET_KEY, `sub` + `action`
+      claims, no expiry) — old token links are dead by design
+- [x] `src` becomes the import root: `routers/` + `services/` + `models/`
+
+Deferred from the original Phase 1 list:
+
+- [ ] `User 1..N Subscription` schema rewrite + migration of existing rows
+- [ ] SvelteKit on Vercel (rebuilds the deleted UI against the JSON API)
 - [ ] Continent/region reference data for the exclusion UX
 - [ ] `SentDeal` history table + city-level search + Redis result cache
 
-Ships gaps 1–6.
+The schema rewrite still ships gaps 1, 4, 5, 6; gap 2/3 items follow it.
 
 ## Phase 2 — infra
 
@@ -148,4 +167,4 @@ Async job + status polling, SSE streaming to the UI, structured output for the i
 - **Reference data quality.** `static/data.json` cities carry no country field, so cities cannot currently be grouped by country — required for gaps 2 and 3. Needs a proper dataset.
 - **Email deliverability.** Raw SMTP is fragile for a mailing product. Consider Resend/Postmark free tiers.
 - **CORS/cookies** once web and API are on different origins. Either scope cookies to `.timonrieger.de` via an `api.` subdomain, or proxy through SvelteKit server routes.
-- **`database-service` git dependency.** Sharing models across projects via a private git package is a coupling smell; Phase 1 should own its own schema.
+- ~~**`database-service` git dependency.**~~ Resolved in Phase 1: the schema is vendored and Alembic-managed in this repo; the git dependency is gone.
