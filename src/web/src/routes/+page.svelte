@@ -31,7 +31,7 @@
 		},
 		{
 			q: 'How often will I receive flight deal emails?',
-			a: 'Flight deal emails are sent once a week, covering deals for both favorite and random destinations.'
+			a: "Flight deal emails are sent once a week: one list of the best deals found across your favorite countries and a few surprise discoveries, ranked by quality. If a week turns up nothing worth sending, we skip the email instead of sending an empty one."
 		},
 		{
 			q: 'What does "Favorite Destinations" mean?',
@@ -39,7 +39,7 @@
 		},
 		{
 			q: 'Will I get flight deals for non-favorite destinations?',
-			a: "Even if you haven't marked certain places as favorites, you'll still get occasional deals for random destinations."
+			a: "Yes. Alongside your favorites, emails mix in discovery deals — surprising destinations you haven't marked, each labeled with a discovery badge."
 		},
 		{
 			q: 'How far ahead do the flight deals cover?',

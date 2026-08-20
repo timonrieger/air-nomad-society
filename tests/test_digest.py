@@ -70,9 +70,11 @@ def test_best_scoring_candidate_wins_over_cheapest() -> None:
 
 def test_search_window_derives_from_subscriber() -> None:
     provider = FakeProvider()
-    build_digest(
+    result = build_digest(
         SUBSCRIBER, provider, DESTINATIONS, rng=random.Random(1), today=date(2026, 1, 1)
     )
+    assert result.window_start == date(2026, 1, 11)
+    assert result.window_end == date(2026, 2, 10)
     query = provider.queries[0]
     assert query.date_from == date(2026, 1, 11)
     assert query.date_to == date(2026, 2, 10)

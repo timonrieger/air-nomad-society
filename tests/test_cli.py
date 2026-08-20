@@ -47,7 +47,7 @@ def test_one_failing_subscriber_does_not_block_the_rest(sqlite_db, monkeypatch) 
     monkeypatch.setattr(cli, "load_subscribers", lambda only_id: subscribers)
     monkeypatch.setattr(cli.mailer, "send_email", fake_send)
 
-    failures = cli.run_digest(FakeProvider())
+    failures = cli.run_digest(FakeProvider({"FI": [deal()]}))
     assert failures == 1
     assert sent == ["works@example.com"]
 
@@ -57,7 +57,22 @@ def test_all_successful_returns_zero(sqlite_db, monkeypatch) -> None:
         cli, "load_subscribers", lambda only_id: [subscriber("a@example.com")]
     )
     monkeypatch.setattr(cli.mailer, "send_email", lambda *a, **k: None)
+    assert cli.run_digest(FakeProvider({"FI": [deal()]})) == 0
+
+
+def test_empty_digest_is_not_sent(sqlite_db, monkeypatch) -> None:
+    sent: list[str] = []
+    monkeypatch.setattr(
+        cli, "load_subscribers", lambda only_id: [subscriber("a@example.com")]
+    )
+    monkeypatch.setattr(
+        cli.mailer,
+        "send_email",
+        lambda html, recipient, *a, **k: sent.append(recipient),
+    )
+    # The provider finds nothing anywhere: no email, but no failure either.
     assert cli.run_digest(FakeProvider()) == 0
+    assert sent == []
 
 
 def test_deal_fields_reach_the_email(sqlite_db, monkeypatch) -> None:

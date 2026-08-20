@@ -2,6 +2,7 @@
 
 import json
 import random
+from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -10,6 +11,7 @@ from jinja2 import Environment, FileSystemLoader
 from src.app.config import Settings
 from src.app.models.flights import FlightDeal, RankedDeal
 from src.app.services import mailer
+from src.app.services.digest import DigestResult
 from src.app.services.tokens import issue_token
 
 TEMPLATE_DIR = Path(__file__).resolve().parent.parent / "templates"
@@ -45,14 +47,28 @@ def _facts(deal: FlightDeal) -> str:
     return f"{stops} · {hours}h{minutes:02d} · dep {deal.departs_at:%H:%M}"
 
 
+def _window(start: date, end: date) -> str:
+    """The searched departure window, e.g. "Sep 1–30" or "Sep 26 – Oct 12"."""
+    if (start.year, start.month) == (end.year, end.month):
+        return f"{start:%b} {start.day}–{end.day}"
+    if start.year == end.year:
+        return f"{start:%b} {start.day} – {end:%b} {end.day}"
+    return f"{start:%b} {start.day}, {start.year} – {end:%b} {end.day}, {end.year}"
+
+
 def _present(
-    ranked: RankedDeal, images: dict[str, list[str]], rng: random.Random
+    ranked: RankedDeal, window: str, images: dict[str, list[str]], rng: random.Random
 ) -> dict[str, Any]:
-    country_images = images.get(ranked.deal.arrival_country)
+    deal = ranked.deal
+    country_images = images.get(deal.arrival_country)
     return {
-        "deal": ranked.deal,
-        "source": ranked.source,
-        "facts": _facts(ranked.deal),
+        "deal": deal,
+        # One badge slot per card: provenance now, savings tier / freshness later.
+        "badges": ["⭐ favorite" if ranked.source == "favorite" else "✨ discovery"],
+        # "depart", not "travel between": the window bounds outbound departures,
+        # so the example trip's return may legitimately fall after it.
+        "dates": f"depart {window} · e.g. {deal.departs_at:%d.%m}–{deal.returns_at:%d.%m}",
+        "facts": _facts(deal),
         "image_url": rng.choice(country_images) if country_images else FALLBACK_IMAGE,
     }
 
@@ -61,20 +77,23 @@ def render_digest(
     username: str,
     update_token: str,
     unsubscribe_token: str,
-    deals: list[RankedDeal],
+    digest: DigestResult,
     images: dict[str, list[str]],
     base_url: str,
     rng: random.Random | None = None,
 ) -> str:
+    # An empty digest is never sent (the cli skips it); rendering one is a bug.
+    assert digest.deals
     picker = rng or random.Random()  # nosec B311 # picks photos, not secrets
+    window = _window(digest.window_start, digest.window_end)
     return _env.get_template("digest.html.j2").render(
         t=TOKENS,
         username=username,
         site_url=base_url,
         update_url=f"{base_url}/subscribe?token={update_token}",
         unsubscribe_url=f"{base_url}/unsubscribe?token={unsubscribe_token}",
-        flights=[_present(ranked, images, picker) for ranked in deals],
-        no_favorite_deals=all(ranked.source != "favorite" for ranked in deals),
+        flights=[_present(ranked, window, images, picker) for ranked in digest.deals],
+        no_favorite_deals=all(ranked.source != "favorite" for ranked in digest.deals),
     )
 
 
