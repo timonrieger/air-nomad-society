@@ -89,7 +89,7 @@
 		}
 		message = updating
 			? 'Your preferences were changed successfully.'
-			: `Successfully subscribed with ${email}.`;
+			: `Almost there! We sent a confirmation link to ${email} — click it to start receiving deals.`;
 	}
 </script>
 
@@ -144,8 +144,8 @@
 		<Field label="Username">
 			<input class="input" required minlength="3" maxlength="20" bind:value={username} />
 		</Field>
-		<Field label="Email">
-			<input class="input" type="email" required bind:value={email} />
+		<Field label={updating ? 'Email (cannot be changed)' : 'Email'}>
+			<input class="input" type="email" required disabled={updating} bind:value={email} />
 		</Field>
 		<Field label="Departure city">
 			<SelectMenu items={cityItems} placeholder="Select a city" bind:value={departureIata} />
