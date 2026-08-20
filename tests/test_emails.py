@@ -13,15 +13,17 @@ def ranked(flight_deal: FlightDeal, source: DealSource = "favorite") -> RankedDe
     return RankedDeal(deal=flight_deal, source=source, score=0.0)
 
 
-def render(deals: list[RankedDeal]) -> str:
+def render(
+    deals: list[RankedDeal],
+    window_start: date = date(2026, 9, 1),
+    window_end: date = date(2026, 9, 30),
+) -> str:
     return render_digest(
         username="Timon",
         update_token="upd123",
         unsubscribe_token="unsub123",
         digest=DigestResult(
-            deals=deals,
-            window_start=date(2026, 9, 1),
-            window_end=date(2026, 9, 30),
+            deals=deals, window_start=window_start, window_end=window_end
         ),
         images=IMAGES,
         base_url="https://example.test",
@@ -43,17 +45,10 @@ def test_date_window_framing() -> None:
 
 
 def test_date_window_crossing_months_names_both() -> None:
-    html = render_digest(
-        username="Timon",
-        update_token="upd123",
-        unsubscribe_token="unsub123",
-        digest=DigestResult(
-            deals=[ranked(deal())],
-            window_start=date(2026, 9, 26),
-            window_end=date(2026, 10, 12),
-        ),
-        images=IMAGES,
-        base_url="https://example.test",
+    html = render(
+        [ranked(deal())],
+        window_start=date(2026, 9, 26),
+        window_end=date(2026, 10, 12),
     )
     assert "travel between Sep 26 – Oct 12" in html
 
