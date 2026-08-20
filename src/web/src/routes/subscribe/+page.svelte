@@ -23,6 +23,19 @@
 	let favorites = $state<string[]>([]);
 	let excluded = $state<string[]>([]);
 
+	let formEl = $state<HTMLFormElement | undefined>();
+	let nativeValid = $state(false);
+	// Native HTML constraint validation (required/min/max/minlength/type)
+	// covers all plain inputs; re-check whenever any bound value changes.
+	$effect(() => {
+		void [username, email, minNights, maxNights, minDaysAhead, maxDaysAhead, updating];
+		nativeValid = formEl?.checkValidity() ?? false;
+	});
+	// bits-ui selects render no native inputs, so they are checked by hand.
+	const canSubmit = $derived(
+		nativeValid && departureIata !== '' && currency !== '' && favorites.length > 0
+	);
+
 	const cityItems = $derived(
 		(refdata?.cities ?? []).map((c) => ({ value: c.code, label: `${c.city} (${c.code})` }))
 	);
@@ -123,7 +136,7 @@
 	</div>
 {/if}
 
-<form onsubmit={submit}>
+<form bind:this={formEl} onsubmit={submit}>
 	<div class="my-6 grid gap-4 sm:grid-cols-2">
 		<Field required label="Username" hint="Used to personalize your emails.">
 			<input class="input" required minlength="3" maxlength="20" bind:value={username} />
@@ -145,13 +158,27 @@
 			<input class="input" type="number" min="1" required bind:value={minNights} />
 		</Field>
 		<Field required label="Maximum nights" hint="Longest trip length, in nights.">
-			<input class="input" type="number" min="1" required bind:value={maxNights} />
+			<input
+				class="input"
+				type="number"
+				min={(minNights || 0) + 1}
+				max={(maxDaysAhead || 365) - (minDaysAhead || 0)}
+				required
+				bind:value={maxNights}
+			/>
 		</Field>
 		<Field required label="Search from (days ahead)" hint="Search starts this many days from now.">
 			<input class="input" type="number" min="1" max="365" required bind:value={minDaysAhead} />
 		</Field>
 		<Field required label="Search to (days ahead)" hint="Search ends this many days from now.">
-			<input class="input" type="number" min="1" max="365" required bind:value={maxDaysAhead} />
+			<input
+				class="input"
+				type="number"
+				min={(minDaysAhead || 0) + 1}
+				max="365"
+				required
+				bind:value={maxDaysAhead}
+			/>
 		</Field>
 		<Field required label="Favorite destinations" hint="You get deals for these every week.">
 			<SelectMenu items={countryItems} placeholder="Select countries" multiple bind:value={favorites} />
@@ -163,7 +190,7 @@
 			<SelectMenu items={countryItems} placeholder="Select countries" multiple bind:value={excluded} />
 		</Field>
 	</div>
-	<button class="btn" type="submit" disabled={submitting || !refdata}>
+	<button class="btn" type="submit" disabled={submitting || !refdata || !canSubmit}>
 		{updating ? 'Update Preferences' : 'Join Air Nomad Society'}
 	</button>
 </form>
