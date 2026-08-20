@@ -29,5 +29,4 @@ Air Nomad Society emails personalized flight deals to subscribers.
 - `src/web/` — SvelteKit frontend (pnpm, bits-ui, Tailwind v4); fully prerendered static site, browser calls the API directly (`VITE_API_URL`, CORS on the backend)
 
 Email links are stateless JWTs (`src/app/services/tokens.py`). `src` is the import root
-(`from src.app.services import ...`). The refactor is planned in `docs/refactor-plan.md`;
-there are no `ty` exclusions — keep it that way.
+(`from src.app.services import ...`). There are no `ty` exclusions — keep it that way.
