@@ -1,0 +1,19 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:best-practices",
+    "schedule:monthly"
+  ],
+  "minimumReleaseAge": "3 days",
+  "packageRules": [
+    {
+      "groupName": "uv toolchain",
+      "groupSlug": "uv",
+      "matchPackageNames": [
+        "uv",
+        "uv_build",
+        "astral-sh/uv"
+      ]
+    }
+  ]
+}

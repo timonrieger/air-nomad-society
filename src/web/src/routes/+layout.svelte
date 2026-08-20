@@ -1,0 +1,26 @@
+<script lang="ts">
+	import '../app.css';
+	import favicon from '$lib/assets/favicon.svg';
+
+	let { children } = $props();
+</script>
+
+<svelte:head>
+	<link rel="icon" href={favicon} />
+</svelte:head>
+
+<header class="mx-auto flex max-w-4xl items-center justify-between px-5 py-4">
+	<a class="font-bold text-ink hover:no-underline" href="/">Air Nomad Society</a>
+	<nav class="flex gap-5">
+		<a class="text-ink-muted hover:text-ink hover:no-underline" href="/">Home</a>
+		<a class="text-ink-muted hover:text-ink hover:no-underline" href="/subscribe">Subscribe</a>
+	</nav>
+</header>
+
+<main class="mx-auto max-w-4xl px-5">
+	{@render children()}
+</main>
+
+<footer class="mt-16 border-t border-line py-6 text-center text-sm text-ink-muted">
+	<p>Copyright © <a href="https://timonrieger.de">Timon Rieger</a></p>
+</footer>
