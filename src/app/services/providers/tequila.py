@@ -1,6 +1,6 @@
 import logging
 import time
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any
 
 import requests
@@ -78,8 +78,10 @@ class TequilaProvider:
             arrival_city=data["cityTo"],
             arrival_iata=data["flyTo"],
             arrival_country=data["countryTo"]["name"],
-            departs_on=datetime.fromtimestamp(route[0]["dTime"]).date(),
-            returns_on=datetime.fromtimestamp(route[-1]["aTime"]).date(),
+            # dTime/aTime encode the local wall-clock time as a UTC epoch, so
+            # decode as UTC — the runner's own timezone must not shift dates.
+            departs_on=datetime.fromtimestamp(route[0]["dTime"], UTC).date(),
+            returns_on=datetime.fromtimestamp(route[-1]["aTime"], UTC).date(),
             link=data["deep_link"],
             via_city=route[0]["cityTo"] if outbound_stop else None,
         )

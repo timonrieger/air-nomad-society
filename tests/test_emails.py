@@ -31,12 +31,28 @@ def test_renders_deals() -> None:
 
 def test_missing_or_empty_image_lists_fall_back() -> None:
     html = render([], [deal(arrival_city="Palma", arrival_country="Spain")])
-    assert FALLBACK_IMAGE in html
+    # Autoescape turns the URL's "&" into "&amp;", so match its unique photo id.
+    assert "photo-1500835556837" in html
+    assert "photo-1500835556837" in FALLBACK_IMAGE
 
 
 def test_empty_sections_render_no_flights_found() -> None:
     html = render([], [])
     assert html.count("No flights found") == 2
+
+
+def test_username_html_is_escaped() -> None:
+    html = render_digest(
+        username="<a href=//evil.co>x",
+        update_token="upd123",
+        unsubscribe_token="unsub123",
+        dream_deals=[],
+        gem_deals=[],
+        images=IMAGES,
+        base_url="https://example.test",
+    )
+    assert "<a href=//evil.co>" not in html
+    assert "&lt;a href=//evil.co&gt;x" in html
 
 
 def test_profile_links_use_base_url_and_action_tokens() -> None:

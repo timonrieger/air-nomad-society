@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import UTC, date, datetime
 from typing import Any
 
 from src.app.models.flights import SearchQuery
@@ -39,7 +39,8 @@ class ResponseStub:
 
 
 def ts(day: int) -> int:
-    return int(datetime(2026, 9, day, 12, 0).timestamp())
+    # Tequila-style timestamp: local wall-clock time encoded as a UTC epoch.
+    return int(datetime(2026, 9, day, 12, 0, tzinfo=UTC).timestamp())
 
 
 def test_direct_flight_maps_fields(monkeypatch) -> None:

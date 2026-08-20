@@ -58,8 +58,15 @@ export function errorMessages(body: unknown): string[] {
 }
 
 async function request(path: string, init?: RequestInit): Promise<{ ok: boolean; body: unknown }> {
-	const response = await fetch(`${API_URL}${path}`, init);
-	return { ok: response.ok, body: await response.json() };
+	// Never reject: a network failure or a non-JSON error body (e.g. a bare
+	// 500) must surface as a banner, not leave the page stuck in its
+	// pending/submitting state.
+	try {
+		const response = await fetch(`${API_URL}${path}`, init);
+		return { ok: response.ok, body: await response.json() };
+	} catch {
+		return { ok: false, body: { detail: 'The server could not be reached. Please try again.' } };
+	}
 }
 
 export async function fetchRefData(): Promise<RefData> {

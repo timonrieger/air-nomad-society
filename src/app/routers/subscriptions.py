@@ -116,6 +116,9 @@ def subscribe(payload: SubscriptionIn, session: SessionDep) -> Subscriber:
         session.add(member)
     else:
         _apply(member, payload)
+        # Restart the confirmation TTL: the freshly resent link must outlive
+        # the unconfirmed-row purge, which keys off created_at.
+        member.created_at = datetime.now()
     session.commit()
     session.refresh(member)  # populate server defaults
     emails.send_confirmation(member.id, member.username, member.email, get_settings())
