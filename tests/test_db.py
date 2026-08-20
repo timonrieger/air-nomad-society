@@ -29,7 +29,6 @@ def member(id: int, email: str) -> AirNomads:
         max_nights=7,
         travel_countries="Finland, Japan",
         excluded_countries=None,
-        token=f"tok-{id}",
     )
 
 

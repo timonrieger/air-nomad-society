@@ -9,7 +9,6 @@ class Subscriber(BaseModel):
     id: int
     username: str
     email: str
-    token: str
     departure_city: str
     departure_iata: str
     currency: str
@@ -26,7 +25,6 @@ class Subscriber(BaseModel):
             id=row.id,
             username=row.username,
             email=row.email,
-            token=row.token,
             departure_city=row.departure_city,
             departure_iata=row.departure_iata,
             currency=row.currency.upper(),

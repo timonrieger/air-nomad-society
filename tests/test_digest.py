@@ -18,7 +18,6 @@ SUBSCRIBER = Subscriber(
     id=1,
     username="Timon",
     email="timon@example.com",
-    token="tok",
     departure_city="Frankfurt",
     departure_iata="FRA",
     currency="EUR",

@@ -30,7 +30,6 @@ class AirNomads(Base):
     max_nights: Mapped[int] = mapped_column(Integer)
     travel_countries: Mapped[str] = mapped_column(String)
     excluded_countries: Mapped[str | None] = mapped_column(String, nullable=True)
-    token: Mapped[str] = mapped_column(String, unique=True)
     min_days_ahead: Mapped[int] = mapped_column(Integer, server_default="1")
     max_days_ahead: Mapped[int] = mapped_column(Integer, server_default="182")
 

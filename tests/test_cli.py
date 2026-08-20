@@ -20,7 +20,6 @@ def subscriber(email: str) -> Subscriber:
         id=1,
         username="u",
         email=email,
-        token="tok",
         departure_city="Frankfurt",
         departure_iata="FRA",
         currency="EUR",
