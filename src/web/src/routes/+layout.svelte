@@ -10,10 +10,12 @@
 </svelte:head>
 
 <header class="mx-auto flex max-w-4xl items-center justify-between px-5 py-4">
-	<a class="font-bold text-ink hover:no-underline" href="/">Air Nomad Society</a>
+	<a class="flex items-center gap-2 font-bold text-ink hover:no-underline" href="/">
+		<img src={favicon} alt="" class="size-6" />
+		Air Nomad Society
+	</a>
 	<nav class="flex gap-5">
-		<a class="nav-link" href="/">Home</a>
-		<a class="nav-link" href="/subscribe">Subscribe</a>
+		<a class="btn px-4 py-2" href="/subscribe">Subscribe</a>
 	</nav>
 </header>
 
