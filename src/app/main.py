@@ -16,10 +16,11 @@ app.include_router(subscriptions.router)
 app.include_router(refdata.router)
 
 # The frontend is a prebuilt static site calling this API from the browser;
-# PUBLIC_BASE_URL is its origin (locally: the vite dev server).
+# PUBLIC_BASE_URL is its origin, also allow Vercel preview deployments.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[get_settings().public_base_url],
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_methods=["*"],
     allow_headers=["*"],
 )

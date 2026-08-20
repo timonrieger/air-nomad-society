@@ -41,7 +41,7 @@ One `.env` at the repo root drives everything locally (backend directly, fronten
 | Vercel — web project (root `src/web`) | `VITE_API_URL` (baked at build time) |
 | GitHub Actions — digest | secrets `DB_URI`, `SECRET_KEY`, `TEQUILA_API_KEY`, `SMTP_*`, `MY_UUID`; repository **variable** `PUBLIC_BASE_URL` |
 
-`PUBLIC_BASE_URL` is the frontend origin — it is both the API's CORS allow-list and the base for all links in emails. `VITE_API_URL` is where the browser reaches the API.
+`PUBLIC_BASE_URL` is the frontend origin — it is both the API's CORS allow-list and the base for all links in emails (Vercel preview origins, `https://*.vercel.app`, are additionally allowed by regex). `VITE_API_URL` is where the browser reaches the API.
 
 ## Migrations
 
