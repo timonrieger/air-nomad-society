@@ -48,19 +48,21 @@ class AirNomads(Base):
 
 @lru_cache
 def get_engine() -> Engine:
-    settings = get_settings()
-    assert settings.db_uri, "DB_URI is not configured"
-    return create_engine(settings.db_uri, pool_pre_ping=True)
+    return create_engine(get_settings().db_uri, pool_pre_ping=True)
 
 
-def get_session() -> Iterator[Session]:
+@contextmanager
+def session_scope() -> Iterator[Session]:
     # expire_on_commit=False: attribute reads after commit stay in memory
     # instead of re-SELECTing — one round trip saved per write endpoint.
     with Session(get_engine(), expire_on_commit=False) as session:
         yield session
 
 
-session_scope = contextmanager(get_session)
+def get_session() -> Iterator[Session]:
+    """The same session lifecycle in the generator form FastAPI's Depends needs."""
+    with session_scope() as session:
+        yield session
 
 
 def load_subscribers(only_id: int | None = None) -> list[Subscriber]:

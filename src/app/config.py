@@ -1,27 +1,27 @@
 from functools import lru_cache
 
+from pydantic import computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
     """Application configuration, read from the environment and `.env`.
 
-    Optional fields default to None so importing never crashes; they assert
-    at the point of use. PUBLIC_BASE_URL is required everywhere (CORS and
-    email links), so a misconfigured deployment fails at startup.
+    Every field without a default is required in every environment, so a
+    misconfigured deployment fails at startup rather than at the point of use.
     """
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
-    secret_key: str | None = None
-    db_uri: str | None = None
+    secret_key: str
+    db_uri: str
 
     tequila_endpoint: str = "https://api.tequila.kiwi.com"
-    tequila_api_key: str | None = None
+    tequila_api_key: str
 
-    smtp_email: str | None = None
-    smtp_pwd: str | None = None
-    smtp_server: str | None = None
+    smtp_email: str
+    smtp_pwd: str
+    smtp_server: str
     smtp_port: int = 587
 
     # "dev" restricts the digest job to the subscriber with id MY_UUID.
@@ -29,8 +29,14 @@ class Settings(BaseSettings):
     my_uuid: int | None = None
 
     # The frontend origin: the API's CORS allow-list and the base for all
-    # links in emails. No default — every environment must set it.
+    # links in emails.
     public_base_url: str
+
+    @computed_field
+    @property
+    def digest_only_id(self) -> int | None:
+        """The single subscriber the digest is restricted to, in dev only."""
+        return self.my_uuid if self.environment == "dev" else None
 
 
 @lru_cache

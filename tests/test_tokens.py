@@ -1,9 +1,5 @@
-import pytest
-
 from src.app.config import get_settings
 from src.app.services.tokens import issue_token, verify_token
-
-pytestmark = pytest.mark.usefixtures("secret")
 
 OTHER_SECRET = "other-secret-key-of-at-least-32-byte"  # gitleaks:allow
 

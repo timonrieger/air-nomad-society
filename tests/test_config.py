@@ -1,14 +1,20 @@
+import pytest
+from pydantic import ValidationError
+
 from src.app.config import Settings
 
 
-def test_importable_without_any_environment(monkeypatch) -> None:
-    """The old constants module crashed on import when SMTP_PORT was unset."""
-    for var in ("SMTP_PORT", "SECRET_KEY", "DB_URI", "TEQUILA_API_KEY"):
-        monkeypatch.delenv(var, raising=False)
+def test_defaults_apply(monkeypatch) -> None:
+    monkeypatch.delenv("SMTP_PORT", raising=False)
     settings = Settings()  # ty: ignore[missing-argument]
     assert settings.smtp_port == 587
-    assert settings.db_uri is None
     assert settings.environment == "production"
+
+
+def test_missing_required_field_fails_at_startup(monkeypatch) -> None:
+    monkeypatch.delenv("SECRET_KEY")
+    with pytest.raises(ValidationError):
+        Settings()  # ty: ignore[missing-argument]
 
 
 def test_reads_environment_variables(monkeypatch) -> None:
@@ -17,5 +23,10 @@ def test_reads_environment_variables(monkeypatch) -> None:
     monkeypatch.setenv("MY_UUID", "7")
     settings = Settings()  # ty: ignore[missing-argument]
     assert settings.smtp_port == 465
-    assert settings.environment == "dev"
-    assert settings.my_uuid == 7
+    assert settings.digest_only_id == 7
+
+
+def test_digest_only_id_is_none_outside_dev(monkeypatch) -> None:
+    monkeypatch.setenv("MY_UUID", "7")
+    settings = Settings()  # ty: ignore[missing-argument]
+    assert settings.digest_only_id is None

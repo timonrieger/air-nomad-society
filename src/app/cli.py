@@ -24,9 +24,7 @@ def run_digest(provider: FlightProvider) -> int:
     purged = purge_unconfirmed()
     if purged:
         logger.info("purged %d subscribers that never confirmed", purged)
-    # "dev" restricts the run to the subscriber with id MY_UUID.
-    only_id = settings.my_uuid if settings.environment == "dev" else None
-    subscribers = load_subscribers(only_id)
+    subscribers = load_subscribers(settings.digest_only_id)
     logger.info("sending digest to %d subscribers", len(subscribers))
     failures = 0
     for subscriber in subscribers:
@@ -61,7 +59,6 @@ def main(argv: list[str] | None = None) -> int:
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
     )
     settings = get_settings()
-    assert settings.tequila_api_key, "TEQUILA_API_KEY is not configured"
     provider = TequilaProvider(settings.tequila_endpoint, settings.tequila_api_key)
     return run_digest(provider)
 

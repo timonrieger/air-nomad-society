@@ -1,11 +1,33 @@
+import { readFileSync, writeFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import tailwindcss from '@tailwindcss/vite';
 import adapter from '@sveltejs/adapter-auto';
 import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
+
+// The brand (accent, gray scale, font stack) is defined once in
+// src/app/brand.json — the emails read it directly, the web gets it compiled
+// into Tailwind theme tokens here. Regenerates src/brand.css on every dev
+// server start and build; the file is committed so svelte-check works alone.
+function brandTheme(): Plugin {
+	const root = fileURLToPath(new URL('.', import.meta.url));
+	const brand: Record<string, string> = JSON.parse(
+		readFileSync(`${root}../app/brand.json`, 'utf-8')
+	);
+	const tokens = Object.entries(brand).map(([key, value]) =>
+		key === 'font' ? `\t--font-sans: ${value};` : `\t--color-${key.replaceAll('_', '-')}: ${value};`
+	);
+	writeFileSync(
+		`${root}src/brand.css`,
+		`/* Generated from src/app/brand.json by vite.config.ts — do not edit. */\n@theme {\n\t--color-gray-*: initial;\n${tokens.join('\n')}\n}\n`
+	);
+	return { name: 'brand-theme' };
+}
 
 export default defineConfig({
 	envDir: '../..',
 	plugins: [
+		brandTheme(),
 		tailwindcss(),
 		sveltekit({
 			compilerOptions: {

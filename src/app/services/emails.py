@@ -1,5 +1,6 @@
 """Renders the digest and confirmation emails and owns their subjects and links."""
 
+import json
 import random
 from pathlib import Path
 from typing import Any
@@ -16,17 +17,12 @@ TEMPLATE_DIR = Path(__file__).resolve().parent.parent / "templates"
 DIGEST_SUBJECT = "Weekly Flight Deals!"
 CONFIRM_SUBJECT = "Confirm your subscription"
 
-# Shared brand tokens — mirrored in src/web/src/app.css (@theme). One accent,
-# one gray scale, one font stack; keep both sides in sync. Emails render on
-# white with the light end of the scale, the web on the dark end.
-TOKENS = {
-    "accent": "#7747ff",
-    "gray_100": "#f1f1f4",
-    "gray_200": "#e8e8ec",
-    "gray_500": "#6f6f7a",
-    "gray_900": "#1a1a21",
-    "font": "'Bitter', Georgia, 'Times New Roman', serif",
-}
+# The shared brand definition (one accent, one gray scale, one font stack);
+# src/web consumes the same file via the brand-theme plugin in vite.config.ts.
+# Emails render on white with the light end of the scale, the web on the dark.
+TOKENS: dict[str, str] = json.loads(
+    (TEMPLATE_DIR.parent / "brand.json").read_text(encoding="utf-8")
+)
 FALLBACK_IMAGE = (
     "https://images.unsplash.com/photo-1500835556837-99ac94a94552?w=800&auto=format"
     "&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8VFJBVkVMfGVufDB8fDB8fHww"

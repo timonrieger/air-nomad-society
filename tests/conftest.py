@@ -7,10 +7,19 @@ from src.app.config import Settings, get_settings
 from src.app.db import get_engine
 from src.app.models.flights import FlightDeal
 
-# Required settings that have no default; tests never talk to real infra.
-os.environ.setdefault("PUBLIC_BASE_URL", "http://localhost:5173")
-
 TEST_SECRET = "test-secret-key-of-at-least-32-bytes!"  # gitleaks:allow
+
+# Every Settings field is required; tests never talk to real infra.
+for var, value in {
+    "PUBLIC_BASE_URL": "http://localhost:5173",
+    "SECRET_KEY": TEST_SECRET,
+    "DB_URI": "sqlite://",
+    "TEQUILA_API_KEY": "test-tequila-key",
+    "SMTP_EMAIL": "digest@example.com",
+    "SMTP_PWD": "test-smtp-pwd",
+    "SMTP_SERVER": "smtp.example.com",
+}.items():
+    os.environ.setdefault(var, value)
 
 
 @pytest.fixture(autouse=True)
@@ -23,12 +32,6 @@ def clean_settings():
     yield
     get_settings.cache_clear()
     get_engine.cache_clear()
-
-
-@pytest.fixture
-def secret(monkeypatch):
-    monkeypatch.setenv("SECRET_KEY", TEST_SECRET)
-    get_settings.cache_clear()
 
 
 def deal(**overrides) -> FlightDeal:

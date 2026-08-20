@@ -47,7 +47,7 @@ def engine():
 
 
 @pytest.fixture
-def client(secret, engine, outbox) -> Iterator[TestClient]:
+def client(engine, outbox) -> Iterator[TestClient]:
     def override() -> Iterator[Session]:
         with Session(engine) as session:
             yield session
