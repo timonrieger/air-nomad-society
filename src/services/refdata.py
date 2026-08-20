@@ -5,7 +5,7 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
-DATA_PATH = Path(__file__).resolve().parent.parent / "static" / "data.json"
+DATA_PATH = Path(__file__).resolve().parent.parent / "data.json"
 
 
 class Country(BaseModel):

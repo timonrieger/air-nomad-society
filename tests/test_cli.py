@@ -1,9 +1,9 @@
 from datetime import date
 
-import ans.cli as cli
-from ans.db import Subscriber
-from ans.models import FlightDeal
-from ans.providers.fake import FakeProvider
+import src.cli as cli
+from src.models.subscriber import Subscriber
+from src.models.flights import FlightDeal
+from src.services.providers.fake import FakeProvider
 
 
 def subscriber(email: str) -> Subscriber:

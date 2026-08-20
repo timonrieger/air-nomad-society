@@ -12,9 +12,9 @@ from typing import Any
 
 from jinja2 import Environment, FileSystemLoader
 
-from ans.models import FlightDeal
+from src.models.flights import FlightDeal
 
-TEMPLATE_DIR = Path(__file__).resolve().parent / "templates"
+TEMPLATE_DIR = Path(__file__).resolve().parent.parent / "templates"
 FALLBACK_IMAGE = (
     "https://images.unsplash.com/photo-1500835556837-99ac94a94552?w=800&auto=format"
     "&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8VFJBVkVMfGVufDB8fDB8fHww"

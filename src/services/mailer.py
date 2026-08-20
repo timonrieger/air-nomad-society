@@ -2,7 +2,7 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-from ans.config import Settings
+from src.config import Settings
 
 
 def send_digest(html: str, recipient: str, settings: Settings) -> None:

@@ -1,8 +1,8 @@
 import random
 from datetime import date
 
-from ans.emails import FALLBACK_IMAGE, render_digest
-from ans.models import FlightDeal
+from src.services.emails import FALLBACK_IMAGE, render_digest
+from src.models.flights import FlightDeal
 
 
 def deal(arrival_city: str, country: str, price: float) -> FlightDeal:

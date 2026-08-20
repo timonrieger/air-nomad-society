@@ -2,13 +2,13 @@ import argparse
 import logging
 import sys
 
-from ans import mailer, refdata
-from ans.config import get_settings
-from ans.db import load_subscribers
-from ans.digest import build_digest
-from ans.emails import render_digest
-from ans.providers import FlightProvider
-from ans.providers.tequila import TequilaProvider
+from src.services import mailer, refdata
+from src.config import get_settings
+from src.db import load_subscribers
+from src.services.digest import build_digest
+from src.services.emails import render_digest
+from src.services.providers import FlightProvider
+from src.services.providers.tequila import TequilaProvider
 
 logger = logging.getLogger(__name__)
 

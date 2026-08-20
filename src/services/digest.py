@@ -7,11 +7,11 @@ from datetime import date, timedelta
 
 from pydantic import BaseModel
 
-from ans.db import Subscriber
-from ans.models import FlightDeal, SearchQuery
-from ans.providers import FlightProvider
-from ans.refdata import Country
-from ans.selection import favorite_destinations, select_gems
+from src.models.subscriber import Subscriber
+from src.models.flights import FlightDeal, SearchQuery
+from src.services.providers import FlightProvider
+from src.services.refdata import Country
+from src.services.selection import favorite_destinations, select_gems
 
 logger = logging.getLogger(__name__)
 
