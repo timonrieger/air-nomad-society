@@ -9,9 +9,16 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  lint:
+  checks:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        task: [lint, test]
     steps:
       - name: Check-out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -21,19 +28,5 @@ jobs:
       - name: Install mise
         uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14 # v4
 
-      - name: Run linters
-        run: mise run lint
-
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check-out repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-        with:
-          persist-credentials: false
-
-      - name: Install mise
-        uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14 # v4
-
-      - name: Run tests
-        run: mise run test
+      - name: Run ${{ matrix.task }}
+        run: mise run ${{ matrix.task }}

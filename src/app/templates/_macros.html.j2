@@ -1,0 +1,8 @@
+{# Markup shared by the digest and confirmation emails (imported by both). #}
+{% macro button(href, label) -%}
+<a href="{{ href }}" style="display: inline-block; background-color: {{ t.accent }}; color: #ffffff; text-decoration: none; font-family: {{ t.font }}; font-weight: 600; font-size: 16px; line-height: 24px; padding: 10px 28px; border-radius: 8px;">{{ label }}</a>
+{%- endmacro %}
+
+{% macro eyebrow() -%}
+<p style="margin: 0 0 24px; font-family: {{ t.font }}; font-size: 14px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: {{ t.accent }};">Air Nomad Society</p>
+{%- endmacro %}

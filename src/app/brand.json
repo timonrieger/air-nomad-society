@@ -1,0 +1,12 @@
+{
+	"accent": "#7747ff",
+	"accent_bright": "#8f66ff",
+	"gray_100": "#f1f1f4",
+	"gray_200": "#e8e8ec",
+	"gray_400": "#a0a0ab",
+	"gray_500": "#6f6f7a",
+	"gray_800": "#2c2c35",
+	"gray_900": "#1a1a21",
+	"gray_950": "#101014",
+	"font": "'Bitter', Georgia, 'Times New Roman', serif"
+}

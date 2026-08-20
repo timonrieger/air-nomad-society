@@ -1,24 +1,8 @@
 import random
-from datetime import date
 
 from src.app.services.emails import FALLBACK_IMAGE, render_digest
 from src.app.models.flights import FlightDeal
-
-
-def deal(arrival_city: str, country: str, price: float) -> FlightDeal:
-    return FlightDeal(
-        price=price,
-        currency="EUR",
-        departure_city="Frankfurt",
-        departure_iata="FRA",
-        arrival_city=arrival_city,
-        arrival_iata="XXX",
-        arrival_country=country,
-        departs_on=date(2026, 9, 3),
-        returns_on=date(2026, 9, 8),
-        link=f"https://kiwi.com/{arrival_city}?a=1&b=2",
-    )
-
+from tests.conftest import deal
 
 IMAGES = {"Finland": ["https://img.example/fi.jpg"]}
 
@@ -37,7 +21,7 @@ def render(dreams: list[FlightDeal], gems: list[FlightDeal]) -> str:
 
 
 def test_renders_deals() -> None:
-    html = render([deal("Helsinki", "Finland", 129.99)], [])
+    html = render([deal()], [])
     assert "Hi Timon!" in html
     assert "129 EUR" in html  # int(), no decimals
     assert "03.09.2026 - 08.09.2026" in html
@@ -46,7 +30,7 @@ def test_renders_deals() -> None:
 
 
 def test_missing_or_empty_image_lists_fall_back() -> None:
-    html = render([], [deal("Palma", "Spain", 49)])
+    html = render([], [deal(arrival_city="Palma", arrival_country="Spain")])
     assert FALLBACK_IMAGE in html
 
 
@@ -63,7 +47,7 @@ def test_profile_links_use_base_url_and_action_tokens() -> None:
 
 
 def test_renders_a_card_per_deal() -> None:
-    dreams = [deal("Helsinki", "Finland", 100), deal("Tokyo", "Japan", 500)]
+    dreams = [deal(), deal(arrival_city="Tokyo", arrival_country="Japan")]
     html = render(dreams, [])
     assert "Frankfurt &ndash; Helsinki" in html
     assert "Frankfurt &ndash; Tokyo" in html

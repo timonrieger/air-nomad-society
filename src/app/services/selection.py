@@ -18,9 +18,7 @@ def select_gems(
     """Pick random "secret gem" countries for a subscriber.
 
     Gems never overlap with the subscriber's favorite countries (those get
-    their own section) or the countries they excluded. The legacy loop in
-    main.py tried the same thing but broke out of the wrong loop, so all but
-    the first collision with a favorite slipped through.
+    their own section) or the countries they excluded.
     """
     pool = [
         destination

@@ -12,8 +12,8 @@
 <header class="mx-auto flex max-w-4xl items-center justify-between px-5 py-4">
 	<a class="font-bold text-ink hover:no-underline" href="/">Air Nomad Society</a>
 	<nav class="flex gap-5">
-		<a class="text-ink-muted hover:text-ink hover:no-underline" href="/">Home</a>
-		<a class="text-ink-muted hover:text-ink hover:no-underline" href="/subscribe">Subscribe</a>
+		<a class="nav-link" href="/">Home</a>
+		<a class="nav-link" href="/subscribe">Subscribe</a>
 	</nav>
 </header>
 

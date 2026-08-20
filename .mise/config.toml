@@ -34,7 +34,7 @@ run = "uvx prek run --all-files"
 description = "Run pre-commit hooks"
 
 [tasks.lint-fix]
-run = "uvx prek run --all-files || true"
+run = "mise run lint || true"
 description = "Run pre-commit hooks, ignoring failures"
 
 [tasks.test]

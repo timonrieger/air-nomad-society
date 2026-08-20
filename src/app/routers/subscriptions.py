@@ -9,8 +9,8 @@ from sqlalchemy.orm import Session
 from src.app.config import get_settings
 from src.app.db import AirNomads, get_session
 from src.app.models.subscriber import Subscriber
-from src.app.services import emails, mailer, refdata
-from src.app.services.tokens import Action, issue_token, verify_token
+from src.app.services import emails, refdata
+from src.app.services.tokens import Action, verify_token
 
 router = APIRouter()
 
@@ -32,7 +32,7 @@ class SubscriptionIn(BaseModel):
     @field_validator("departure_iata")
     @classmethod
     def _known_city(cls, value: str) -> str:
-        if value not in {city.code for city in refdata.load().cities}:
+        if value not in refdata.city_codes():
             raise ValueError("unknown departure city code")
         return value
 
@@ -46,7 +46,7 @@ class SubscriptionIn(BaseModel):
     @field_validator("favorite_countries", "excluded_countries")
     @classmethod
     def _known_countries(cls, value: list[str]) -> list[str]:
-        unknown = set(value) - set(refdata.country_choices())
+        unknown = set(value) - refdata.country_names()
         if unknown:
             raise ValueError(f"unknown countries: {', '.join(sorted(unknown))}")
         return value
@@ -82,6 +82,11 @@ def _columns(payload: SubscriptionIn) -> dict[str, Any]:
     }
 
 
+def _apply(member: AirNomads, payload: SubscriptionIn) -> None:
+    for key, value in _columns(payload).items():
+        setattr(member, key, value)
+
+
 def _authorized_member(token: str, action: Action, session: Session) -> AirNomads:
     subscriber_id = verify_token(token, action)
     if subscriber_id is None:
@@ -90,18 +95,6 @@ def _authorized_member(token: str, action: Action, session: Session) -> AirNomad
     if member is None:
         raise HTTPException(status_code=404, detail="No member found.")
     return member
-
-
-def _send_confirmation(member: AirNomads) -> None:
-    settings = get_settings()
-    token = issue_token(member.id, "confirm")
-    confirm_url = f"{settings.public_base_url}/confirm?token={token}"
-    mailer.send_email(
-        emails.render_confirmation(member.username, confirm_url),
-        member.email,
-        "Confirm your subscription",
-        settings,
-    )
 
 
 @router.post("/subscribe")
@@ -122,11 +115,10 @@ def subscribe(payload: SubscriptionIn, session: SessionDep) -> Subscriber:
         member = AirNomads(**_columns(payload))
         session.add(member)
     else:
-        for key, value in _columns(payload).items():
-            setattr(member, key, value)
+        _apply(member, payload)
     session.commit()
     session.refresh(member)  # populate server defaults
-    _send_confirmation(member)
+    emails.send_confirmation(member.id, member.username, member.email, get_settings())
     return Subscriber.from_row(member)
 
 
@@ -156,8 +148,7 @@ def update_subscription(
             detail="The email address cannot be changed. Unsubscribe and "
             "subscribe again with the new address.",
         )
-    for key, value in _columns(payload).items():
-        setattr(member, key, value)
+    _apply(member, payload)
     session.commit()
     return Subscriber.from_row(member)
 

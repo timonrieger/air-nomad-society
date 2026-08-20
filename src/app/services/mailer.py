@@ -6,9 +6,6 @@ from src.app.config import Settings
 
 
 def send_email(html: str, recipient: str, subject: str, settings: Settings) -> None:
-    assert settings.smtp_server and settings.smtp_email and settings.smtp_pwd, (
-        "SMTP is not configured"
-    )
     message = MIMEMultipart()
     message["From"] = f"Air Nomad Society <{settings.smtp_email}>"
     message["To"] = recipient

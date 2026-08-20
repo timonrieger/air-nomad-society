@@ -24,15 +24,73 @@ export type Subscription = {
 	excluded: string[];
 };
 
+/** Request body for POST /subscribe and PUT /subscription. */
+export type SubscriptionIn = {
+	username: string;
+	email: string;
+	departure_iata: string;
+	currency: string;
+	min_nights: number;
+	max_nights: number;
+	min_days_ahead: number;
+	max_days_ahead: number;
+	favorite_countries: string[];
+	excluded_countries: string[];
+};
+
+/** Form bounds mirroring SubscriptionIn in src/app/routers/subscriptions.py. */
+export const LIMITS = { usernameMin: 3, usernameMax: 20, maxDaysAhead: 365 } as const;
+
+export function tokenFromUrl(): string | null {
+	return new URLSearchParams(location.search).get('token');
+}
+
+type FastApiError = { detail: string | { loc: (string | number)[]; msg: string }[] };
+
 /** Flatten a FastAPI error body (422 detail list or plain detail) to messages. */
 export function errorMessages(body: unknown): string[] {
-	const detail = (body as { detail?: unknown })?.detail;
+	const { detail } = body as FastApiError;
 	if (typeof detail === 'string') return [detail];
-	if (Array.isArray(detail)) {
-		return detail.map((e: { loc?: (string | number)[]; msg?: string }) => {
-			const field = e.loc?.filter((part) => part !== 'body').join('.');
-			return field ? `${field}: ${e.msg}` : (e.msg ?? 'Invalid input');
-		});
-	}
-	return ['Something went wrong. Please try again.'];
+	return detail.map((e) => {
+		const field = e.loc.filter((part) => part !== 'body').join('.');
+		return field ? `${field}: ${e.msg}` : e.msg;
+	});
+}
+
+async function request(path: string, init?: RequestInit): Promise<{ ok: boolean; body: unknown }> {
+	const response = await fetch(`${API_URL}${path}`, init);
+	return { ok: response.ok, body: await response.json() };
+}
+
+export async function fetchRefData(): Promise<RefData> {
+	return (await request('/refdata')).body as RefData;
+}
+
+/** Resolves to null when the token is invalid or the subscription no longer exists. */
+export async function fetchSubscription(token: string): Promise<Subscription | null> {
+	const { ok, body } = await request(`/subscription?token=${encodeURIComponent(token)}`);
+	return ok ? (body as Subscription) : null;
+}
+
+/** Create (no token) or update (token) a subscription; resolves to error messages, empty on success. */
+export async function saveSubscription(
+	payload: SubscriptionIn,
+	token: string | null
+): Promise<string[]> {
+	const path = token ? `/subscription?token=${encodeURIComponent(token)}` : '/subscribe';
+	const { ok, body } = await request(path, {
+		method: token ? 'PUT' : 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(payload)
+	});
+	return ok ? [] : errorMessages(body);
+}
+
+/** Hit one of the token-actioned endpoints and flatten the response to messages. */
+export async function tokenAction(
+	path: '/confirm' | '/unsubscribe',
+	token: string
+): Promise<{ ok: boolean; messages: string[] }> {
+	const { ok, body } = await request(`${path}?token=${encodeURIComponent(token)}`);
+	return { ok, messages: ok ? [(body as { detail: string }).detail] : errorMessages(body) };
 }

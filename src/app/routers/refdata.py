@@ -16,9 +16,8 @@ class RefData(BaseModel):
 @router.get("/refdata")
 def reference_data() -> RefData:
     """The choice lists the subscription form is built from."""
-    data = refdata.load()
     return RefData(
-        cities=data.cities,
-        currencies=data.currencies,
-        countries=[country.country for country in data.countries],
+        cities=refdata.load().cities,
+        currencies=refdata.currency_choices(),
+        countries=refdata.country_choices(),
     )
