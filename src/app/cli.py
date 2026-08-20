@@ -6,6 +6,7 @@ from src.app.services import emails, mailer, refdata
 from src.app.config import get_settings
 from src.app.db import load_subscribers, purge_unconfirmed
 from src.app.services.digest import build_digest
+from src.app.services.history import RecordingProvider, record_sent_deals
 from src.app.services.providers import FlightProvider
 from src.app.services.providers.tequila import TequilaProvider
 from src.app.services.tokens import issue_token
@@ -26,10 +27,11 @@ def run_digest(provider: FlightProvider) -> int:
         logger.info("purged %d subscribers that never confirmed", purged)
     subscribers = load_subscribers(settings.digest_only_id)
     logger.info("sending digest to %d subscribers", len(subscribers))
+    recording = RecordingProvider(provider)
     failures = 0
     for subscriber in subscribers:
         try:
-            result = build_digest(subscriber, provider, data.countries)
+            result = build_digest(subscriber, recording, data.countries)
             html = emails.render_digest(
                 username=subscriber.username,
                 update_token=issue_token(subscriber.id, "update"),
@@ -39,6 +41,7 @@ def run_digest(provider: FlightProvider) -> int:
                 base_url=settings.public_base_url,
             )
             mailer.send_email(html, subscriber.email, emails.DIGEST_SUBJECT, settings)
+            record_sent_deals(subscriber.id, result.deals)
             logger.info("sent digest to %s", subscriber.email)
         except Exception:
             failures += 1

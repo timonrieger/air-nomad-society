@@ -22,6 +22,17 @@ for var, value in {
     os.environ.setdefault(var, value)
 
 
+@pytest.fixture
+def sqlite_db(tmp_path, monkeypatch):
+    """A file-backed sqlite database with the full schema created."""
+    from src.app.db import Base, get_engine
+
+    monkeypatch.setenv("DB_URI", f"sqlite:///{tmp_path}/test.db")
+    get_settings.cache_clear()
+    get_engine.cache_clear()
+    Base.metadata.create_all(get_engine())
+
+
 @pytest.fixture(autouse=True)
 def clean_settings():
     """Config comes from the process env only (never a local .env), and the
