@@ -1,6 +1,9 @@
-from typing import Any
+from typing import TYPE_CHECKING
 
 from pydantic import BaseModel, Field
+
+if TYPE_CHECKING:
+    from src.app.db import AirNomads
 
 
 class Subscriber(BaseModel):
@@ -23,7 +26,7 @@ class Subscriber(BaseModel):
     confirmed: bool = Field(description="Whether the subscriber confirmed via email")
 
     @classmethod
-    def from_row(cls, row: Any) -> "Subscriber":
+    def from_row(cls, row: "AirNomads") -> "Subscriber":
         return cls(
             id=row.id,
             username=row.username,

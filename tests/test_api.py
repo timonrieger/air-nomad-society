@@ -6,10 +6,10 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 from sqlalchemy.pool import StaticPool
 
-import src.app.routers.subscriptions as subscriptions
 from src.app.config import get_settings
 from src.app.db import AirNomads, Base, get_session
 from src.app.main import app
+from src.app.services import mailer
 from src.app.services.tokens import issue_token
 
 TEST_SECRET = "test-secret-key-of-at-least-32-bytes!"  # gitleaks:allow
@@ -32,7 +32,7 @@ PAYLOAD = {
 def outbox(monkeypatch) -> list[tuple[str, str]]:
     sent: list[tuple[str, str]] = []
     monkeypatch.setattr(
-        subscriptions.mailer,
+        mailer,
         "send_email",
         lambda html, recipient, subject, settings: sent.append((recipient, subject)),
     )

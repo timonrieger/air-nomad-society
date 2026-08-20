@@ -18,12 +18,15 @@ class TequilaProvider:
     """Searches flights via Kiwi's Tequila API.
 
     Direct flights are preferred; if none exist the search is retried
-    allowing one stopover per sector, mirroring the legacy behaviour.
+    allowing one stopover per sector.
     """
 
     def __init__(self, endpoint: str, api_key: str) -> None:
         self.endpoint = endpoint
-        self.api_key = api_key
+        # One keep-alive session for the whole run: every search hits the
+        # same host, so this saves a TLS handshake per request.
+        self._session = requests.Session()
+        self._session.headers["apikey"] = api_key
 
     def search_cheapest(self, query: SearchQuery) -> FlightDeal | None:
         for max_stopovers in (0, 1):
@@ -47,11 +50,8 @@ class TequilaProvider:
         # A response without a "data" key means we got rate limited: back off
         # and retry before giving up on the destination.
         for attempt in range(RATE_LIMIT_ATTEMPTS):
-            response = requests.get(
-                f"{self.endpoint}/search",
-                params=params,
-                headers={"apikey": self.api_key},
-                timeout=REQUEST_TIMEOUT,
+            response = self._session.get(
+                f"{self.endpoint}/search", params=params, timeout=REQUEST_TIMEOUT
             )
             body = response.json()
             if "data" in body:

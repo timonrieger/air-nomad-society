@@ -6,8 +6,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     """Application configuration, read from the environment and `.env`.
 
-    Optional features have defaults so importing never crashes: the web app
-    doesn't need SMTP, the digest job doesn't need SECRET_KEY — those fail
+    Optional fields default to None so importing never crashes; they assert
     at the point of use. PUBLIC_BASE_URL is required everywhere (CORS and
     email links), so a misconfigured deployment fails at startup.
     """

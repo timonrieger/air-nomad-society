@@ -1,10 +1,7 @@
-"""Database access: the vendored schema, engine, and session plumbing.
-
-The AirNomads model was vendored 1:1 from the retired database-service
-package; this project now owns the `air_nomads` table and its migrations.
-"""
+"""Database access: schema, engine, and session plumbing for `air_nomads`."""
 
 from collections.abc import Iterator
+from contextlib import contextmanager
 from datetime import datetime, timedelta
 from functools import lru_cache
 
@@ -21,7 +18,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
 
-from src.app.config import Settings, get_settings
+from src.app.config import get_settings
 from src.app.models.subscriber import Subscriber
 
 UNCONFIRMED_TTL_DAYS = 7
@@ -57,26 +54,31 @@ def get_engine() -> Engine:
 
 
 def get_session() -> Iterator[Session]:
-    with Session(get_engine()) as session:
+    # expire_on_commit=False: attribute reads after commit stay in memory
+    # instead of re-SELECTing — one round trip saved per write endpoint.
+    with Session(get_engine(), expire_on_commit=False) as session:
         yield session
 
 
-def load_subscribers(settings: Settings) -> list[Subscriber]:
+session_scope = contextmanager(get_session)
+
+
+def load_subscribers(only_id: int | None = None) -> list[Subscriber]:
     """Confirmed subscribers only — unconfirmed rows never receive the digest."""
     statement = select(AirNomads).where(AirNomads.confirmed_at.is_not(None))
-    if settings.environment == "dev":
-        statement = statement.where(AirNomads.id == settings.my_uuid)
-    with Session(get_engine()) as session:
+    if only_id is not None:
+        statement = statement.where(AirNomads.id == only_id)
+    with session_scope() as session:
         return [Subscriber.from_row(row) for row in session.scalars(statement)]
 
 
-def purge_unconfirmed(now: datetime | None = None) -> int:
+def purge_unconfirmed() -> int:
     """Deletes rows that never confirmed within the TTL; returns the count."""
-    cutoff = (now or datetime.now()) - timedelta(days=UNCONFIRMED_TTL_DAYS)
+    cutoff = datetime.now() - timedelta(days=UNCONFIRMED_TTL_DAYS)
     statement = delete(AirNomads).where(
         AirNomads.confirmed_at.is_(None), AirNomads.created_at < cutoff
     )
-    with Session(get_engine()) as session:
+    with session_scope() as session:
         result = session.execute(statement)
         session.commit()
         assert isinstance(result, CursorResult)  # DML always returns a cursor

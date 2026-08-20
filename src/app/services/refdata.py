@@ -1,4 +1,4 @@
-"""Typed access to the reference data in `static/data.json`."""
+"""Typed access to the reference data in `src/app/data.json`."""
 
 from functools import lru_cache
 from pathlib import Path
@@ -30,10 +30,6 @@ def load() -> ReferenceData:
     return ReferenceData.model_validate_json(DATA_PATH.read_text(encoding="utf-8"))
 
 
-def departure_choices() -> list[str]:
-    return [f"{city.city} | {city.code}" for city in load().cities]
-
-
 def country_choices() -> list[str]:
     return [country.country for country in load().countries]
 
@@ -42,5 +38,20 @@ def currency_choices() -> list[str]:
     return load().currencies
 
 
+@lru_cache
+def country_names() -> frozenset[str]:
+    return frozenset(country_choices())
+
+
+@lru_cache
+def city_codes() -> frozenset[str]:
+    return frozenset(city.code for city in load().cities)
+
+
+@lru_cache
+def _cities_by_code() -> dict[str, str]:
+    return {city.code: city.city for city in load().cities}
+
+
 def city_name(iata: str) -> str:
-    return next(city.city for city in load().cities if city.code == iata)
+    return _cities_by_code()[iata]

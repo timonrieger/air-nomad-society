@@ -8,7 +8,8 @@ def test_loads_and_validates() -> None:
     assert data.images
 
 
-def test_choice_lists_match_legacy_format() -> None:
-    departures = refdata.departure_choices()
-    assert all(" | " in choice for choice in departures)
-    assert len(refdata.country_choices()) == len(refdata.load().countries)
+def test_lookup_helpers_cover_the_data() -> None:
+    data = refdata.load()
+    assert len(refdata.country_choices()) == len(data.countries)
+    assert refdata.city_codes() == {city.code for city in data.cities}
+    assert refdata.city_name(data.cities[0].code) == data.cities[0].city

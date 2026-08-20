@@ -51,8 +51,8 @@ def test_direct_flight_maps_fields(monkeypatch) -> None:
         ]
     )
     monkeypatch.setattr(
-        "src.app.services.providers.tequila.requests.get",
-        lambda *a, **k: ResponseStub({"data": [direct]}),
+        "src.app.services.providers.tequila.requests.Session.get",
+        lambda self, *a, **k: ResponseStub({"data": [direct]}),
     )
     provider: FlightProvider = TequilaProvider("https://t", "key")
     deal = provider.search_cheapest(QUERY)
@@ -74,13 +74,15 @@ def test_stopover_escalation_and_via_city(monkeypatch) -> None:
     )
     calls: list[int] = []
 
-    def fake_get(url: str, params: dict[str, Any], **kwargs: Any) -> ResponseStub:
+    def fake_get(self, url: str, params: dict[str, Any], **kwargs: Any) -> ResponseStub:
         calls.append(params["max_sector_stopovers"])
         if params["max_sector_stopovers"] == 0:
             return ResponseStub({"data": []})
         return ResponseStub({"data": [with_stop]})
 
-    monkeypatch.setattr("src.app.services.providers.tequila.requests.get", fake_get)
+    monkeypatch.setattr(
+        "src.app.services.providers.tequila.requests.Session.get", fake_get
+    )
     deal = TequilaProvider("https://t", "key").search_cheapest(QUERY)
     assert calls == [0, 1]
     assert deal is not None
@@ -91,8 +93,8 @@ def test_stopover_escalation_and_via_city(monkeypatch) -> None:
 def test_rate_limited_then_empty_returns_none(monkeypatch) -> None:
     monkeypatch.setattr("src.app.services.providers.tequila.time.sleep", lambda s: None)
     monkeypatch.setattr(
-        "src.app.services.providers.tequila.requests.get",
-        lambda *a, **k: ResponseStub({"error": "rate limited"}, status_code=429),
+        "src.app.services.providers.tequila.requests.Session.get",
+        lambda self, *a, **k: ResponseStub({"error": "rate limited"}, status_code=429),
     )
     assert TequilaProvider("https://t", "key").search_cheapest(QUERY) is None
 

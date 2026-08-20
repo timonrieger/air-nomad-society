@@ -1,6 +1,7 @@
 import random
 from datetime import date
 
+from src.app.db import AirNomads
 from src.app.models.subscriber import Subscriber
 from src.app.services.digest import build_digest
 from src.app.models.flights import FlightDeal
@@ -80,22 +81,23 @@ def test_same_city_deals_are_dropped() -> None:
 
 
 def test_subscriber_from_row_parses_country_lists() -> None:
-    class Row:
-        id = 3
-        username = "t"
-        email = "t@example.com"
-        departure_city = "Berlin"
-        departure_iata = "BER"
-        currency = "eur"
-        min_nights = 2
-        max_nights = 5
-        min_days_ahead = 1
-        max_days_ahead = 30
-        travel_countries = "Finland, Spain"
-        excluded_countries = None
-        confirmed_at = None
+    row = AirNomads(
+        id=3,
+        username="t",
+        email="t@example.com",
+        departure_city="Berlin",
+        departure_iata="BER",
+        currency="eur",
+        min_nights=2,
+        max_nights=5,
+        min_days_ahead=1,
+        max_days_ahead=30,
+        travel_countries="Finland, Spain",
+        excluded_countries=None,
+        confirmed_at=None,
+    )
 
-    subscriber = Subscriber.from_row(Row())
+    subscriber = Subscriber.from_row(row)
     assert subscriber.favorites == ["Finland", "Spain"]
     assert subscriber.excluded == []
     assert subscriber.confirmed is False
