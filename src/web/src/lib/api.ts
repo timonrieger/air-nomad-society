@@ -1,6 +1,9 @@
-/** Base URL of the FastAPI backend, baked in at build time. */
-export const API_URL: string =
-	(import.meta.env.VITE_API_URL as string | undefined) ?? 'http://localhost:8000';
+/** Base URL of the FastAPI backend, baked in at build time.
+
+Locally it comes from the repo-root .env (vite's envDir points there);
+on Vercel from the web project's environment variables. */
+export const API_URL: string = import.meta.env.VITE_API_URL as string;
+if (!API_URL) throw new Error('VITE_API_URL was not set at build time');
 
 export type RefData = {
 	cities: { city: string; code: string }[];

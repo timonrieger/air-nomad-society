@@ -31,6 +31,18 @@ mise run db-upgrade       # apply database migrations
 
 The digest sends real emails when SMTP is configured; set `ENVIRONMENT=dev` and `MY_UUID=<your subscriber id>` to restrict it to yourself.
 
+## Environments
+
+One `.env` at the repo root drives everything locally (backend directly, frontend via vite's `envDir`); `.env.example` documents the localhost values. In deployment the same variables live in three places:
+
+| Where | Variables |
+|---|---|
+| Vercel — API project | `DB_URI`, `SECRET_KEY`, `PUBLIC_BASE_URL`, `SMTP_EMAIL`, `SMTP_PWD`, `SMTP_SERVER`, `SMTP_PORT` (confirmation emails are sent by the API) |
+| Vercel — web project (root `src/web`) | `VITE_API_URL` (baked at build time) |
+| GitHub Actions — digest | secrets `DB_URI`, `SECRET_KEY`, `TEQUILA_API_KEY`, `SMTP_*`, `MY_UUID`; repository **variable** `PUBLIC_BASE_URL` |
+
+`PUBLIC_BASE_URL` is the frontend origin — it is both the API's CORS allow-list and the base for all links in emails. `VITE_API_URL` is where the browser reaches the API.
+
 ## Migrations
 
 Alembic owns the `air_nomads` table (`alembic/`). A fresh database is created with `mise run db-upgrade`; a database that predates the migrations is adopted **once** with `uv run alembic stamp 0001`, after which `db-upgrade` applies everything newer. Autogenerate a revision after model changes with `mise run db-revision -- -m "message"`.

@@ -44,3 +44,4 @@ jobs:
           ENVIRONMENT: ${{ inputs.environment || 'prod' }}
           MY_UUID: ${{ secrets.MY_UUID }}
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          PUBLIC_BASE_URL: ${{ vars.PUBLIC_BASE_URL }}

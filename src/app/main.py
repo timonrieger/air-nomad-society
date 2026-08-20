@@ -15,14 +15,11 @@ app = FastAPI(
 app.include_router(subscriptions.router)
 app.include_router(refdata.router)
 
-# The frontend is a prebuilt static site calling this API from the browser.
+# The frontend is a prebuilt static site calling this API from the browser;
+# PUBLIC_BASE_URL is its origin (locally: the vite dev server).
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        get_settings().public_base_url,
-        "http://localhost:5173",  # vite dev
-        "http://localhost:4173",  # vite preview
-    ],
+    allow_origins=[get_settings().public_base_url],
     allow_methods=["*"],
     allow_headers=["*"],
 )

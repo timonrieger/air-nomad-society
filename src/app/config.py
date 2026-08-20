@@ -6,9 +6,10 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     """Application configuration, read from the environment and `.env`.
 
-    Every field has a default so importing (and instantiating) never crashes:
-    the web app doesn't need SMTP, the digest job doesn't need SECRET_KEY.
-    Missing values fail at the point of use instead.
+    Optional features have defaults so importing never crashes: the web app
+    doesn't need SMTP, the digest job doesn't need SECRET_KEY — those fail
+    at the point of use. PUBLIC_BASE_URL is required everywhere (CORS and
+    email links), so a misconfigured deployment fails at startup.
     """
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
@@ -28,9 +29,12 @@ class Settings(BaseSettings):
     environment: str = "production"
     my_uuid: int | None = None
 
-    public_base_url: str = "https://ans.timonrieger.de"
+    # The frontend origin: the API's CORS allow-list and the base for all
+    # links in emails. No default — every environment must set it.
+    public_base_url: str
 
 
 @lru_cache
 def get_settings() -> Settings:
-    return Settings()
+    # pydantic-settings fills required fields from the environment.
+    return Settings()  # ty: ignore[missing-argument]

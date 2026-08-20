@@ -8,6 +8,8 @@ class EnvOnlySettings(Settings):
 
     model_config = SettingsConfigDict(env_file=None, extra="ignore")
 
+    public_base_url: str = "http://localhost:5173"
+
 
 def test_importable_without_any_environment(monkeypatch) -> None:
     """The old constants module crashed on import when SMTP_PORT was unset."""
