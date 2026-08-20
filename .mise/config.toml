@@ -41,6 +41,10 @@ description = "Run pre-commit hooks, ignoring failures"
 run = "uv run pytest"
 description = "Run tests"
 
+[tasks.dev]
+run = "uv run uvicorn src.main:app --reload --port 5000"
+description = "Run the API dev server"
+
 [tasks.db-upgrade]
 run = "uv run alembic upgrade head"
 description = "Apply database migrations"

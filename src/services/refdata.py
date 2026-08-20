@@ -40,3 +40,7 @@ def country_choices() -> list[str]:
 
 def currency_choices() -> list[str]:
     return load().currencies
+
+
+def city_name(iata: str) -> str:
+    return next(city.city for city in load().cities if city.code == iata)
