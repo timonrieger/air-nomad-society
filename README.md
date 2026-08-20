@@ -19,10 +19,14 @@ mise run setup            # install dependencies + pre-commit hooks
 docker compose up -d      # local Postgres + Redis
 cp .env.example .env      # then fill in values
 
-mise run dev              # Flask dev server
 mise run test             # pytest
 mise run lint             # all pre-commit hooks
 mise run digest           # run the digest job once
+mise run db-upgrade       # apply database migrations
 ```
 
 The digest sends real emails when SMTP is configured; set `ENVIRONMENT=dev` and `MY_UUID=<your subscriber id>` to restrict it to yourself.
+
+## Migrations
+
+Alembic owns the `air_nomads` table (`alembic/`). A fresh database is created with `mise run db-upgrade`; a database that predates the migrations is adopted **once** with `uv run alembic stamp 0001`, after which `db-upgrade` applies everything newer. Autogenerate a revision after model changes with `mise run db-revision -- -m "message"`.
