@@ -11,13 +11,9 @@ from src.app.db import AirNomads, Base, get_engine, load_subscribers, purge_unco
 @pytest.fixture
 def sqlite_db(tmp_path, monkeypatch):
     monkeypatch.setenv("DB_URI", f"sqlite:///{tmp_path}/test.db")
-    monkeypatch.setenv("ENVIRONMENT", "production")  # a local .env may say dev
     get_settings.cache_clear()
     get_engine.cache_clear()
     Base.metadata.create_all(get_engine())
-    yield
-    get_settings.cache_clear()
-    get_engine.cache_clear()
 
 
 def member(

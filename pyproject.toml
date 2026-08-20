@@ -17,7 +17,6 @@ dependencies = [
     "pydantic>=2.13.4,<3.0.0",
     "pydantic-settings>=2.15.0,<3.0.0",
     "pyjwt>=2.13.0,<3.0.0",
-    "python-dotenv>=1.0.0,<2.0.0",
     "requests>=2.32.0,<3.0.0",
     "sqlalchemy>=2.0.0,<3.0.0",
 ]
@@ -29,7 +28,6 @@ Repository = "https://github.com/timonrieger/air-nomad-society"
 dev = [
     "httpx>=0.28.1,<0.29.0",
     "pytest>=9.0.0,<10.0.0",
-    "pytest-cov>=7.0.0,<8.0.0",
     "ty>=0.0.55,<0.0.56",
     "uvicorn>=0.52.4,<0.53.0",
 ]
@@ -48,6 +46,3 @@ entrypoint = "src.app.main:app"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
-
-[tool.coverage.run]
-source = ["src/app"]

@@ -3,7 +3,6 @@ from typing import Any
 
 from src.app.models.flights import SearchQuery
 from src.app.services.providers import FlightProvider
-from src.app.services.providers.fake import FakeProvider
 from src.app.services.providers.tequila import TequilaProvider
 
 QUERY = SearchQuery(
@@ -97,8 +96,3 @@ def test_rate_limited_then_empty_returns_none(monkeypatch) -> None:
         lambda self, *a, **k: ResponseStub({"error": "rate limited"}, status_code=429),
     )
     assert TequilaProvider("https://t", "key").search_cheapest(QUERY) is None
-
-
-def test_fake_provider_satisfies_protocol() -> None:
-    provider: FlightProvider = FakeProvider()
-    assert provider.search_cheapest(QUERY) is None

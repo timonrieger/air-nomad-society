@@ -4,9 +4,9 @@ from datetime import date
 from src.app.db import AirNomads
 from src.app.models.subscriber import Subscriber
 from src.app.services.digest import build_digest
-from src.app.models.flights import FlightDeal
-from src.app.services.providers.fake import FakeProvider
 from src.app.services.refdata import Country
+from tests.conftest import deal
+from tests.fakes import FakeProvider
 
 DESTINATIONS = [
     Country(country="Finland", code="FI"),
@@ -32,26 +32,13 @@ SUBSCRIBER = Subscriber(
 )
 
 
-def deal(code: str, arrival_city: str, country: str) -> FlightDeal:
-    return FlightDeal(
-        price=100,
-        currency="EUR",
-        departure_city="Frankfurt",
-        departure_iata="FRA",
-        arrival_city=arrival_city,
-        arrival_iata=code,
-        arrival_country=country,
-        departs_on=date(2026, 9, 3),
-        returns_on=date(2026, 9, 8),
-        link="https://kiwi.com/x",
-    )
-
-
 def test_favorites_and_gems_split_correctly() -> None:
     provider = FakeProvider(
         {
-            "FI": deal("FI", "Helsinki", "Finland"),
-            "ES": deal("ES", "Palma", "Spain"),
+            "FI": deal(arrival_iata="FI"),
+            "ES": deal(
+                arrival_iata="ES", arrival_city="Palma", arrival_country="Spain"
+            ),
         }
     )
     result = build_digest(SUBSCRIBER, provider, DESTINATIONS, rng=random.Random(7))
@@ -75,7 +62,7 @@ def test_search_window_derives_from_subscriber() -> None:
 
 
 def test_same_city_deals_are_dropped() -> None:
-    provider = FakeProvider({"FI": deal("FI", "Frankfurt", "Finland")})
+    provider = FakeProvider({"FI": deal(arrival_iata="FI", arrival_city="Frankfurt")})
     result = build_digest(SUBSCRIBER, provider, DESTINATIONS, rng=random.Random(1))
     assert result.dream_deals == []
 

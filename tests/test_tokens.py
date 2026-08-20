@@ -3,16 +3,9 @@ import pytest
 from src.app.config import get_settings
 from src.app.services.tokens import issue_token, verify_token
 
-TEST_SECRET = "test-secret-key-of-at-least-32-bytes!"  # gitleaks:allow
+pytestmark = pytest.mark.usefixtures("secret")
+
 OTHER_SECRET = "other-secret-key-of-at-least-32-byte"  # gitleaks:allow
-
-
-@pytest.fixture(autouse=True)
-def secret(monkeypatch):
-    monkeypatch.setenv("SECRET_KEY", TEST_SECRET)
-    get_settings.cache_clear()
-    yield
-    get_settings.cache_clear()
 
 
 def test_round_trip() -> None:

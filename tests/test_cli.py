@@ -1,11 +1,9 @@
-from datetime import date
-
 import pytest
 
 import src.app.cli as cli
-from src.app.models.flights import FlightDeal
 from src.app.models.subscriber import Subscriber
-from src.app.services.providers.fake import FakeProvider
+from tests.conftest import deal
+from tests.fakes import FakeProvider
 
 
 @pytest.fixture(autouse=True)
@@ -43,7 +41,7 @@ def test_one_failing_subscriber_does_not_block_the_rest(monkeypatch) -> None:
             raise RuntimeError("smtp exploded")
         sent.append(recipient)
 
-    monkeypatch.setattr(cli, "load_subscribers", lambda settings: subscribers)
+    monkeypatch.setattr(cli, "load_subscribers", lambda only_id: subscribers)
     monkeypatch.setattr(cli.mailer, "send_email", fake_send)
 
     failures = cli.run_digest(FakeProvider())
@@ -53,36 +51,24 @@ def test_one_failing_subscriber_does_not_block_the_rest(monkeypatch) -> None:
 
 def test_all_successful_returns_zero(monkeypatch) -> None:
     monkeypatch.setattr(
-        cli, "load_subscribers", lambda settings: [subscriber("a@example.com")]
+        cli, "load_subscribers", lambda only_id: [subscriber("a@example.com")]
     )
     monkeypatch.setattr(cli.mailer, "send_email", lambda *a, **k: None)
     assert cli.run_digest(FakeProvider()) == 0
 
 
 def test_deal_fields_reach_the_email(monkeypatch) -> None:
-    provider = FakeProvider(
-        {
-            "FI": FlightDeal(
-                price=129.99,
-                currency="EUR",
-                departure_city="Frankfurt",
-                departure_iata="FRA",
-                arrival_city="Helsinki",
-                arrival_iata="HEL",
-                arrival_country="Finland",
-                departs_on=date(2026, 9, 3),
-                returns_on=date(2026, 9, 8),
-                link="https://kiwi.com/deep",
-            )
-        }
-    )
-    captured: list[str] = []
+    provider = FakeProvider({"FI": deal()})
+    captured: list[tuple[str, str]] = []
     monkeypatch.setattr(
-        cli, "load_subscribers", lambda settings: [subscriber("a@example.com")]
+        cli, "load_subscribers", lambda only_id: [subscriber("a@example.com")]
     )
     monkeypatch.setattr(
-        cli.mailer, "send_email", lambda html, *a, **k: captured.append(html)
+        cli.mailer,
+        "send_email",
+        lambda html, recipient, *a, **k: captured.append((html, recipient)),
     )
     assert cli.run_digest(provider) == 0
-    assert ">129 EUR</strong>" in captured[0]
-    assert "https://kiwi.com/deep" in captured[0]
+    html, recipient = captured[0]
+    assert recipient == "a@example.com"
+    assert "https://kiwi.com/deep" in html

@@ -11,8 +11,7 @@
       "groupSlug": "uv",
       "matchPackageNames": [
         "uv",
-        "uv_build",
-        "astral-sh/uv"
+        "astral-sh/uv-pre-commit"
       ]
     }
   ]
