@@ -5,10 +5,14 @@ on Vercel from the web project's environment variables. */
 export const API_URL: string = import.meta.env.VITE_API_URL as string;
 if (!API_URL) throw new Error('VITE_API_URL was not set at build time');
 
+/** Mirrors Cadence in src/app/models/subscriber.py. */
+export type Cadence = 'weekly' | 'biweekly';
+
 export type RefData = {
 	cities: { city: string; code: string }[];
 	currencies: string[];
 	countries: string[];
+	regions: Record<string, string[]>;
 };
 
 export type Subscription = {
@@ -20,6 +24,8 @@ export type Subscription = {
 	max_nights: number;
 	min_days_ahead: number;
 	max_days_ahead: number;
+	cadence: Cadence;
+	gem_count: number;
 	favorites: string[];
 	excluded: string[];
 };
@@ -34,12 +40,14 @@ export type SubscriptionIn = {
 	max_nights: number;
 	min_days_ahead: number;
 	max_days_ahead: number;
+	cadence: Cadence;
+	gem_count: number;
 	favorite_countries: string[];
 	excluded_countries: string[];
 };
 
 /** Form bounds mirroring SubscriptionIn in src/app/routers/subscriptions.py. */
-export const LIMITS = { usernameMin: 3, usernameMax: 20, maxDaysAhead: 365 } as const;
+export const LIMITS = { usernameMin: 3, usernameMax: 20, maxDaysAhead: 365, gemCountMax: 10 } as const;
 
 export type WallDeal = {
 	departure_city: string;

@@ -11,6 +11,7 @@ class RefData(BaseModel):
     cities: list[City] = Field(description="Departure cities with IATA codes")
     currencies: list[str] = Field(description="ISO 4217 currency codes")
     countries: list[str] = Field(description="Destination country names")
+    regions: dict[str, list[str]] = Field(description="Country names per region")
 
 
 @router.get("/refdata")
@@ -20,4 +21,5 @@ def reference_data() -> RefData:
         cities=refdata.load().cities,
         currencies=refdata.currency_choices(),
         countries=refdata.country_choices(),
+        regions=refdata.regions(),
     )

@@ -10,7 +10,7 @@
 
 <TokenAction endpoint="/confirm" pending="Confirming…">
 	{#snippet success()}
-		<p>Your first weekly digest arrives with the next send-out. Happy travels!</p>
+		<p>Your first digest arrives with the next send-out. Happy travels!</p>
 	{/snippet}
 	{#snippet failure()}
 		<p>

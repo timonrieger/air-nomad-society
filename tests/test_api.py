@@ -20,6 +20,8 @@ PAYLOAD = {
     "max_nights": 7,
     "min_days_ahead": 10,
     "max_days_ahead": 40,
+    "cadence": "weekly",
+    "gem_count": 5,
     "favorite_countries": ["Finland"],
     "excluded_countries": [],
 }
@@ -147,3 +149,23 @@ def test_deals_wall_is_public_anonymized_and_cached(sqlite_db, monkeypatch) -> N
         insert_rows([sent(price=50, arrival_iata="TKU", arrival_city="Turku")])
         get_engine().dispose()
         assert len(anonymous_client.get("/deals").json()) == 1
+
+
+def test_subscribe_round_trips_cadence_and_gem_count(client) -> None:
+    payload = {**PAYLOAD, "cadence": "biweekly", "gem_count": 2}
+    body = client.post("/subscribe", json=payload).json()
+    assert body["cadence"] == "biweekly"
+    assert body["gem_count"] == 2
+
+
+def test_refdata_groups_countries_by_region(client) -> None:
+    body = client.get("/refdata").json()
+    assert "Finland" in body["regions"]["Europe"]
+    assert set(body["regions"]) == {
+        "Africa",
+        "Asia",
+        "Europe",
+        "North America",
+        "Oceania",
+        "South America",
+    }

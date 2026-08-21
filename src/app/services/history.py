@@ -8,7 +8,7 @@ from datetime import date, datetime, timedelta, timezone
 from statistics import median
 from uuid import uuid4
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 
 from src.app.db import PriceObservation, SentDeal, insert_rows, session_scope
 from src.app.models.flights import FlightDeal, SearchQuery
@@ -119,6 +119,15 @@ def route_baselines(
         for route, values in prices.items()
         if len(days[route]) >= MIN_OBSERVATION_DAYS
     }
+
+
+def last_sent_at(subscriber_id: int) -> datetime | None:
+    """When this subscriber last received a digest with deals, if ever."""
+    statement = select(func.max(SentDeal.sent_at)).where(
+        SentDeal.subscriber_id == subscriber_id
+    )
+    with session_scope() as session:
+        return session.scalar(statement)
 
 
 def sent_history(subscriber_id: int) -> SentHistory:

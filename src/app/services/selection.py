@@ -7,8 +7,6 @@ from src.app.models.flights import DealSource, FlightDeal
 from src.app.models.history import SentHistory
 from src.app.services.refdata import Country
 
-GEM_COUNT = 5
-
 # Comfort penalties expressed as fare fractions, so the score stays
 # currency-agnostic: a stopover "costs" 25% of the ticket, every outbound
 # hour 2%, and a red-eye departure 15%.
@@ -77,7 +75,7 @@ def select_gems(
     favorites: set[str],
     excluded: set[str],
     recent: set[str],
-    count: int = GEM_COUNT,
+    count: int,
     rng: random.Random | None = None,
 ) -> list[Country]:
     """Pick random "secret gem" countries for a subscriber.

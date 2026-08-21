@@ -1,6 +1,7 @@
 import argparse
 import logging
 import sys
+from datetime import timedelta
 
 from src.app.services import emails, mailer, refdata
 from src.app.config import get_settings
@@ -8,6 +9,7 @@ from src.app.db import load_subscribers, purge_unconfirmed
 from src.app.services.digest import build_digest
 from src.app.services.history import (
     RecordingProvider,
+    last_sent_at,
     record_sent_deals,
     route_baselines,
     sent_history,
@@ -18,6 +20,11 @@ from src.app.services.providers.tequila import TequilaProvider
 from src.app.services.tokens import issue_token
 
 logger = logging.getLogger(__name__)
+
+# Minimum days since the last delivered digest before the weekly run sends
+# to a biweekly subscriber again. Between one run (7 days) and two (14), so
+# they skip exactly every other run — no dispatch rework needed.
+BIWEEKLY_GAP_DAYS = 10
 
 
 def run_digest(provider: FlightProvider) -> int:
@@ -37,6 +44,13 @@ def run_digest(provider: FlightProvider) -> int:
     failures = 0
     for subscriber in subscribers:
         try:
+            if subscriber.cadence == "biweekly":
+                last = last_sent_at(subscriber.id)
+                if last and last > recording.started_at - timedelta(
+                    days=BIWEEKLY_GAP_DAYS
+                ):
+                    logger.info("not due yet for %s, skipping", subscriber.email)
+                    continue
             result = build_digest(
                 subscriber,
                 recording,

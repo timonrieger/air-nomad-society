@@ -21,7 +21,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
 
 from src.app.config import get_settings
-from src.app.models.subscriber import Subscriber
+from src.app.models.subscriber import Cadence, Subscriber
 
 UNCONFIRMED_TTL_DAYS = 7
 
@@ -43,6 +43,8 @@ class AirNomads(Base):
     excluded_countries: Mapped[str | None] = mapped_column(String, nullable=True)
     min_days_ahead: Mapped[int] = mapped_column(Integer, server_default="1")
     max_days_ahead: Mapped[int] = mapped_column(Integer, server_default="182")
+    cadence: Mapped[Cadence] = mapped_column(String, server_default="weekly")
+    gem_count: Mapped[int] = mapped_column(Integer, server_default="5")
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
     confirmed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
 

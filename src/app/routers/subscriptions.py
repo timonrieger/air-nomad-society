@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from src.app.config import get_settings
 from src.app.db import AirNomads, get_session
-from src.app.models.subscriber import Subscriber
+from src.app.models.subscriber import Cadence, Subscriber
 from src.app.services import emails, refdata
 from src.app.services.tokens import Action, verify_token
 
@@ -33,6 +33,10 @@ class SubscriptionIn(BaseModel):
     max_nights: int = Field(ge=1)
     min_days_ahead: int = Field(ge=1, le=365)
     max_days_ahead: int = Field(ge=1, le=365)
+    # Required on the wire: a defaulted field would let a stale client
+    # silently reset a saved preference on update.
+    cadence: Cadence
+    gem_count: int = Field(ge=0, le=10)
     favorite_countries: list[str] = Field(min_length=1)
     excluded_countries: list[str] = []
 
@@ -80,6 +84,8 @@ def _columns(payload: SubscriptionIn) -> dict[str, Any]:
         "max_nights": payload.max_nights,
         "min_days_ahead": payload.min_days_ahead,
         "max_days_ahead": payload.max_days_ahead,
+        "cadence": payload.cadence,
+        "gem_count": payload.gem_count,
         "travel_countries": ",".join(payload.favorite_countries),
         "excluded_countries": ",".join(payload.excluded_countries) or None,
     }

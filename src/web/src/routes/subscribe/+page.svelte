@@ -8,6 +8,7 @@
 		fetchSubscription,
 		saveSubscription,
 		tokenFromUrl,
+		type Cadence,
 		type RefData
 	} from '$lib/api';
 
@@ -25,8 +26,11 @@
 	let maxNights = $state(7);
 	let minDaysAhead = $state(14);
 	let maxDaysAhead = $state(90);
+	let cadence = $state<Cadence>('weekly');
+	let gemCount = $state(5);
 	let favorites = $state<string[]>([]);
 	let excluded = $state<string[]>([]);
+	let excludedRegions = $state<string[]>([]);
 
 	let formEl = $state<HTMLFormElement | undefined>();
 	// Native HTML constraint validation (required/min/max/minlength/type)
@@ -47,6 +51,11 @@
 	);
 	const currencyItems = $derived(toItems(refdata?.currencies ?? []));
 	const countryItems = $derived(toItems(refdata?.countries ?? []));
+	const regionItems = $derived(toItems(Object.keys(refdata?.regions ?? {})));
+	const cadenceItems = [
+		{ value: 'weekly', label: 'Every week' },
+		{ value: 'biweekly', label: 'Every two weeks' }
+	];
 
 	onMount(async () => {
 		token = tokenFromUrl();
@@ -74,8 +83,17 @@
 			maxNights = current.max_nights;
 			minDaysAhead = current.min_days_ahead;
 			maxDaysAhead = current.max_days_ahead;
+			cadence = current.cadence;
+			gemCount = current.gem_count;
 			favorites = current.favorites;
-			excluded = current.excluded;
+			// Fully-excluded regions fold back into the region picker, so a
+			// saved region exclusion can be undone the way it was made.
+			const excludedSet = new Set(current.excluded);
+			excludedRegions = Object.keys(data.regions).filter((region) =>
+				data.regions[region].every((country) => excludedSet.has(country))
+			);
+			const inRegions = new Set(excludedRegions.flatMap((region) => data.regions[region]));
+			excluded = current.excluded.filter((country) => !inRegions.has(country));
 		}
 		await revalidate();
 	});
@@ -94,8 +112,13 @@
 				max_nights: maxNights,
 				min_days_ahead: minDaysAhead,
 				max_days_ahead: maxDaysAhead,
+				cadence,
+				gem_count: gemCount,
 				favorite_countries: favorites,
-				excluded_countries: excluded
+				// Selected regions expand into their countries on submit.
+				excluded_countries: [
+					...new Set([...excluded, ...excludedRegions.flatMap((region) => refdata!.regions[region])])
+				]
 			},
 			token
 		);
@@ -147,7 +170,7 @@
 		<Field
 			required
 			label={updating ? 'Email (cannot be changed)' : 'Email'}
-			hint="Where your weekly deals land."
+			hint="Where your deal emails land."
 		>
 			<input class="input" type="email" required disabled={updating} bind:value={email} />
 		</Field>
@@ -199,7 +222,17 @@
 				bind:value={maxDaysAhead}
 			/>
 		</Field>
-		<Field required label="Favorite destinations" hint="You get deals for these every week.">
+		<Field required label="Cadence" hint="How often your deal email arrives.">
+			<SelectMenu items={cadenceItems} bind:value={cadence} />
+		</Field>
+		<Field
+			required
+			label="Discoveries per email"
+			hint="Surprise destinations mixed in alongside your favorites."
+		>
+			<input class="input" type="number" min="0" max={LIMITS.gemCountMax} required bind:value={gemCount} />
+		</Field>
+		<Field required label="Favorite destinations" hint="You get deals for these in every digest.">
 			<SelectMenu items={countryItems} placeholder="Select countries" multiple bind:value={favorites} />
 		</Field>
 		<Field
@@ -207,6 +240,17 @@
 			hint="Never picked as surprise discoveries. Favorites are unaffected."
 		>
 			<SelectMenu items={countryItems} placeholder="Select countries" multiple bind:value={excluded} />
+		</Field>
+		<Field
+			label="Exclude whole regions"
+			hint="Every country in these regions joins the exclusions when you save."
+		>
+			<SelectMenu
+				items={regionItems}
+				placeholder="Select regions"
+				multiple
+				bind:value={excludedRegions}
+			/>
 		</Field>
 	</div>
 	<button class="btn" type="submit" disabled={submitting || !canSubmit}>
