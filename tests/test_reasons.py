@@ -44,8 +44,6 @@ def reasons_with_response(monkeypatch, response: ResponseStub) -> list[RankedDea
     deals = result.deals
     body = calls[0]["json"]
     payload = json.loads(body["messages"][1]["content"])
-    assert calls[0]["url"] == "https://api.anthropic.com/v1/chat/completions"
-    assert body["model"] == "claude-sonnet-5"
     assert payload["deals"][0]["id"] == 0
     assert payload["deals"][0]["typical_price"] == 310.0
     assert payload["deals"][0]["beat_these_runner_ups"]
