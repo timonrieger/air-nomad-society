@@ -19,6 +19,7 @@ from src.app.services.selection import deal_score
 BASELINE_WINDOW_WEEKS = 26
 MIN_OBSERVATION_DAYS = 4
 FRESHNESS_WINDOW_WEEKS = 8
+WALL_WINDOW_WEEKS = 4
 
 
 def _utcnow() -> datetime:
@@ -37,7 +38,9 @@ OBSERVED_FIELDS = {
 }
 
 SENT_FIELDS = {
+    "departure_city",
     "departure_iata",
+    "arrival_city",
     "arrival_iata",
     "arrival_country",
     "price",
@@ -134,6 +137,47 @@ def sent_history(subscriber_id: int) -> SentHistory:
             history.recent_countries.add(country)
             history.recent_cities.add(city)
     return history
+
+
+def wall_deals(count: int) -> list[tuple[SentDeal, int | None]]:
+    """Recent sent deals for the public wall, with their savings vs typical.
+
+    Aggregated across subscribers: identical routes at the same price
+    collapse to the newest send, and nothing subscriber-specific leaves
+    this function's rows unread. Best savings first, then newest; savings
+    are None while a route's baseline is still thin."""
+    since = _utcnow() - timedelta(weeks=WALL_WINDOW_WEEKS)
+    statement = (
+        select(SentDeal)
+        .where(SentDeal.sent_at >= since)
+        .order_by(SentDeal.sent_at.asc())
+    )
+    with session_scope() as session:
+        rows = list(session.scalars(statement))
+    unique = {
+        (row.departure_iata, row.arrival_iata, row.price, row.currency): row
+        for row in rows  # ascending sent_at: the newest duplicate wins
+    }
+    scored: list[tuple[SentDeal, int | None]] = []
+    for currency in {row.currency for row in unique.values()}:
+        group = [row for row in unique.values() if row.currency == currency]
+        typical = route_baselines(
+            {(row.departure_iata, row.arrival_iata) for row in group},
+            currency,
+            before=_utcnow(),
+        )
+        for row in group:
+            baseline = typical.get((row.departure_iata, row.arrival_iata))
+            savings = round((1 - row.price / baseline) * 100) if baseline else None
+            scored.append((row, savings if savings and savings >= 1 else None))
+    scored.sort(
+        key=lambda pair: (
+            pair[1] is None,
+            -(pair[1] or 0),
+            -pair[0].sent_at.timestamp(),
+        )
+    )
+    return scored[:count]
 
 
 def record_sent_deals(subscriber_id: int, deals: list[RankedDeal]) -> None:

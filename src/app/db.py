@@ -83,7 +83,9 @@ class SentDeal(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     subscriber_id: Mapped[int] = mapped_column(Integer)
+    departure_city: Mapped[str | None] = mapped_column(String, nullable=True)
     departure_iata: Mapped[str] = mapped_column(String)
+    arrival_city: Mapped[str | None] = mapped_column(String, nullable=True)
     arrival_iata: Mapped[str] = mapped_column(String)
     arrival_country: Mapped[str] = mapped_column(String)
     price: Mapped[float] = mapped_column(Float)

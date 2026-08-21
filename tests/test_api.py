@@ -121,3 +121,20 @@ def test_unsubscribe_deletes(client) -> None:
     token = issue_token(subscriber_id, "unsubscribe")
     assert client.get(f"/unsubscribe?token={token}").status_code == 200
     assert client.get(f"/unsubscribe?token={token}").status_code == 404
+
+
+def test_deals_wall_is_public_and_anonymized(sqlite_db) -> None:
+    from src.app.db import get_engine, insert_rows
+    from tests.conftest import sent
+
+    insert_rows([sent(price=129.99)])
+    # A fresh connection per thread: sqlite refuses cross-thread reuse.
+    get_engine().dispose()
+    with TestClient(app) as anonymous_client:
+        body = anonymous_client.get("/deals").json()
+    assert [
+        (deal["departure_city"], deal["arrival_city"], deal["arrival_country"])
+        for deal in body
+    ] == [("Frankfurt", "Helsinki", "Finland")]
+    assert "subscriber_id" not in body[0]
+    assert body[0]["savings_percent"] is None  # no baseline seeded
