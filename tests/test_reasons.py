@@ -45,12 +45,15 @@ def reasons_with_response(monkeypatch, response: ResponseStub) -> list[RankedDea
 
 
 def test_no_key_skips_the_call(monkeypatch) -> None:
-    def explode(*a, **k):
-        raise AssertionError("must not call the API without a key")
-
-    monkeypatch.setattr(reasons_module.requests, "post", explode)
+    # Record calls instead of raising: an exception would be swallowed by
+    # deal_reasons' by-design catch-all and the test could never fail.
+    calls: list[str] = []
+    monkeypatch.setattr(
+        reasons_module.requests, "post", lambda url, **k: calls.append(url)
+    )
     deals = picks()
     deal_reasons(SUBSCRIBER, deals, {}, get_settings())
+    assert calls == []
     assert deals[0].reason is None
 
 

@@ -17,7 +17,13 @@ from src.app.models.subscriber import Subscriber
 logger = logging.getLogger(__name__)
 
 TIMEOUT_SECONDS = 120
-MAX_OUTPUT_TOKENS = 1000
+# Per-deal output allowance plus headroom, so a favorites-heavy digest's
+# reasons JSON never gets cut off mid-object.
+TOKENS_PER_REASON = 60
+TOKEN_HEADROOM = 200
+# The prompt asks for ≤120 chars; reasons wildly past that are dropped, not
+# rendered as a paragraph on the card.
+REASON_MAX_CHARS = 200
 
 SYSTEM_PROMPT = """\
 You write one short reason per flight deal for a personalized weekly deal
@@ -78,7 +84,7 @@ def deal_reasons(
             headers={"Authorization": f"Bearer {settings.ai_api_key}"},
             json={
                 "model": settings.ai_model,
-                "max_tokens": MAX_OUTPUT_TOKENS,
+                "max_tokens": TOKEN_HEADROOM + TOKENS_PER_REASON * len(deals),
                 "messages": [
                     {"role": "system", "content": SYSTEM_PROMPT},
                     {
@@ -94,12 +100,13 @@ def deal_reasons(
             timeout=TIMEOUT_SECONDS,
         )
         response.raise_for_status()
-        content = response.json()["choices"][0]["message"]["content"]
-        content = content.strip().removeprefix("```json").removesuffix("```")
+        content = response.json()["choices"][0]["message"]["content"].strip()
+        content = content.removeprefix("```json").removeprefix("```")
+        content = content.removesuffix("```")
         reasons = json.loads(content)
         for index, ranked in enumerate(deals):
             reason = reasons.get(str(index))
-            if isinstance(reason, str):
+            if isinstance(reason, str) and 0 < len(reason) <= REASON_MAX_CHARS:
                 ranked.reason = reason
     except Exception:
         # The reasoning line is a garnish: any failure just means no line.
