@@ -150,8 +150,13 @@ def sent_history(subscriber_id: int) -> SentHistory:
 
 
 def record_sent_deals(subscriber_id: int, digest: DigestResult) -> None:
-    insert_rows(
-        [
+    rows = []
+    for ranked in digest.deals:
+        # The savings and typical price the email quoted, frozen at send
+        # time as quoted — round(baseline) is the integer the anchor line
+        # prints — so the public wall shows exactly these numbers.
+        baseline = digest.baseline_for(ranked)
+        rows.append(
             SentDeal(
                 subscriber_id=subscriber_id,
                 source=ranked.source,
@@ -160,16 +165,12 @@ def record_sent_deals(subscriber_id: int, digest: DigestResult) -> None:
                 # deterministic on the deal, so the two can never drift.
                 quality_score=deal_score(ranked.deal),
                 origin_iata=ranked.origin_iata,
-                # The savings the email quoted, frozen at send time — the
-                # public wall shows exactly this number.
                 savings_percent=(
-                    savings_percent(ranked.deal.price, baseline)
-                    if (baseline := digest.baseline_for(ranked))
-                    else None
+                    savings_percent(ranked.deal.price, baseline) if baseline else None
                 ),
+                usual_price=round(baseline) if baseline else None,
                 reason=ranked.reason,
                 **ranked.deal.model_dump(include=SENT_FIELDS),
             )
-            for ranked in digest.deals
-        ]
-    )
+        )
+    insert_rows(rows)

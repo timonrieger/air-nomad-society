@@ -73,6 +73,7 @@ def sent(
     source: str = "favorite",
     score: float = 160.0,
     savings_percent: int | None = None,
+    usual_price: int | None = None,
     sent_at: datetime | None = None,
     **deal_overrides,
 ) -> SentDeal:
@@ -87,6 +88,7 @@ def sent(
         quality_score=deal_score(flight),
         origin_iata=flight.departure_iata,
         savings_percent=savings_percent,
+        usual_price=usual_price,
         sent_at=sent_at,
         **flight.model_dump(include=SENT_FIELDS),
     )

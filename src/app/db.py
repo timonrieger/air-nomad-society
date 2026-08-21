@@ -103,8 +103,10 @@ class SentDeal(Base):
     # server_default only satisfies SQLite's ADD COLUMN NOT NULL rule; the
     # digest always writes the real value.
     quality_score: Mapped[float] = mapped_column(Float, server_default="0")
-    # The savings the digest email quoted; the wall shows the same number.
+    # The savings and typical price the digest email quoted; the wall shows
+    # the same numbers.
     savings_percent: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    usual_price: Mapped[int | None] = mapped_column(Integer, nullable=True)
     reason: Mapped[str | None] = mapped_column(String, nullable=True)
     sent_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 

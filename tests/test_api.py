@@ -1,4 +1,5 @@
 from collections.abc import Iterator
+from datetime import datetime, timedelta
 
 import pytest
 from fastapi.testclient import TestClient
@@ -6,10 +7,11 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 from sqlalchemy.pool import StaticPool
 
-from src.app.db import AirNomads, Base, get_session
+from src.app.db import AirNomads, Base, get_engine, get_session, insert_rows
 from src.app.main import app
 from src.app.services import mailer
 from src.app.services.tokens import issue_token
+from tests.conftest import sent
 
 PAYLOAD = {
     "username": "Timon",
@@ -123,6 +125,39 @@ def test_unsubscribe_deletes(client) -> None:
     token = issue_token(subscriber_id, "unsubscribe")
     assert client.get(f"/unsubscribe?token={token}").status_code == 200
     assert client.get(f"/unsubscribe?token={token}").status_code == 404
+
+
+def test_deals_wall_is_public_display_ready_and_cached(sqlite_db) -> None:
+    insert_rows(
+        [
+            sent(price=129.99, savings_percent=58, usual_price=310),
+            # The same deal to a second subscriber collapses into one card.
+            sent(subscriber_id=2, price=129.99, savings_percent=58, usual_price=310),
+            # No baseline at send time: a card without savings or usual price.
+            sent(price=80.5, arrival_iata="TKU", arrival_city="Turku"),
+            # Outside the four-week window: never shown.
+            sent(
+                price=50,
+                arrival_iata="OLD",
+                sent_at=datetime.now() - timedelta(weeks=5),
+            ),
+        ]
+    )
+    # A fresh connection per thread: sqlite refuses cross-thread reuse.
+    get_engine().dispose()
+    with TestClient(app) as anonymous_client:
+        response = anonymous_client.get("/deals")
+        body = response.json()
+        # Best savings first; the prices are the integers the email printed.
+        assert [(d["destination"], d["price"], d["usual_price"]) for d in body] == [
+            ("Helsinki", 129, 310),
+            ("Turku", 80, None),
+        ]
+        assert body[0]["badge"] == "🔥 exceptional price"
+        assert body[0]["departure_city"] == "Frankfurt"
+        assert "subscriber_id" not in body[0]
+        assert body[0]["image_url"].startswith("https://images.unsplash.com/")
+        assert "max-age" in response.headers["Cache-Control"]
 
 
 def test_subscribe_round_trips_cadence_and_gem_count(client) -> None:

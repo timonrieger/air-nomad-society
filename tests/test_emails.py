@@ -4,7 +4,8 @@ import pytest
 
 from src.app.models.flights import DealSource, FlightDeal, RankedDeal
 from src.app.services.digest import DigestResult
-from src.app.services.emails import FALLBACK_IMAGE, render_digest
+from src.app.services.emails import render_digest
+from src.app.services.refdata import FALLBACK_IMAGE
 from tests.conftest import deal
 
 IMAGES = {"Finland": ["https://img.example/fi.jpg"]}

@@ -11,6 +11,7 @@ from src.app.config import Settings
 from src.app.models.flights import RankedDeal
 from src.app.services import mailer
 from src.app.services.digest import DigestResult
+from src.app.services.refdata import country_images
 from src.app.services.tokens import issue_token
 
 TEMPLATE_DIR = Path(__file__).resolve().parent.parent / "templates"
@@ -24,11 +25,6 @@ CONFIRM_SUBJECT = "Confirm your subscription"
 TOKENS: dict[str, str] = json.loads(
     (TEMPLATE_DIR.parent / "brand.json").read_text(encoding="utf-8")
 )
-FALLBACK_IMAGE = (
-    "https://images.unsplash.com/photo-1500835556837-99ac94a94552?w=800&auto=format"
-    "&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8VFJBVkVMfGVufDB8fDB8fHww"
-)
-
 # Rendered values are trusted internal data (usernames, provider results);
 # autoescape stays off. Revisit when usernames become untrusted input.
 _env = Environment(loader=FileSystemLoader(TEMPLATE_DIR), autoescape=False)  # noqa: S701 # nosec B701
@@ -76,7 +72,6 @@ def _present(
     rng: random.Random,
 ) -> dict[str, Any]:
     deal = ranked.deal
-    country_images = images.get(deal.arrival_country)
     anchor, tier = (
         _anchor(deal.price, baseline, deal.currency) if baseline else (None, None)
     )
@@ -94,7 +89,7 @@ def _present(
         "reason": ranked.reason,
         "dates": deal.trip_dates,
         "facts": deal.facts,
-        "image_url": rng.choice(country_images) if country_images else FALLBACK_IMAGE,
+        "image_url": rng.choice(country_images(images, deal.arrival_country)),
     }
 
 
