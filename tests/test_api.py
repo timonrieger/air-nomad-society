@@ -20,6 +20,8 @@ PAYLOAD = {
     "max_nights": 7,
     "min_days_ahead": 10,
     "max_days_ahead": 40,
+    "cadence": "weekly",
+    "gem_count": 5,
     "favorite_countries": ["Finland"],
     "excluded_countries": [],
 }

@@ -14,7 +14,7 @@
 		},
 		{
 			title: 'Know a Good Price on Sight',
-			text: 'Every deal shows what the route typically costs and outstanding deals are badged. One weekly email and no more comparison tabs for your flights.',
+			text: 'Every deal shows what the route typically costs and outstanding deals are badged. One short email and no more comparison tabs for your flights.',
 			img: 'https://images.unsplash.com/photo-1609948679766-a6d38be3bae4?w=800&auto=format&fit=crop&q=60',
 			alt: 'Beach'
 		}
@@ -31,7 +31,7 @@
 		},
 		{
 			q: 'How often will I receive flight deal emails?',
-			a: "Flight deal emails are sent once per week: the best deals found across your favorite countries and a few surprise discoveries, ranked by quality."
+			a: "Flight deal emails are sent weekly — or every two weeks, if you prefer: the best deals found across your favorite countries and a few surprise discoveries, ranked by quality."
 		},
 		{
 			q: 'What does "Favorite Destinations" mean?',
@@ -68,14 +68,14 @@
 	<title>Personalized Flight Deals via Email | Air Nomad Society</title>
 	<meta
 		name="description"
-		content="Join to receive weekly emails with flight deals. One email per week, focused on delivering relevant flight information directly to your inbox."
+		content="Join to receive emails with flight deals, weekly or biweekly, focused on delivering relevant flight information directly to your inbox."
 	/>
 </svelte:head>
 
 <section class="py-20 text-center">
 	<h1 class="mb-3 text-5xl font-bold">Air Nomad Society</h1>
 	<p class="mx-auto mb-8 max-w-xl text-lg text-ink-muted">
-		Get the best flight deals directly in your inbox, fully automated, just one email per week.
+		Get the best flight deals directly in your inbox, fully automated, at the pace you choose.
 	</p>
 	<a class="btn" href="/subscribe">Subscribe For Free</a>
 </section>

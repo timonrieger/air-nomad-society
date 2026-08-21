@@ -27,7 +27,7 @@ TOKEN_HEADROOM = 200
 REASON_MAX_CHARS = 200
 
 SYSTEM_PROMPT = """\
-You write one short reason per flight deal for a personalized weekly deal
+You write one short reason per flight deal for a personalized deal
 digest. Each reason tells this subscriber why their deal was picked: what it
 beat (runner-ups on the same route search), how it compares to the route's
 typical price, comfort (direct, duration, departure time), or that it's one

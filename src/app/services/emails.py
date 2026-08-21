@@ -15,7 +15,7 @@ from src.app.services.tokens import issue_token
 
 TEMPLATE_DIR = Path(__file__).resolve().parent.parent / "templates"
 
-DIGEST_SUBJECT = "Weekly Flight Deals!"
+DIGEST_SUBJECT = "Fresh Flight Deals!"
 CONFIRM_SUBJECT = "Confirm your subscription"
 
 # The shared brand definition (one accent, one gray scale, one font stack);

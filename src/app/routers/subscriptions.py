@@ -33,8 +33,10 @@ class SubscriptionIn(BaseModel):
     max_nights: int = Field(ge=1)
     min_days_ahead: int = Field(ge=1, le=365)
     max_days_ahead: int = Field(ge=1, le=365)
-    cadence: Cadence = "weekly"
-    gem_count: int = Field(default=5, ge=0, le=10)
+    # Required on the wire: a defaulted field would let a stale client
+    # silently reset a saved preference on update.
+    cadence: Cadence
+    gem_count: int = Field(ge=0, le=10)
     favorite_countries: list[str] = Field(min_length=1)
     excluded_countries: list[str] = []
 

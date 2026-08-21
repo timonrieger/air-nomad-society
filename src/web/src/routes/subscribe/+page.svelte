@@ -8,6 +8,7 @@
 		fetchSubscription,
 		saveSubscription,
 		tokenFromUrl,
+		type Cadence,
 		type RefData
 	} from '$lib/api';
 
@@ -25,7 +26,7 @@
 	let maxNights = $state(7);
 	let minDaysAhead = $state(14);
 	let maxDaysAhead = $state(90);
-	let cadence = $state('weekly');
+	let cadence = $state<Cadence>('weekly');
 	let gemCount = $state(5);
 	let favorites = $state<string[]>([]);
 	let excluded = $state<string[]>([]);
@@ -85,7 +86,14 @@
 			cadence = current.cadence;
 			gemCount = current.gem_count;
 			favorites = current.favorites;
-			excluded = current.excluded;
+			// Fully-excluded regions fold back into the region picker, so a
+			// saved region exclusion can be undone the way it was made.
+			const excludedSet = new Set(current.excluded);
+			excludedRegions = Object.keys(data.regions).filter((region) =>
+				data.regions[region].every((country) => excludedSet.has(country))
+			);
+			const inRegions = new Set(excludedRegions.flatMap((region) => data.regions[region]));
+			excluded = current.excluded.filter((country) => !inRegions.has(country));
 		}
 		await revalidate();
 	});
@@ -162,7 +170,7 @@
 		<Field
 			required
 			label={updating ? 'Email (cannot be changed)' : 'Email'}
-			hint="Where your weekly deals land."
+			hint="Where your deal emails land."
 		>
 			<input class="input" type="email" required disabled={updating} bind:value={email} />
 		</Field>
@@ -224,7 +232,7 @@
 		>
 			<input class="input" type="number" min="0" max={LIMITS.gemCountMax} required bind:value={gemCount} />
 		</Field>
-		<Field required label="Favorite destinations" hint="You get deals for these every week.">
+		<Field required label="Favorite destinations" hint="You get deals for these in every digest.">
 			<SelectMenu items={countryItems} placeholder="Select countries" multiple bind:value={favorites} />
 		</Field>
 		<Field
