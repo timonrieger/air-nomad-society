@@ -48,7 +48,7 @@ def run_digest(provider: FlightProvider) -> int:
                 subscriber.currency,
                 before=recording.started_at,
             )
-            reasons = deal_reasons(subscriber, result, baselines, settings)
+            deal_reasons(subscriber, result.deals, baselines, settings)
             html = emails.render_digest(
                 username=subscriber.username,
                 update_token=issue_token(subscriber.id, "update"),
@@ -56,11 +56,10 @@ def run_digest(provider: FlightProvider) -> int:
                 digest=result,
                 images=data.images,
                 baselines=baselines,
-                reasons=reasons,
                 base_url=settings.public_base_url,
             )
             mailer.send_email(html, subscriber.email, emails.DIGEST_SUBJECT, settings)
-            record_sent_deals(subscriber.id, result.deals, reasons)
+            record_sent_deals(subscriber.id, result.deals)
             logger.info("sent digest to %s", subscriber.email)
         except Exception:
             failures += 1

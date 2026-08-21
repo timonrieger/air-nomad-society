@@ -11,10 +11,8 @@ import logging
 import requests
 
 from src.app.config import Settings
-from src.app.models.flights import RankedDeal
+from src.app.models.flights import FlightDeal, RankedDeal
 from src.app.models.subscriber import Subscriber
-from src.app.services.digest import DigestResult
-from src.app.services.emails import deal_facts
 
 logger = logging.getLogger(__name__)
 
@@ -33,18 +31,17 @@ not present in the data.
 Reply with ONLY a JSON object mapping each deal's "id" to its reason string."""
 
 
-def _card(ranked: RankedDeal) -> dict[str, object]:
-    deal = ranked.deal
+def _card(deal: FlightDeal) -> dict[str, object]:
     return {
         "route": f"{deal.departure_city}–{deal.arrival_city}, {deal.arrival_country}",
         "price": f"{deal.price:.0f} {deal.currency}",
-        "facts": deal_facts(deal),
-        "dates": f"{deal.departs_at:%d.%m}–{deal.returns_at:%d.%m}",
+        "facts": deal.facts,
+        "dates": deal.trip_dates,
     }
 
 
 def _payload(
-    subscriber: Subscriber, digest: DigestResult, baselines: dict[str, float]
+    subscriber: Subscriber, deals: list[RankedDeal], baselines: dict[str, float]
 ) -> dict[str, object]:
     return {
         "subscriber": {
@@ -53,29 +50,28 @@ def _payload(
         },
         "deals": [
             {
-                "id": ranked.deal.arrival_iata,
+                "id": index,
                 "picked_as": ranked.source,
-                **_card(ranked),
+                **_card(ranked.deal),
                 "typical_price": baselines.get(ranked.deal.arrival_iata),
                 "beat_these_runner_ups": [
-                    _card(runner_up)
-                    for runner_up in digest.runner_ups.get(ranked.deal.arrival_iata, [])
+                    _card(runner_up.deal) for runner_up in ranked.runner_ups
                 ],
             }
-            for ranked in digest.deals
+            for index, ranked in enumerate(deals)
         ],
     }
 
 
 def deal_reasons(
     subscriber: Subscriber,
-    digest: DigestResult,
+    deals: list[RankedDeal],
     baselines: dict[str, float],
     settings: Settings,
-) -> dict[str, str]:
-    """Reason per deal, keyed by arrival_iata; empty when unconfigured or failed."""
+) -> None:
+    """Attach one reason per pick in place; a no-op when unconfigured or failed."""
     if not settings.ai_api_key:
-        return {}
+        return
     try:
         response = requests.post(
             f"{settings.ai_base_url.rstrip('/')}/chat/completions",
@@ -88,7 +84,9 @@ def deal_reasons(
                     {
                         "role": "user",
                         "content": json.dumps(
-                            _payload(subscriber, digest, baselines)
+                            _payload(subscriber, deals, baselines),
+                            ensure_ascii=False,
+                            separators=(",", ":"),
                         ),
                     },
                 ],
@@ -99,12 +97,10 @@ def deal_reasons(
         content = response.json()["choices"][0]["message"]["content"]
         content = content.strip().removeprefix("```json").removesuffix("```")
         reasons = json.loads(content)
-        return {
-            arrival_iata: reason
-            for arrival_iata, reason in reasons.items()
-            if isinstance(reason, str)
-        }
+        for index, ranked in enumerate(deals):
+            reason = reasons.get(str(index))
+            if isinstance(reason, str):
+                ranked.reason = reason
     except Exception:
         # The reasoning line is a garnish: any failure just means no line.
         logger.warning("deal reasons failed for %s", subscriber.email, exc_info=True)
-        return {}

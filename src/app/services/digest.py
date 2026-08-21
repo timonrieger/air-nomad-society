@@ -28,9 +28,6 @@ class DigestResult(BaseModel):
     """Deals across all searched countries, best score first."""
 
     deals: list[RankedDeal]
-    # The beaten candidates per winning deal, keyed by the winner's
-    # arrival_iata, best score first.
-    runner_ups: dict[str, list[RankedDeal]]
     window_start: date
     window_end: date
 
@@ -46,8 +43,8 @@ def build_digest(
     window_start = start + timedelta(days=subscriber.min_days_ahead)
     window_end = start + timedelta(days=subscriber.max_days_ahead)
 
-    def top_picks(country: Country, source: DealSource) -> list[RankedDeal]:
-        """The country's best-scoring candidates: winner first, then runner-ups."""
+    def best_pick(country: Country, source: DealSource) -> RankedDeal | None:
+        """The country's best-scoring candidate, carrying its beaten runner-ups."""
         query = SearchQuery(
             origin_iata=subscriber.departure_iata,
             destination_iata=country.code,
@@ -71,26 +68,19 @@ def build_digest(
             ),
             key=lambda pick: pick.score,
         )
-        return ranked[: 1 + RUNNER_UP_COUNT]
+        if not ranked:
+            return None
+        winner = ranked[0]
+        winner.runner_ups = ranked[1 : 1 + RUNNER_UP_COUNT]
+        return winner
 
     favorites = set(subscriber.favorites)
     gems = select_gems(destinations, favorites, set(subscriber.excluded), rng=rng)
-    searches: list[tuple[Country, DealSource]] = [
-        (country, "favorite")
+    deals = [
+        pick
         for country in favorite_destinations(destinations, favorites)
-    ] + [(country, "discovery") for country in gems]
-    deals: list[RankedDeal] = []
-    runner_ups: dict[str, list[RankedDeal]] = {}
-    for country, source in searches:
-        picks = top_picks(country, source)
-        if picks:
-            deals.append(picks[0])
-            runner_ups[picks[0].deal.arrival_iata] = picks[1:]
+        if (pick := best_pick(country, "favorite"))
+    ] + [pick for country in gems if (pick := best_pick(country, "discovery"))]
     deals.sort(key=lambda pick: pick.score)
     logger.info("digest for %s: %d deals", subscriber.email, len(deals))
-    return DigestResult(
-        deals=deals,
-        runner_ups=runner_ups,
-        window_start=window_start,
-        window_end=window_end,
-    )
+    return DigestResult(deals=deals, window_start=window_start, window_end=window_end)
