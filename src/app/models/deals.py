@@ -1,3 +1,5 @@
+from datetime import date
+
 from pydantic import BaseModel, Field
 
 
@@ -16,4 +18,5 @@ class WallDeal(BaseModel):
         description="The route's typical price as the email quoted it"
     )
     badge: str | None = Field(description="Savings-tier badge the deal earned")
+    found_on: date = Field(description="Date the deal went out in a digest")
     image_url: str = Field(description="Destination image for the card")

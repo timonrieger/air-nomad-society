@@ -10,10 +10,15 @@
 		deals = await fetchDeals().catch(() => []);
 	});
 
+	const foundOn = (deal: WallDeal) => {
+		const [, month, day] = deal.found_on.split('-');
+		return `${day}.${month}.`;
+	};
+
 	const features = [
 		{
 			title: 'Personalized Deals, With a Reason',
-			text: 'Deals are picked for your favorite countries, travel dates and departure cities. Each one carries a short note on why it beat the alternatives.',
+			text: 'Deals are picked for your favorite countries, trip length and departure cities. Each one carries a short note on why it beat the alternatives.',
 			img: 'https://images.unsplash.com/photo-1567927663055-efed28734f1f?w=800&auto=format&fit=crop&q=60',
 			alt: 'Mountain with ocean view'
 		},
@@ -34,7 +39,15 @@
 	const faq = [
 		{
 			q: 'What is the pricing for Air Nomad Society?',
-			a: 'Air Nomad Society is completely free to join and use.'
+			a: 'Air Nomad Society is completely free. If you book through a deal link, our booking partner may pay us a small affiliate commission at no extra cost to you — that is the only way the project earns anything. Your data is never sold or used for anything but your digest.'
+		},
+		{
+			q: 'Where can I fly from?',
+			a: 'Deals depart from the cities you pick — more than 450 departure cities worldwide are supported. Start typing yours in the subscribe form to check.'
+		},
+		{
+			q: 'How do I book a deal?',
+			a: 'Every deal in the email links straight to the fare on our booking partner’s site, where you book directly — we never sell tickets ourselves. Prices are round-trip per person as found.'
 		},
 		{
 			q: 'What is the difference to Skyscanner and Co.?',
@@ -84,7 +97,17 @@
 	<p class="mx-auto mb-8 max-w-xl text-lg text-ink-muted">
 		Get the best flight deals directly in your inbox, fully automated, at the pace you choose.
 	</p>
-	<a class="btn" href="/subscribe">Subscribe For Free</a>
+	<div class="flex items-center justify-center gap-6">
+		<a class="btn" href="/subscribe">Subscribe For Free</a>
+		<a
+			class="text-ink-muted underline underline-offset-4 hover:text-ink"
+			href="/sample-digest.html"
+			target="_blank">See a sample email</a
+		>
+	</div>
+	<p class="mt-5 text-sm text-ink-muted">
+		Free · 450+ departure cities worldwide · unsubscribe anytime
+	</p>
 </section>
 
 {#if deals.length > 0}
@@ -92,7 +115,7 @@
 		<h2 class="mb-1 text-2xl font-semibold">Get flights like these</h2>
 		<p class="mb-4 text-ink-muted">
 			Recently sent to our subscribers — every digest is picked for its subscriber's own cities and
-			favorite countries.
+			favorite countries. Prices are round-trip per person as found; good fares move fast.
 		</p>
 		<div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
 			{#each deals as deal (deal)}
@@ -123,6 +146,7 @@
 								</span>
 							{/if}
 						</p>
+						<p class="mt-1 text-xs text-ink-muted">found {foundOn(deal)}</p>
 					</div>
 				</article>
 			{/each}
