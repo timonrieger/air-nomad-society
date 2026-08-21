@@ -2,7 +2,6 @@
 
 import json
 import random
-from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -57,15 +56,6 @@ def _anchor(price: float, baseline: float, currency: str) -> tuple[str, str | No
     return line, badge
 
 
-def _window(start: date, end: date) -> str:
-    """The searched departure window, e.g. "Sep 1–30" or "Sep 26 – Oct 12"."""
-    if (start.year, start.month) == (end.year, end.month):
-        return f"{start:%b} {start.day}–{end.day}"
-    if start.year == end.year:
-        return f"{start:%b} {start.day} – {end:%b} {end.day}"
-    return f"{start:%b} {start.day}, {start.year} – {end:%b} {end.day}, {end.year}"
-
-
 def _present(
     ranked: RankedDeal,
     images: dict[str, list[str]],
@@ -109,9 +99,6 @@ def render_digest(
     picker = rng or random.Random()  # nosec B311 # picks photos, not secrets
     return _env.get_template("digest.html.j2").render(
         t=TOKENS,
-        # Shown once in the intro; "departing", because it bounds outbound
-        # departures — a trip's return may legitimately fall after it.
-        window=_window(digest.window_start, digest.window_end),
         username=username,
         site_url=base_url,
         update_url=f"{base_url}/subscribe?token={update_token}",

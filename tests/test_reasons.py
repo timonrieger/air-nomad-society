@@ -1,5 +1,4 @@
 import json
-from datetime import date
 
 import src.app.services.reasons as reasons_module
 from src.app.config import Settings, get_settings
@@ -15,12 +14,7 @@ from tests.test_emails import ranked
 def digest() -> DigestResult:
     winner = ranked(deal())
     winner.runner_ups = [ranked(deal(price=115, via_cities=["Riga"]))]
-    return DigestResult(
-        deals=[winner],
-        baselines={("FRA", "HEL"): 310.0},
-        window_start=date(2026, 9, 1),
-        window_end=date(2026, 9, 30),
-    )
+    return DigestResult(deals=[winner], baselines={("FRA", "HEL"): 310.0})
 
 
 def configured() -> Settings:
