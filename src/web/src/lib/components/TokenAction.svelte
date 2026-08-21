@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount, untrack } from 'svelte';
 	import type { Snippet } from 'svelte';
+	import Loader from '$lib/components/Loader.svelte';
 	import { fetchUnsubscribeTarget, tokenAction, tokenFromUrl } from '$lib/api';
 
 	let {
@@ -59,11 +60,11 @@
 </script>
 
 {#if status === 'looking-up'}
-	<p class="mt-4 text-ink-muted">Checking your link…</p>
+	<Loader label="Checking your link…" />
 {:else if status === 'idle'}
 	{@render confirm!(email, run)}
 {:else if status === 'pending'}
-	<p class="mt-4 text-ink-muted">{pending}</p>
+	<Loader label={pending} />
 {:else}
 	{#each messages as message (message)}
 		<div class="banner {status === 'ok' ? 'banner-success' : 'banner-error'}">{message}</div>

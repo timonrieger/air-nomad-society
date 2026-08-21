@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
+	import { browser } from '$app/environment';
 	import Field from '$lib/components/Field.svelte';
+	import Loader from '$lib/components/Loader.svelte';
 	import SelectMenu from '$lib/components/SelectMenu.svelte';
 	import {
 		LIMITS,
@@ -13,7 +15,11 @@
 	} from '$lib/api';
 
 	let refdata = $state<RefData | null>(null);
-	let token = $state<string | null>(null);
+	// Read the token during hydration (never at prerender time) so the
+	// loading screen replaces the form before the first client paint.
+	const urlToken = browser ? tokenFromUrl() : null;
+	let token = $state<string | null>(urlToken);
+	let resolving = $state(urlToken !== null);
 	let updating = $state(false);
 	let banner = $state<{ ok: boolean; lines: string[] } | null>(null);
 	let submitting = $state(false);
@@ -64,7 +70,6 @@
 	];
 
 	onMount(async () => {
-		token = tokenFromUrl();
 		const [data, current] = await Promise.all([
 			fetchRefData(),
 			token ? fetchSubscription(token) : null
@@ -94,7 +99,8 @@
 			favorites = current.favorites;
 			excluded = current.excluded;
 		}
-		await revalidate();
+		resolving = false;
+		await revalidate(); // the tick inside also mounts the form after the loader
 	});
 
 	async function submit(event: SubmitEvent) {
@@ -140,129 +146,133 @@
 	/>
 </svelte:head>
 
-<h1 class="page-title">
-	{updating ? 'Update your preferences' : 'Become an Air Nomad'}
-</h1>
+{#if resolving}
+	<Loader label="Loading your preferences…" />
+{:else}
+	<h1 class="page-title">
+		{updating ? 'Update your preferences' : 'Become an Air Nomad'}
+	</h1>
 
-{#if banner}
-	<div class="banner {banner.ok ? 'banner-success' : 'banner-error'}">
-		{#each banner.lines as line (line)}
-			<div>{line}</div>
-		{/each}
-	</div>
-{/if}
+	{#if banner}
+		<div class="banner {banner.ok ? 'banner-success' : 'banner-error'}">
+			{#each banner.lines as line (line)}
+				<div>{line}</div>
+			{/each}
+		</div>
+	{/if}
 
-<form bind:this={formEl} oninput={revalidate} onsubmit={submit}>
-	<div class="my-6 grid gap-4 sm:grid-cols-2">
-		<Field required label="Username" hint="Used to personalize your emails.">
-			<input
-				class="input"
-				required
-				minlength={LIMITS.usernameMin}
-				maxlength={LIMITS.usernameMax}
-				bind:value={username}
-			/>
-		</Field>
-		<Field
-			required
-			label={updating ? 'Email (cannot be changed)' : 'Email'}
-			hint="Where your deal emails land."
-		>
-			<input class="input" type="email" required disabled={updating} bind:value={email} />
-		</Field>
-		<Field
-			required
-			label="Departure cities"
-			hint="Pick up to 5. Every deal flies from one of these; the best deal across them wins."
-		>
-			<SelectMenu
-				items={cityItems}
-				placeholder="Select cities"
-				multiple
-				bind:value={departureAirports}
-			/>
-		</Field>
-		<Field required label="Currency" hint="Prices are shown in this currency.">
-			<SelectMenu items={currencyItems} placeholder="Select a currency" bind:value={currency} />
-		</Field>
-	</div>
-	<details
-		class="mb-6 overflow-hidden rounded-xl border border-line"
-		open={updating || undefined}
-	>
-		<summary
-			class="cursor-pointer list-none bg-raised px-5 py-3.5 hover:bg-gray-800 [&::-webkit-details-marker]:hidden"
-		>
-			<span class="font-semibold">Advanced configuration</span>
-			<span class="block text-sm text-ink-muted">
-				Trip length, timing, cadence and destination preferences — all preset with sensible
-				defaults.
-			</span>
-		</summary>
-		<div class="grid gap-4 p-5 sm:grid-cols-2">
-			<Field required label="Minimum nights" hint="Shortest trip length, in nights.">
-				<input class="input" type="number" min="1" required bind:value={minNights} />
-			</Field>
-			<Field required label="Maximum nights" hint="Longest trip length, in nights.">
+	<form bind:this={formEl} oninput={revalidate} onsubmit={submit}>
+		<div class="my-6 grid gap-4 sm:grid-cols-2">
+			<Field required label="Username" hint="Used to personalize your emails.">
 				<input
 					class="input"
-					type="number"
-					min={(minNights || 0) + 1}
-					max={(maxDaysAhead || LIMITS.maxDaysAhead) - (minDaysAhead || 0)}
 					required
-					bind:value={maxNights}
+					minlength={LIMITS.usernameMin}
+					maxlength={LIMITS.usernameMax}
+					bind:value={username}
 				/>
-			</Field>
-			<Field required label="Search from (days ahead)" hint="Search starts this many days from now.">
-				<input
-					class="input"
-					type="number"
-					min="1"
-					max={LIMITS.maxDaysAhead}
-					required
-					bind:value={minDaysAhead}
-				/>
-			</Field>
-			<Field required label="Search to (days ahead)" hint="Search ends this many days from now.">
-				<input
-					class="input"
-					type="number"
-					min={(minDaysAhead || 0) + 1}
-					max={LIMITS.maxDaysAhead}
-					required
-					bind:value={maxDaysAhead}
-				/>
-			</Field>
-			<Field required label="Cadence" hint="How often your deal email arrives.">
-				<SelectMenu items={cadenceItems} bind:value={cadence} />
 			</Field>
 			<Field
 				required
-				label="Discoveries per email"
-				hint="Surprise destinations mixed in alongside your favorites."
+				label={updating ? 'Email (cannot be changed)' : 'Email'}
+				hint="Where your deal emails land."
 			>
-				<input class="input" type="number" min="0" max={LIMITS.gemCountMax} required bind:value={gemCount} />
+				<input class="input" type="email" required disabled={updating} bind:value={email} />
 			</Field>
 			<Field
-				label="Favorite destinations"
-				hint="Optional — pick up to 10. Every digest guarantees a deal for each favorite; without any, it is all discoveries."
-			>
-				<SelectMenu items={countryItems} placeholder="Select countries" multiple bind:value={favorites} />
-			</Field>
-			<Field
-				label="Exclude from discoveries"
-				hint="Never picked as surprise discoveries. Favorites are unaffected. Pick a region to toggle all its countries."
+				required
+				label="Departure cities"
+				hint="Pick up to 5. Every deal flies from one of these; the best deal across them wins."
 			>
 				<SelectMenu
-					groups={countryGroups}
-					placeholder="Select countries or regions"
+					items={cityItems}
+					placeholder="Select cities"
 					multiple
-					bind:value={excluded}
+					bind:value={departureAirports}
 				/>
 			</Field>
+			<Field required label="Currency" hint="Prices are shown in this currency.">
+				<SelectMenu items={currencyItems} placeholder="Select a currency" bind:value={currency} />
+			</Field>
 		</div>
-	</details>
-	<button class="btn" type="submit" disabled={submitting || !canSubmit}>
-		{updating ? 'Update Preferences' : 'Join Air Nomad Society'}
-	</button>
-</form>
+		<details
+			class="mb-6 overflow-hidden rounded-xl border border-line"
+			open={updating || undefined}
+		>
+			<summary
+				class="cursor-pointer list-none bg-raised px-5 py-3.5 hover:bg-gray-800 [&::-webkit-details-marker]:hidden"
+			>
+				<span class="font-semibold">Advanced configuration</span>
+				<span class="block text-sm text-ink-muted">
+					Trip length, timing, cadence and destination preferences — all preset with sensible
+					defaults.
+				</span>
+			</summary>
+			<div class="grid gap-4 p-5 sm:grid-cols-2">
+				<Field required label="Minimum nights" hint="Shortest trip length, in nights.">
+					<input class="input" type="number" min="1" required bind:value={minNights} />
+				</Field>
+				<Field required label="Maximum nights" hint="Longest trip length, in nights.">
+					<input
+						class="input"
+						type="number"
+						min={(minNights || 0) + 1}
+						max={(maxDaysAhead || LIMITS.maxDaysAhead) - (minDaysAhead || 0)}
+						required
+						bind:value={maxNights}
+					/>
+				</Field>
+				<Field required label="Search from (days ahead)" hint="Search starts this many days from now.">
+					<input
+						class="input"
+						type="number"
+						min="1"
+						max={LIMITS.maxDaysAhead}
+						required
+						bind:value={minDaysAhead}
+					/>
+				</Field>
+				<Field required label="Search to (days ahead)" hint="Search ends this many days from now.">
+					<input
+						class="input"
+						type="number"
+						min={(minDaysAhead || 0) + 1}
+						max={LIMITS.maxDaysAhead}
+						required
+						bind:value={maxDaysAhead}
+					/>
+				</Field>
+				<Field required label="Cadence" hint="How often your deal email arrives.">
+					<SelectMenu items={cadenceItems} bind:value={cadence} />
+				</Field>
+				<Field
+					required
+					label="Discoveries per email"
+					hint="Surprise destinations mixed in alongside your favorites."
+				>
+					<input class="input" type="number" min="0" max={LIMITS.gemCountMax} required bind:value={gemCount} />
+				</Field>
+				<Field
+					label="Favorite destinations"
+					hint="Optional — pick up to 10. Every digest guarantees a deal for each favorite; without any, it is all discoveries."
+				>
+					<SelectMenu items={countryItems} placeholder="Select countries" multiple bind:value={favorites} />
+				</Field>
+				<Field
+					label="Exclude from discoveries"
+					hint="Never picked as surprise discoveries. Favorites are unaffected. Pick a region to toggle all its countries."
+				>
+					<SelectMenu
+						groups={countryGroups}
+						placeholder="Select countries or regions"
+						multiple
+						bind:value={excluded}
+					/>
+				</Field>
+			</div>
+		</details>
+		<button class="btn" type="submit" disabled={submitting || !canSubmit}>
+			{updating ? 'Update Preferences' : 'Join Air Nomad Society'}
+		</button>
+	</form>
+{/if}
