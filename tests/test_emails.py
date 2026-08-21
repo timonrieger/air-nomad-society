@@ -1,5 +1,4 @@
 import random
-from datetime import date
 
 import pytest
 
@@ -23,20 +22,13 @@ def ranked(
 
 def render(
     deals: list[RankedDeal],
-    window_start: date = date(2026, 9, 1),
-    window_end: date = date(2026, 9, 30),
     baselines: dict[tuple[str, str], float] | None = None,
 ) -> str:
     return render_digest(
         username="Timon",
         update_token="upd123",
         unsubscribe_token="unsub123",
-        digest=DigestResult(
-            deals=deals,
-            baselines=baselines or {},
-            window_start=window_start,
-            window_end=window_end,
-        ),
+        digest=DigestResult(deals=deals, baselines=baselines or {}),
         images=IMAGES,
         base_url="https://example.test",
         rng=random.Random(1),
@@ -51,27 +43,10 @@ def test_renders_deals() -> None:
     assert "{{" not in html and "{%" not in html
 
 
-def test_date_window_framing() -> None:
+def test_card_shows_country_and_plain_travel_dates() -> None:
     html = render([ranked(deal())])
-    assert "depart Sep 1–30 · e.g. 03.09–08.09" in html
-
-
-def test_date_window_crossing_months_names_both() -> None:
-    html = render(
-        [ranked(deal())],
-        window_start=date(2026, 9, 26),
-        window_end=date(2026, 10, 12),
-    )
-    assert "depart Sep 26 – Oct 12" in html
-
-
-def test_date_window_crossing_years_names_both_years() -> None:
-    html = render(
-        [ranked(deal())],
-        window_start=date(2026, 12, 15),
-        window_end=date(2027, 1, 20),
-    )
-    assert "depart Dec 15, 2026 – Jan 20, 2027" in html
+    assert "Finland &middot; 03.09–08.09" in html
+    assert "depart" not in html
 
 
 def test_empty_digest_refuses_to_render() -> None:

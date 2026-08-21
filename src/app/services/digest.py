@@ -42,8 +42,6 @@ class DigestResult(BaseModel):
     # Typical price per searched route: selection consulted these for the
     # repeat waiver, and rendering reuses them for the anchor line.
     baselines: dict[tuple[str, str], float]
-    window_start: date
-    window_end: date
 
     def baseline_for(self, ranked: RankedDeal) -> float | None:
         """The typical price of the route this pick was searched on."""
@@ -167,9 +165,4 @@ def build_digest(
     if missing := winner_routes - eligible:
         baselines |= baselines_for(missing)
     logger.info("digest for %s: %d deals", subscriber.email, len(deals))
-    return DigestResult(
-        deals=deals,
-        baselines=baselines,
-        window_start=window_start,
-        window_end=window_end,
-    )
+    return DigestResult(deals=deals, baselines=baselines)

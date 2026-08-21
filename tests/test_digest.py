@@ -197,9 +197,7 @@ def test_best_deal_across_airports_wins_and_keeps_its_origin() -> None:
 
 def test_search_window_derives_from_subscriber() -> None:
     provider = FakeProvider()
-    result = digest(SUBSCRIBER, provider, today=date(2026, 1, 1))
-    assert result.window_start == date(2026, 1, 11)
-    assert result.window_end == date(2026, 2, 10)
+    digest(SUBSCRIBER, provider, today=date(2026, 1, 1))
     query = provider.queries[0]
     assert query.date_from == date(2026, 1, 11)
     assert query.date_to == date(2026, 2, 10)

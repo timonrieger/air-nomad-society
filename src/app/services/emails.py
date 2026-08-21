@@ -2,7 +2,6 @@
 
 import json
 import random
-from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -57,18 +56,8 @@ def _anchor(price: float, baseline: float, currency: str) -> tuple[str, str | No
     return line, badge
 
 
-def _window(start: date, end: date) -> str:
-    """The searched departure window, e.g. "Sep 1–30" or "Sep 26 – Oct 12"."""
-    if (start.year, start.month) == (end.year, end.month):
-        return f"{start:%b} {start.day}–{end.day}"
-    if start.year == end.year:
-        return f"{start:%b} {start.day} – {end:%b} {end.day}"
-    return f"{start:%b} {start.day}, {start.year} – {end:%b} {end.day}, {end.year}"
-
-
 def _present(
     ranked: RankedDeal,
-    window: str,
     images: dict[str, list[str]],
     baseline: float | None,
     rng: random.Random,
@@ -90,9 +79,7 @@ def _present(
         "badges": badges,
         "anchor": anchor,
         "reason": ranked.reason,
-        # "depart", not "travel between": the window bounds outbound departures,
-        # so the example trip's return may legitimately fall after it.
-        "dates": f"depart {window} · e.g. {deal.trip_dates}",
+        "dates": deal.trip_dates,
         "facts": deal.facts,
         "image_url": rng.choice(country_images) if country_images else FALLBACK_IMAGE,
     }
@@ -110,7 +97,6 @@ def render_digest(
     # An empty digest is never sent (the cli skips it); rendering one is a bug.
     assert digest.deals
     picker = rng or random.Random()  # nosec B311 # picks photos, not secrets
-    window = _window(digest.window_start, digest.window_end)
     return _env.get_template("digest.html.j2").render(
         t=TOKENS,
         username=username,
@@ -118,7 +104,7 @@ def render_digest(
         update_url=f"{base_url}/subscribe?token={update_token}",
         unsubscribe_url=f"{base_url}/unsubscribe?token={unsubscribe_token}",
         flights=[
-            _present(ranked, window, images, digest.baseline_for(ranked), picker)
+            _present(ranked, images, digest.baseline_for(ranked), picker)
             for ranked in digest.deals
         ],
         no_favorite_deals=all(ranked.source != "favorite" for ranked in digest.deals),
