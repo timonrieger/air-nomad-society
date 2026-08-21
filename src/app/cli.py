@@ -2,7 +2,6 @@ import argparse
 import logging
 import sys
 from datetime import timedelta
-from pathlib import Path
 
 from src.app.services import emails, mailer, refdata
 from src.app.config import get_settings
@@ -85,54 +84,17 @@ def run_digest(provider: FlightProvider) -> int:
     return failures
 
 
-def run_announcement(subject: str, body_file: str) -> int:
-    """Emails a product update to every confirmed subscriber.
-
-    The body is plain text; blank lines separate paragraphs. Returns the
-    number of failed subscribers, like run_digest."""
-    settings = get_settings()
-    body = Path(body_file).read_text(encoding="utf-8")
-    paragraphs = [p.strip() for p in body.split("\n\n") if p.strip()]
-    assert paragraphs, f"{body_file} is empty"
-    subscribers = load_subscribers(settings.digest_only_id)
-    logger.info("announcing %r to %d subscribers", subject, len(subscribers))
-    failures = 0
-    for subscriber in subscribers:
-        try:
-            html = emails.render_announcement(
-                username=subscriber.username,
-                paragraphs=paragraphs,
-                update_token=issue_token(subscriber.id, "update"),
-                unsubscribe_token=issue_token(subscriber.id, "unsubscribe"),
-                base_url=settings.public_base_url,
-            )
-            mailer.send_email(html, subscriber.email, subject, settings)
-            logger.info("announced to %s", subscriber.email)
-        except Exception:
-            failures += 1
-            logger.exception("announcement failed for %s", subscriber.email)
-    return failures
-
-
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="ans")
     parser.add_argument(
-        "command",
-        choices=["digest", "announce"],
-        help="search deals and email every subscriber, or send a product update",
+        "command", choices=["digest"], help="search deals and email every subscriber"
     )
-    # announce's flags are parsed by the mise file task (.mise/tasks/announce),
-    # which forwards them here as two positionals: subject, body file.
-    parser.add_argument("args", nargs="*")
-    parsed = parser.parse_args(argv)
+    parser.parse_args(argv)
 
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
     )
-    if parsed.command == "announce":
-        subject, body_file = parsed.args
-        return run_announcement(subject, body_file)
     settings = get_settings()
     provider = TequilaProvider(settings.tequila_endpoint, settings.tequila_api_key)
     return run_digest(provider)
