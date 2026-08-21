@@ -63,9 +63,11 @@ def build_digest(
         return [
             deal
             for deal in provider.search_top(query, CANDIDATES_PER_COUNTRY)
-            # A candidate's destination can be the origin city itself
-            # (e.g. searching Germany from Frankfurt); skip those.
+            # A candidate's destination can be one of the subscriber's own
+            # departure cities (e.g. searching Germany from Frankfurt returns
+            # Frankfurt itself, or Berlin for a FRA+BER subscriber); skip those.
             if deal.departure_city != deal.arrival_city
+            and deal.arrival_iata not in subscriber.departure_airports
         ]
 
     def best_pick(country: Country, source: DealSource) -> RankedDeal | None:

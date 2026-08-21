@@ -163,6 +163,17 @@ def test_same_city_deals_are_dropped() -> None:
     assert result.deals == []
 
 
+def test_deals_to_another_departure_city_are_dropped() -> None:
+    # A FRA+BER subscriber must not be sold a "deal" to Berlin.
+    subscriber = SUBSCRIBER.model_copy(update={"departure_airports": ["FRA", "BER"]})
+    to_berlin = deal(arrival_iata="BER", arrival_city="Berlin")
+    provider = FakeProvider({("FRA", "FI"): [to_berlin]})
+    result = build_digest(
+        subscriber, provider, DESTINATIONS, SentHistory(), rng=random.Random(1)
+    )
+    assert result.deals == []
+
+
 def test_subscriber_from_row_parses_country_lists() -> None:
     row = AirNomads(
         id=3,

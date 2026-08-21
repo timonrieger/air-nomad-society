@@ -49,6 +49,20 @@ def test_single_day_of_observations_does_not_anchor(sqlite_db) -> None:
     assert baselines() == {}
 
 
+def test_multi_origin_routes_do_not_cross_pollinate(sqlite_db) -> None:
+    # FRA→TKU sits inside the IN-filter cross product of the requested
+    # routes but is neither of them; it must not mint a baseline.
+    insert_rows(
+        spread((100, 200, 300, 400))
+        + spread((500, 600, 700, 800), origin_iata="BER", arrival_iata="TKU")
+        + spread((999, 999, 999, 999), arrival_iata="TKU")
+    )
+    assert baselines({("FRA", "HEL"), ("BER", "TKU")}) == {
+        ("FRA", "HEL"): 250.0,
+        ("BER", "TKU"): 650.0,
+    }
+
+
 def test_only_matching_route_and_currency_count(sqlite_db) -> None:
     insert_rows(
         spread((100, 200, 300, 400))
