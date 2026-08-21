@@ -42,16 +42,12 @@
 			a: "Yes. Alongside your favorites, emails mix in discovery deals of surprising destinations you haven't marked, labeled with a discovery badge."
 		},
 		{
+			q: 'Can I exclude regions or countries?',
+			a: "Yes. Exclude countries you never want as surprise discoveries — pick a whole region to toggle all of its countries at once. Your favorites aren't affected."
+		},
+		{
 			q: 'Will I see the same deals every time?',
 			a: 'No. The digest remembers what you have already been sent: repeats only come back on clearly better prices and repeating countries rotate their cities.'
-		},
-		{
-			q: 'What does "typically ~X" under a price mean?',
-			a: "That's what the route usually costs, from our own recent search history. The percentage shows how far below typical today's fare is, and the best savings earn a price badge."
-		},
-		{
-			q: 'Why does each deal have a little note on it?',
-			a: 'Every deal can carry a one-line reason, written for you: why it was picked, what it beat, and how it fits your preferences.'
 		},
 		{
 			q: 'Can I depart from more than one city?',
