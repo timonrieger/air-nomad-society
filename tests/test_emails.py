@@ -32,10 +32,12 @@ def render(
         update_token="upd123",
         unsubscribe_token="unsub123",
         digest=DigestResult(
-            deals=deals, window_start=window_start, window_end=window_end
+            deals=deals,
+            baselines=baselines or {},
+            window_start=window_start,
+            window_end=window_end,
         ),
         images=IMAGES,
-        baselines=baselines or {},
         base_url="https://example.test",
         rng=random.Random(1),
     )

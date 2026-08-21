@@ -3,6 +3,7 @@
 
 import logging
 import random
+from collections.abc import Callable
 from datetime import date, timedelta
 
 from pydantic import BaseModel
@@ -29,11 +30,18 @@ CANDIDATES_PER_COUNTRY = 30
 # can say what the winner beat.
 RUNNER_UP_COUNT = 2
 
+# Typical price per (origin, arrival) route — history.route_baselines bound
+# to the subscriber's currency and the run boundary by the caller.
+BaselineLookup = Callable[[set[tuple[str, str]]], dict[tuple[str, str], float]]
+
 
 class DigestResult(BaseModel):
     """Deals across all searched countries, best score first."""
 
     deals: list[RankedDeal]
+    # Typical price per searched route: selection consulted these for the
+    # repeat waiver, and rendering reuses them for the anchor line.
+    baselines: dict[tuple[str, str], float]
     window_start: date
     window_end: date
 
@@ -43,12 +51,14 @@ def build_digest(
     provider: FlightProvider,
     destinations: list[Country],
     history: SentHistory,
+    baselines_for: BaselineLookup,
     rng: random.Random | None = None,
     today: date | None = None,
 ) -> DigestResult:
     start = today or date.today()
     window_start = start + timedelta(days=subscriber.min_days_ahead)
     window_end = start + timedelta(days=subscriber.max_days_ahead)
+    baselines: dict[tuple[str, str], float] = {}
 
     def search(origin_iata: str, country: Country) -> list[FlightDeal]:
         query = SearchQuery(
@@ -73,6 +83,17 @@ def build_digest(
     def best_pick(country: Country, source: DealSource) -> RankedDeal | None:
         """The country's best-scoring candidate across every departure airport,
         carrying its beaten runner-ups."""
+        candidates = [
+            (origin_iata, deal)
+            for origin_iata in subscriber.departure_airports
+            for deal in search(origin_iata, country)
+        ]
+        if not candidates:
+            return None
+        typical = baselines_for(
+            {(origin_iata, deal.arrival_iata) for origin_iata, deal in candidates}
+        )
+        baselines.update(typical)
         ranked = sorted(
             (
                 RankedDeal(
@@ -81,16 +102,18 @@ def build_digest(
                     # The freshness multiplier steers repeating countries
                     # toward fresh cities and sinks repeats in the ranking.
                     score=deal_score(deal)
-                    * freshness_multiplier(deal, source, history),
+                    * freshness_multiplier(
+                        deal,
+                        source,
+                        history,
+                        typical.get((origin_iata, deal.arrival_iata)),
+                    ),
                     origin_iata=origin_iata,
                 )
-                for origin_iata in subscriber.departure_airports
-                for deal in search(origin_iata, country)
+                for origin_iata, deal in candidates
             ),
             key=lambda pick: pick.score,
         )
-        if not ranked:
-            return None
         winner = ranked[0]
         winner.runner_ups = ranked[1 : 1 + RUNNER_UP_COUNT]
         # Only meaningful once some history exists: a brand-new subscriber's
@@ -116,4 +139,9 @@ def build_digest(
     ] + [pick for country in gems if (pick := best_pick(country, "discovery"))]
     deals.sort(key=lambda pick: pick.score)
     logger.info("digest for %s: %d deals", subscriber.email, len(deals))
-    return DigestResult(deals=deals, window_start=window_start, window_end=window_end)
+    return DigestResult(
+        deals=deals,
+        baselines=baselines,
+        window_start=window_start,
+        window_end=window_end,
+    )

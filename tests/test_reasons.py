@@ -1,8 +1,9 @@
 import json
+from datetime import date
 
 import src.app.services.reasons as reasons_module
 from src.app.config import Settings, get_settings
-from src.app.models.flights import RankedDeal
+from src.app.services.digest import DigestResult
 from src.app.services.reasons import deal_reasons
 from tests.conftest import deal
 from tests.fakes import ResponseStub
@@ -10,10 +11,15 @@ from tests.test_digest import SUBSCRIBER
 from tests.test_emails import ranked
 
 
-def picks() -> list[RankedDeal]:
+def digest() -> DigestResult:
     winner = ranked(deal())
     winner.runner_ups = [ranked(deal(price=115, via_cities=["Riga"]))]
-    return [winner]
+    return DigestResult(
+        deals=[winner],
+        baselines={("FRA", "HEL"): 310.0},
+        window_start=date(2026, 9, 1),
+        window_end=date(2026, 9, 30),
+    )
 
 
 def configured() -> Settings:
@@ -24,7 +30,7 @@ def chat_response(content: str) -> ResponseStub:
     return ResponseStub({"choices": [{"message": {"content": content}}]})
 
 
-def reasons_with_response(monkeypatch, response: ResponseStub) -> list[RankedDeal]:
+def reasons_with_response(monkeypatch, response: ResponseStub):
     calls: list[dict] = []
 
     def fake_post(url, **kwargs):
@@ -32,8 +38,9 @@ def reasons_with_response(monkeypatch, response: ResponseStub) -> list[RankedDea
         return response
 
     monkeypatch.setattr(reasons_module.requests, "post", fake_post)
-    deals = picks()
-    deal_reasons(SUBSCRIBER, deals, {("FRA", "HEL"): 310.0}, configured())
+    result = digest()
+    deal_reasons(SUBSCRIBER, result, configured())
+    deals = result.deals
     body = calls[0]["json"]
     payload = json.loads(body["messages"][1]["content"])
     assert calls[0]["url"] == "https://api.anthropic.com/v1/chat/completions"
@@ -51,10 +58,10 @@ def test_no_key_skips_the_call(monkeypatch) -> None:
     monkeypatch.setattr(
         reasons_module.requests, "post", lambda url, **k: calls.append(url)
     )
-    deals = picks()
-    deal_reasons(SUBSCRIBER, deals, {}, get_settings())
+    result = digest()
+    deal_reasons(SUBSCRIBER, result, get_settings())
     assert calls == []
-    assert deals[0].reason is None
+    assert result.deals[0].reason is None
 
 
 def test_reasons_attached_from_response(monkeypatch) -> None:

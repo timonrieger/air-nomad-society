@@ -41,29 +41,23 @@ def run_digest(provider: FlightProvider) -> int:
                 subscriber,
                 recording,
                 data.countries,
-                history=sent_history(subscriber.id, subscriber.currency),
+                history=sent_history(subscriber.id),
+                # before=started_at: the run's own candidates never anchor
+                # themselves.
+                baselines_for=lambda routes: route_baselines(
+                    routes, subscriber.currency, before=recording.started_at
+                ),
             )
             if not result.deals:
                 logger.info("no deals for %s, skipping digest", subscriber.email)
                 continue
-            # before=started_at: the run's own candidates never anchor
-            # themselves.
-            baselines = route_baselines(
-                {
-                    (ranked.origin_iata, ranked.deal.arrival_iata)
-                    for ranked in result.deals
-                },
-                subscriber.currency,
-                before=recording.started_at,
-            )
-            deal_reasons(subscriber, result.deals, baselines, settings)
+            deal_reasons(subscriber, result, settings)
             html = emails.render_digest(
                 username=subscriber.username,
                 update_token=issue_token(subscriber.id, "update"),
                 unsubscribe_token=issue_token(subscriber.id, "unsubscribe"),
                 digest=result,
                 images=data.images,
-                baselines=baselines,
                 base_url=settings.public_base_url,
             )
             mailer.send_email(html, subscriber.email, emails.DIGEST_SUBJECT, settings)

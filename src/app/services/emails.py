@@ -105,7 +105,6 @@ def render_digest(
     unsubscribe_token: str,
     digest: DigestResult,
     images: dict[str, list[str]],
-    baselines: dict[tuple[str, str], float],
     base_url: str,
     rng: random.Random | None = None,
 ) -> str:
@@ -120,7 +119,7 @@ def render_digest(
         update_url=f"{base_url}/subscribe?token={update_token}",
         unsubscribe_url=f"{base_url}/unsubscribe?token={unsubscribe_token}",
         flights=[
-            _present(ranked, window, images, baselines, picker)
+            _present(ranked, window, images, digest.baselines, picker)
             for ranked in digest.deals
         ],
         no_favorite_deals=all(ranked.source != "favorite" for ranked in digest.deals),

@@ -84,54 +84,48 @@ def test_gems_top_up_from_recent_when_fresh_pool_runs_short() -> None:
 
 
 def test_fresh_deal_is_not_penalized() -> None:
-    assert freshness_multiplier(deal(), "discovery", SentHistory()) == 1.0
+    assert freshness_multiplier(deal(), "discovery", SentHistory(), None) == 1.0
 
 
 def test_recent_country_penalty_and_clearly_better_waiver() -> None:
-    history = SentHistory(
-        recent_countries={"Finland"}, recent_country_prices={"Finland": 150.0}
-    )
-    assert freshness_multiplier(deal(price=140), "discovery", history) == 1.25
-    # ≥15% below the cheapest recently sent price repeats without penalty.
-    assert freshness_multiplier(deal(price=127), "discovery", history) == 1.0
+    history = SentHistory(recent_countries={"Finland"})
+    assert freshness_multiplier(deal(price=140), "discovery", history, 150.0) == 1.25
+    # ≥15% below the route's typical price repeats without penalty.
+    assert freshness_multiplier(deal(price=127), "discovery", history, 150.0) == 1.0
 
 
 def test_favorites_are_exempt_from_the_country_penalty() -> None:
     # Favorites are re-sent weekly by contract; only repeating a city costs.
     history = SentHistory(recent_countries={"Finland"})
-    assert freshness_multiplier(deal(price=999), "favorite", history) == 1.0
+    assert freshness_multiplier(deal(price=999), "favorite", history, None) == 1.0
     history.recent_cities.add("HEL")
-    assert freshness_multiplier(deal(price=999), "favorite", history) == 1.15
+    assert freshness_multiplier(deal(price=999), "favorite", history, None) == 1.15
 
 
 def test_waiver_clears_the_city_penalty_too() -> None:
     # A clear price drop recurs in the same city; that is the point of it.
-    history = SentHistory(
-        recent_countries={"Finland"},
-        recent_country_prices={"Finland": 150.0},
-        recent_cities={"HEL"},
-    )
-    assert freshness_multiplier(deal(price=127), "discovery", history) == 1.0
+    history = SentHistory(recent_countries={"Finland"}, recent_cities={"HEL"})
+    assert freshness_multiplier(deal(price=127), "discovery", history, 150.0) == 1.0
 
 
 def test_waiver_holds_at_exactly_15_percent_despite_float_rounding() -> None:
-    history = SentHistory(
-        recent_countries={"Finland"}, recent_country_prices={"Finland": 18.0}
-    )
-    # 0.85 × 18.00 is 15.299999… in doubles; 15.30 must still be waived.
-    assert freshness_multiplier(deal(price=15.30), "discovery", history) == 1.0
-
-
-def test_recent_country_without_comparable_price_is_always_penalized() -> None:
     history = SentHistory(recent_countries={"Finland"})
-    assert freshness_multiplier(deal(price=1), "discovery", history) == 1.25
+    # 0.85 × 18.00 is 15.299999… in doubles; 15.30 must still be waived.
+    assert freshness_multiplier(deal(price=15.30), "discovery", history, 18.0) == 1.0
+
+
+def test_recent_country_without_a_baseline_is_always_penalized() -> None:
+    history = SentHistory(recent_countries={"Finland"})
+    assert freshness_multiplier(deal(price=1), "discovery", history, None) == 1.25
 
 
 def test_recent_city_penalty_stacks_on_country() -> None:
     history = SentHistory(recent_countries={"Finland"}, recent_cities={"HEL"})
-    assert freshness_multiplier(deal(price=999), "discovery", history) == 1.25 * 1.15
+    assert (
+        freshness_multiplier(deal(price=999), "discovery", history, None) == 1.25 * 1.15
+    )
     fresh_city = deal(price=999, arrival_iata="TKU")
-    assert freshness_multiplier(fresh_city, "discovery", history) == 1.25
+    assert freshness_multiplier(fresh_city, "discovery", history, None) == 1.25
 
 
 def test_favorite_destinations_keeps_reference_order() -> None:

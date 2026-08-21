@@ -125,8 +125,8 @@ def test_reasons_reach_the_email_and_the_history(sqlite_db, monkeypatch) -> None
         cli, "load_subscribers", lambda only_id: [subscriber("a@example.com")]
     )
 
-    def fake_reasons(subscriber, deals, baselines, settings) -> None:
-        deals[0].reason = reason
+    def fake_reasons(subscriber, digest, settings) -> None:
+        digest.deals[0].reason = reason
 
     monkeypatch.setattr(cli, "deal_reasons", fake_reasons)
     captured: list[str] = []

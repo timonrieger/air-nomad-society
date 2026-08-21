@@ -17,8 +17,8 @@ HOURLY_PENALTY = 0.02
 RED_EYE_PENALTY = 0.15
 DAYTIME_HOURS = range(7, 21)
 
-# Repetition penalties — country first, then city — and the price cut that
-# lets a favorite repeat anyway.
+# Repetition penalties — country first, then city — and the cut below the
+# route's typical price that lets any repeat through anyway.
 COUNTRY_REPEAT_PENALTY = 1.25
 CITY_REPEAT_PENALTY = 1.15
 CLEARLY_BETTER_FRACTION = 0.85
@@ -41,7 +41,10 @@ def deal_score(deal: FlightDeal) -> float:
 
 
 def freshness_multiplier(
-    deal: FlightDeal, source: DealSource, history: SentHistory
+    deal: FlightDeal,
+    source: DealSource,
+    history: SentHistory,
+    typical_price: float | None,
 ) -> float:
     """Score inflation for repetition — the top churn driver of deal digests.
 
@@ -50,15 +53,18 @@ def freshness_multiplier(
     its cities. Favorites are exempt from the country penalty — they are
     re-sent every week by contract, so it would apply to them permanently
     and just handicap them against gems — but still pay for repeating a
-    city. A fare clearly below the cheapest recently sent one there (≥15%
-    cheaper) repeats with no penalty at all — that price drop is exactly
-    what is worth resending."""
+    city. A fare clearly below the route's typical price (≥15% under the
+    baseline) repeats with no penalty at all — a genuine deal is worth
+    resending. The typical price, not the cheapest recently sent fare,
+    anchors that waiver: one lucky send must not raise the bar for two
+    months. No baseline yet means no waiver."""
     if deal.arrival_country not in history.recent_countries:
         return 1.0
-    best = history.recent_country_prices.get(deal.arrival_country)
-    # Rounded to cents so 0.85 × best can't float-drift just below an
+    # Rounded to cents so 0.85 × typical can't float-drift just below an
     # exactly-15%-cheaper fare.
-    if best is not None and deal.price <= round(CLEARLY_BETTER_FRACTION * best, 2):
+    if typical_price is not None and deal.price <= round(
+        CLEARLY_BETTER_FRACTION * typical_price, 2
+    ):
         return 1.0
     multiplier = 1.0 if source == "favorite" else COUNTRY_REPEAT_PENALTY
     if deal.arrival_iata in history.recent_cities:

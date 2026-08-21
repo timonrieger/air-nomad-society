@@ -115,18 +115,12 @@ def route_baselines(
     }
 
 
-def sent_history(subscriber_id: int, currency: str) -> SentHistory:
-    """The subscriber's sent-deal history as the freshness rules consume it.
-
-    The price map only trusts rows in the subscriber's current currency — a
-    price sent under an old currency setting cannot gate the repeat waiver."""
+def sent_history(subscriber_id: int) -> SentHistory:
+    """The subscriber's sent-deal history as the freshness rules consume it."""
     cutoff = _utcnow() - timedelta(weeks=FRESHNESS_WINDOW_WEEKS)
-    recent = select(
-        SentDeal.arrival_country,
-        SentDeal.arrival_iata,
-        SentDeal.price,
-        SentDeal.currency,
-    ).where(SentDeal.subscriber_id == subscriber_id, SentDeal.sent_at >= cutoff)
+    recent = select(SentDeal.arrival_country, SentDeal.arrival_iata).where(
+        SentDeal.subscriber_id == subscriber_id, SentDeal.sent_at >= cutoff
+    )
     ever = (
         select(SentDeal.arrival_country)
         .where(SentDeal.subscriber_id == subscriber_id)
@@ -135,12 +129,9 @@ def sent_history(subscriber_id: int, currency: str) -> SentHistory:
     history = SentHistory()
     with session_scope() as session:
         history.all_countries.update(session.scalars(ever))
-        for country, city, price, row_currency in session.execute(recent):
+        for country, city in session.execute(recent):
             history.recent_countries.add(country)
             history.recent_cities.add(city)
-            if row_currency == currency:
-                prices = history.recent_country_prices
-                prices[country] = min(price, prices.get(country, price))
     return history
 
 
