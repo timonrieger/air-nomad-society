@@ -49,6 +49,15 @@ def test_currencies_are_unique_iso_codes() -> None:
     assert len(set(currencies)) == len(currencies)
 
 
+def test_every_country_has_images_and_no_key_is_orphaned() -> None:
+    """Coverage both ways: a country without images renders the generic
+    fallback on real cards, and a key without a country is dead weight."""
+    data = refdata.load()
+    countries = {entry.country for entry in data.countries}
+    assert countries - set(data.images) == set()
+    assert set(data.images) - countries == set()
+
+
 def test_every_image_entry_is_a_non_empty_list_of_urls() -> None:
     """An empty list crashes the digest: `random.choice([])` raises IndexError."""
     for country, urls in refdata.load().images.items():
