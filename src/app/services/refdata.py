@@ -11,6 +11,7 @@ DATA_PATH = Path(__file__).resolve().parent.parent / "data.json"
 class Country(BaseModel):
     country: str
     code: str
+    region: str
 
 
 class City(BaseModel):
@@ -51,3 +52,12 @@ def city_codes() -> frozenset[str]:
 @lru_cache
 def city_names() -> dict[str, str]:
     return {city.code: city.city for city in load().cities}
+
+
+@lru_cache
+def regions() -> dict[str, list[str]]:
+    """Country names per region, for the exclusion picker's region groups."""
+    grouped: dict[str, list[str]] = {}
+    for country in load().countries:
+        grouped.setdefault(country.region, []).append(country.country)
+    return dict(sorted(grouped.items()))

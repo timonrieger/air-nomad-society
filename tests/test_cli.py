@@ -30,6 +30,8 @@ def subscriber(email: str) -> Subscriber:
         max_nights=5,
         min_days_ahead=1,
         max_days_ahead=30,
+        cadence="weekly",
+        gem_count=5,
         favorites=["Finland"],
         excluded=[],
         confirmed=True,
@@ -214,3 +216,24 @@ def test_no_sent_deals_recorded_when_email_fails(sqlite_db, monkeypatch) -> None
         assert session.scalars(select(SentDeal)).all() == []
         # Observations are still kept: the search itself succeeded.
         assert len(session.scalars(select(PriceObservation)).all()) == 1
+
+
+def test_biweekly_subscribers_skip_until_due(sqlite_db, monkeypatch) -> None:
+    biweekly = subscriber("a@example.com").model_copy(update={"cadence": "biweekly"})
+    monkeypatch.setattr(cli, "load_subscribers", lambda only_id: [biweekly])
+    sent_to: list[str] = []
+    monkeypatch.setattr(
+        cli.mailer,
+        "send_email",
+        lambda html, recipient, *a, **k: sent_to.append(recipient),
+    )
+    insert_rows([sent()])  # a digest landed just now
+    assert cli.run_digest(FakeProvider({("FRA", "FI"): [deal()]})) == 0
+    assert sent_to == []
+    # Eleven days on, the gap has passed: age the record and rerun.
+    with Session(get_engine()) as session:
+        for row in session.scalars(select(SentDeal)):
+            row.sent_at = datetime.now() - timedelta(days=11)
+        session.commit()
+    assert cli.run_digest(FakeProvider({("FRA", "FI"): [deal()]})) == 0
+    assert sent_to == ["a@example.com"]

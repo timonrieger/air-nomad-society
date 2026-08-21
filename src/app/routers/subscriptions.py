@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, EmailStr, Field, field_validator, model_validator
@@ -33,6 +33,8 @@ class SubscriptionIn(BaseModel):
     max_nights: int = Field(ge=1)
     min_days_ahead: int = Field(ge=1, le=365)
     max_days_ahead: int = Field(ge=1, le=365)
+    cadence: Literal["weekly", "biweekly"] = "weekly"
+    gem_count: int = Field(default=5, ge=0, le=10)
     favorite_countries: list[str] = Field(min_length=1)
     excluded_countries: list[str] = []
 
@@ -80,6 +82,8 @@ def _columns(payload: SubscriptionIn) -> dict[str, Any]:
         "max_nights": payload.max_nights,
         "min_days_ahead": payload.min_days_ahead,
         "max_days_ahead": payload.max_days_ahead,
+        "cadence": payload.cadence,
+        "gem_count": payload.gem_count,
         "travel_countries": ",".join(payload.favorite_countries),
         "excluded_countries": ",".join(payload.excluded_countries) or None,
     }

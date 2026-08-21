@@ -20,6 +20,8 @@ class Subscriber(BaseModel):
     max_nights: int = Field(description="Maximum nights per trip")
     min_days_ahead: int = Field(description="Search window start, days from today")
     max_days_ahead: int = Field(description="Search window end, days from today")
+    cadence: str = Field(description="Digest cadence: weekly or biweekly")
+    gem_count: int = Field(description="Surprise discoveries per digest")
     favorites: list[str] = Field(
         description="Favorite country names, always searched for deals"
     )
@@ -38,6 +40,8 @@ class Subscriber(BaseModel):
             max_nights=row.max_nights,
             min_days_ahead=row.min_days_ahead,
             max_days_ahead=row.max_days_ahead,
+            cadence=row.cadence,
+            gem_count=row.gem_count,
             favorites=_split(row.travel_countries),
             excluded=_split(row.excluded_countries),
             confirmed=row.confirmed_at is not None,

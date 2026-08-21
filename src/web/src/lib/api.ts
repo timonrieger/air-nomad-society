@@ -9,6 +9,7 @@ export type RefData = {
 	cities: { city: string; code: string }[];
 	currencies: string[];
 	countries: string[];
+	regions: Record<string, string[]>;
 };
 
 export type Subscription = {
@@ -20,6 +21,8 @@ export type Subscription = {
 	max_nights: number;
 	min_days_ahead: number;
 	max_days_ahead: number;
+	cadence: string;
+	gem_count: number;
 	favorites: string[];
 	excluded: string[];
 };
@@ -34,12 +37,14 @@ export type SubscriptionIn = {
 	max_nights: number;
 	min_days_ahead: number;
 	max_days_ahead: number;
+	cadence: string;
+	gem_count: number;
 	favorite_countries: string[];
 	excluded_countries: string[];
 };
 
 /** Form bounds mirroring SubscriptionIn in src/app/routers/subscriptions.py. */
-export const LIMITS = { usernameMin: 3, usernameMax: 20, maxDaysAhead: 365 } as const;
+export const LIMITS = { usernameMin: 3, usernameMax: 20, maxDaysAhead: 365, gemCountMax: 10 } as const;
 
 export type WallDeal = {
 	departure_city: string;

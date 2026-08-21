@@ -12,13 +12,13 @@ from src.app.services.selection import (
 from tests.conftest import deal
 
 DESTINATIONS = [
-    Country(country="Finland", code="FI"),
-    Country(country="Spain", code="ES"),
-    Country(country="Japan", code="JP"),
-    Country(country="Brazil", code="BR"),
-    Country(country="Canada", code="CA"),
-    Country(country="Kenya", code="KE"),
-    Country(country="Norway", code="NO"),
+    Country(country="Finland", code="FI", region="Europe"),
+    Country(country="Spain", code="ES", region="Europe"),
+    Country(country="Japan", code="JP", region="Asia"),
+    Country(country="Brazil", code="BR", region="South America"),
+    Country(country="Canada", code="CA", region="North America"),
+    Country(country="Kenya", code="KE", region="Africa"),
+    Country(country="Norway", code="NO", region="Europe"),
 ]
 
 

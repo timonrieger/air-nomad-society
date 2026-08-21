@@ -126,6 +126,7 @@ def build_digest(
         favorites,
         set(subscriber.excluded),
         recent=history.recent_countries,
+        count=subscriber.gem_count,
         rng=rng,
     )
     searches: list[tuple[DealSource, Country]] = [

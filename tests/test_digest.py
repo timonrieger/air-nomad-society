@@ -32,10 +32,10 @@ def digest(
 
 
 DESTINATIONS = [
-    Country(country="Finland", code="FI"),
-    Country(country="Spain", code="ES"),
-    Country(country="Japan", code="JP"),
-    Country(country="Germany", code="DE"),
+    Country(country="Finland", code="FI", region="Europe"),
+    Country(country="Spain", code="ES", region="Europe"),
+    Country(country="Japan", code="JP", region="Asia"),
+    Country(country="Germany", code="DE", region="Europe"),
 ]
 
 SUBSCRIBER = Subscriber(
@@ -48,6 +48,8 @@ SUBSCRIBER = Subscriber(
     max_nights=7,
     min_days_ahead=10,
     max_days_ahead=40,
+    cadence="weekly",
+    gem_count=5,
     favorites=["Finland"],
     excluded=["Japan"],
     confirmed=True,
@@ -231,6 +233,8 @@ def test_subscriber_from_row_parses_country_lists() -> None:
         max_nights=5,
         min_days_ahead=1,
         max_days_ahead=30,
+        cadence="weekly",
+        gem_count=5,
         travel_countries="Finland, Spain",
         excluded_countries=None,
         confirmed_at=None,
@@ -242,3 +246,15 @@ def test_subscriber_from_row_parses_country_lists() -> None:
     assert subscriber.excluded == []
     assert subscriber.confirmed is False
     assert subscriber.currency == "EUR"
+
+
+def test_gem_count_zero_searches_only_favorites() -> None:
+    provider = FakeProvider()
+    digest(SUBSCRIBER.model_copy(update={"gem_count": 0}), provider)
+    assert [q.destination_iata for q in provider.queries] == ["FI"]
+
+
+def test_gem_count_caps_discovery_searches() -> None:
+    provider = FakeProvider()
+    digest(SUBSCRIBER.model_copy(update={"gem_count": 1}), provider)
+    assert len(provider.queries) == 2  # the favorite plus exactly one gem
