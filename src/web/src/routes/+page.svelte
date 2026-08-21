@@ -42,7 +42,7 @@
 		},
 		{
 			q: 'How often will I receive flight deal emails?',
-			a: "Flight deal emails are sent weekly — or every two weeks, if you prefer: the best deals found across your favorite countries and a few surprise discoveries, ranked by quality."
+			a: "Flight deal emails are sent weekly, every two weeks or monthly — your choice: the best deals found across your favorite countries and a few surprise discoveries, ranked by quality."
 		},
 		{
 			q: 'What does "Favorite Destinations" mean?',
@@ -75,7 +75,7 @@
 	<title>Personalized Flight Deals via Email | Air Nomad Society</title>
 	<meta
 		name="description"
-		content="Join to receive emails with flight deals, weekly or biweekly, focused on delivering relevant flight information directly to your inbox."
+		content="Join to receive emails with flight deals at the pace you choose, focused on delivering relevant flight information directly to your inbox."
 	/>
 </svelte:head>
 

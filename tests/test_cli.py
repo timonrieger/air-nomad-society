@@ -220,19 +220,37 @@ def test_no_sent_deals_recorded_when_email_fails(sqlite_db, monkeypatch) -> None
         assert len(session.scalars(select(PriceObservation)).all()) == 1
 
 
-def test_biweekly_subscribers_skip_until_due(sqlite_db, monkeypatch) -> None:
-    biweekly = subscriber("a@example.com").model_copy(update={"cadence": "biweekly"})
-    monkeypatch.setattr(cli, "load_subscribers", lambda only_id: [biweekly])
+@pytest.mark.parametrize(("cadence", "stale_days"), [("biweekly", 11), ("monthly", 25)])
+def test_slow_cadences_send_once_due_then_skip(
+    sqlite_db, monkeypatch, cadence, stale_days
+) -> None:
+    slow = subscriber("a@example.com").model_copy(update={"cadence": cadence})
+    monkeypatch.setattr(cli, "load_subscribers", lambda only_id: [slow])
     sent_to: list[str] = []
     monkeypatch.setattr(
         cli.mailer,
         "send_email",
         lambda html, recipient, *a, **k: sent_to.append(recipient),
     )
-    # The last digest is eleven days old — past the gap, so this run sends.
-    insert_rows([sent(sent_at=datetime.now() - timedelta(days=11))])
+    # The last digest is past this cadence's gap, so the run sends.
+    insert_rows([sent(sent_at=datetime.now() - timedelta(days=stale_days))])
     assert cli.run_digest(FakeProvider({("FRA", "FI"): [deal()]})) == 0
     assert sent_to == ["a@example.com"]
     # That run recorded its own sent deals; an immediate rerun is not due.
     assert cli.run_digest(FakeProvider({("FRA", "FI"): [deal()]})) == 0
     assert sent_to == ["a@example.com"]
+
+
+def test_monthly_is_not_due_when_biweekly_would_be(sqlite_db, monkeypatch) -> None:
+    monthly = subscriber("a@example.com").model_copy(update={"cadence": "monthly"})
+    monkeypatch.setattr(cli, "load_subscribers", lambda only_id: [monthly])
+    sent_to: list[str] = []
+    monkeypatch.setattr(
+        cli.mailer,
+        "send_email",
+        lambda html, recipient, *a, **k: sent_to.append(recipient),
+    )
+    # Eleven days: due for biweekly, still inside the monthly gap.
+    insert_rows([sent(sent_at=datetime.now() - timedelta(days=11))])
+    assert cli.run_digest(FakeProvider({("FRA", "FI"): [deal()]})) == 0
+    assert sent_to == []

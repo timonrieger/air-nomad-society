@@ -57,7 +57,8 @@
 	);
 	const cadenceItems = [
 		{ value: 'weekly', label: 'Every week' },
-		{ value: 'biweekly', label: 'Every two weeks' }
+		{ value: 'biweekly', label: 'Every two weeks' },
+		{ value: 'monthly', label: 'Every month' }
 	];
 
 	onMount(async () => {

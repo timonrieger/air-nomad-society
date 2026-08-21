@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 if TYPE_CHECKING:
     from src.app.db import AirNomads
 
-Cadence = Literal["weekly", "biweekly"]
+Cadence = Literal["weekly", "biweekly", "monthly"]
 
 
 class Subscriber(BaseModel):
