@@ -1016,6 +1016,18 @@
 			"code": "ADL"
 		},
 		{
+			"city": "Agadir",
+			"code": "AGA"
+		},
+		{
+			"city": "Ahmedabad",
+			"code": "AMD"
+		},
+		{
+			"city": "Alghero",
+			"code": "AHO"
+		},
+		{
 			"city": "Algiers",
 			"code": "ALG"
 		},
@@ -1030,6 +1042,10 @@
 		{
 			"city": "Amman",
 			"code": "AMM"
+		},
+		{
+			"city": "Amritsar",
+			"code": "ATQ"
 		},
 		{
 			"city": "Amsterdam",
@@ -1136,6 +1152,10 @@
 			"code": "BRI"
 		},
 		{
+			"city": "Batumi",
+			"code": "BUS"
+		},
+		{
 			"city": "Beijing",
 			"code": "BJS"
 		},
@@ -1170,6 +1190,10 @@
 		{
 			"city": "Berlin",
 			"code": "BER"
+		},
+		{
+			"city": "Bilbao",
+			"code": "BIO"
 		},
 		{
 			"city": "Billund",
@@ -1224,6 +1248,10 @@
 			"code": "BNE"
 		},
 		{
+			"city": "Bristol",
+			"code": "BRS"
+		},
+		{
 			"city": "Budapest",
 			"code": "BUD"
 		},
@@ -1260,6 +1288,10 @@
 			"code": "YYC"
 		},
 		{
+			"city": "Cali",
+			"code": "CLO"
+		},
+		{
 			"city": "Camp Springs",
 			"code": "ADW"
 		},
@@ -1270,6 +1302,10 @@
 		{
 			"city": "Caracas",
 			"code": "CCS"
+		},
+		{
+			"city": "Cartagena",
+			"code": "CTG"
 		},
 		{
 			"city": "Casablanca",
@@ -1296,6 +1332,10 @@
 			"code": "CSX"
 		},
 		{
+			"city": "Chania",
+			"code": "CHQ"
+		},
+		{
 			"city": "Charlotte",
 			"code": "CLT"
 		},
@@ -1318,6 +1358,10 @@
 		{
 			"city": "Chicago",
 			"code": "CHI"
+		},
+		{
+			"city": "Chișinău",
+			"code": "RMO"
 		},
 		{
 			"city": "Chongqing",
@@ -1404,8 +1448,20 @@
 			"code": "CPH"
 		},
 		{
+			"city": "Corfu",
+			"code": "CFU"
+		},
+		{
+			"city": "Curitiba",
+			"code": "CWB"
+		},
+		{
 			"city": "Cusco",
 			"code": "CUZ"
+		},
+		{
+			"city": "Da Nang",
+			"code": "DAD"
 		},
 		{
 			"city": "Dakar",
@@ -1464,12 +1520,20 @@
 			"code": "DOH"
 		},
 		{
+			"city": "Dortmund",
+			"code": "DTM"
+		},
+		{
 			"city": "Dubai",
 			"code": "DXB"
 		},
 		{
 			"city": "Dublin",
 			"code": "DUB"
+		},
+		{
+			"city": "Dubrovnik",
+			"code": "DBV"
 		},
 		{
 			"city": "Dulles",
@@ -1532,6 +1596,10 @@
 			"code": "MXP"
 		},
 		{
+			"city": "Florence",
+			"code": "FLR"
+		},
+		{
 			"city": "Florianópolis",
 			"code": "FLN"
 		},
@@ -1550,6 +1618,10 @@
 		{
 			"city": "Fortaleza",
 			"code": "FOR"
+		},
+		{
+			"city": "Foz do Iguaçu",
+			"code": "IGU"
 		},
 		{
 			"city": "Frankfurt am Main",
@@ -1600,8 +1672,16 @@
 			"code": "GVA"
 		},
 		{
+			"city": "Genoa",
+			"code": "GOA"
+		},
+		{
 			"city": "George Town",
 			"code": "GCM"
+		},
+		{
+			"city": "Girona",
+			"code": "GRO"
 		},
 		{
 			"city": "Gothenburg",
@@ -1768,8 +1848,16 @@
 			"code": "TNA"
 		},
 		{
+			"city": "João Pessoa",
+			"code": "JPA"
+		},
+		{
 			"city": "Johannesburg",
 			"code": "JNB"
+		},
+		{
+			"city": "Johor Bahru",
+			"code": "JHB"
 		},
 		{
 			"city": "Juba",
@@ -1800,6 +1888,10 @@
 			"code": "KTM"
 		},
 		{
+			"city": "Katowice",
+			"code": "KTW"
+		},
+		{
 			"city": "Kazan",
 			"code": "KZN"
 		},
@@ -1820,6 +1912,10 @@
 			"code": "FIH"
 		},
 		{
+			"city": "Ko Samui",
+			"code": "USM"
+		},
+		{
 			"city": "Kochi",
 			"code": "COK"
 		},
@@ -1832,6 +1928,18 @@
 			"code": "CGN"
 		},
 		{
+			"city": "Kos",
+			"code": "KGS"
+		},
+		{
+			"city": "Kota Kinabalu",
+			"code": "BKI"
+		},
+		{
+			"city": "Krabi",
+			"code": "KBV"
+		},
+		{
 			"city": "Kralendijk, Bonaire",
 			"code": "BON"
 		},
@@ -1840,8 +1948,16 @@
 			"code": "KJA"
 		},
 		{
+			"city": "Kuching",
+			"code": "KCH"
+		},
+		{
 			"city": "Kunming",
 			"code": "KMG"
+		},
+		{
+			"city": "Kutaisi",
+			"code": "KUT"
 		},
 		{
 			"city": "Kuwait City",
@@ -1854,6 +1970,14 @@
 		{
 			"city": "Lahore",
 			"code": "LHE"
+		},
+		{
+			"city": "Lamezia Terme",
+			"code": "SUF"
+		},
+		{
+			"city": "Langkawi",
+			"code": "LGK"
 		},
 		{
 			"city": "Lanzhou (Yongdeng)",
@@ -1920,6 +2044,10 @@
 			"code": "LYS"
 		},
 		{
+			"city": "Maceió",
+			"code": "MCZ"
+		},
+		{
 			"city": "Madrid",
 			"code": "MAD"
 		},
@@ -1964,6 +2092,10 @@
 			"code": "ESG"
 		},
 		{
+			"city": "Marrakesh",
+			"code": "RAK"
+		},
+		{
 			"city": "Marseille",
 			"code": "MRS"
 		},
@@ -1988,6 +2120,10 @@
 			"code": "KNO"
 		},
 		{
+			"city": "Medellín",
+			"code": "MDE"
+		},
+		{
 			"city": "Medina",
 			"code": "MED"
 		},
@@ -1998,6 +2134,10 @@
 		{
 			"city": "Memphis",
 			"code": "MEM"
+		},
+		{
+			"city": "Menorca",
+			"code": "MAH"
 		},
 		{
 			"city": "Mexicali",
@@ -2032,6 +2172,10 @@
 			"code": "ROB"
 		},
 		{
+			"city": "Montego Bay",
+			"code": "MBJ"
+		},
+		{
 			"city": "Montréal",
 			"code": "YUL"
 		},
@@ -2054,6 +2198,10 @@
 		{
 			"city": "Muscat",
 			"code": "MCT"
+		},
+		{
+			"city": "Mykonos",
+			"code": "JMK"
 		},
 		{
 			"city": "N'Djamena",
@@ -2080,6 +2228,10 @@
 			"code": "NNG"
 		},
 		{
+			"city": "Nantes",
+			"code": "NTE"
+		},
+		{
 			"city": "Napoli",
 			"code": "NAP"
 		},
@@ -2094,6 +2246,10 @@
 		{
 			"city": "Nassau",
 			"code": "NAS"
+		},
+		{
+			"city": "Natal",
+			"code": "NAT"
 		},
 		{
 			"city": "Natori",
@@ -2114,6 +2270,10 @@
 		{
 			"city": "Newark",
 			"code": "EWR"
+		},
+		{
+			"city": "Nha Trang",
+			"code": "CXR"
 		},
 		{
 			"city": "Niamey",
@@ -2154,6 +2314,10 @@
 		{
 			"city": "Oakland",
 			"code": "OAK"
+		},
+		{
+			"city": "Olbia",
+			"code": "OLB"
 		},
 		{
 			"city": "Omaha",
@@ -2208,12 +2372,20 @@
 			"code": "PPT"
 		},
 		{
+			"city": "Paphos",
+			"code": "PFO"
+		},
+		{
 			"city": "Paris",
 			"code": "PAR"
 		},
 		{
 			"city": "Pedro Juan Caballero",
 			"code": "PJC"
+		},
+		{
+			"city": "Penang",
+			"code": "PEN"
 		},
 		{
 			"city": "Pendik, Istanbul",
@@ -2234,6 +2406,10 @@
 		{
 			"city": "Phoenix",
 			"code": "PHX"
+		},
+		{
+			"city": "Phú Quốc",
+			"code": "PQC"
 		},
 		{
 			"city": "Phuket",
@@ -2288,6 +2464,10 @@
 			"code": "OPO"
 		},
 		{
+			"city": "Porto Alegre",
+			"code": "POA"
+		},
+		{
 			"city": "Porto Seguro",
 			"code": "BPS"
 		},
@@ -2328,12 +2508,20 @@
 			"code": "RDU"
 		},
 		{
+			"city": "Recife",
+			"code": "REC"
+		},
+		{
 			"city": "Reno",
 			"code": "RNO"
 		},
 		{
 			"city": "Reykjavík",
 			"code": "KEF"
+		},
+		{
+			"city": "Rhodes",
+			"code": "RHO"
 		},
 		{
 			"city": "Richmond",
@@ -2364,6 +2552,10 @@
 			"code": "ROV"
 		},
 		{
+			"city": "Rovaniemi",
+			"code": "RVN"
+		},
+		{
 			"city": "Sacramento",
 			"code": "SMF"
 		},
@@ -2388,8 +2580,16 @@
 			"code": "SSA"
 		},
 		{
+			"city": "Salzburg",
+			"code": "SZG"
+		},
+		{
 			"city": "Samara",
 			"code": "KUF"
+		},
+		{
+			"city": "Samarkand",
+			"code": "SKD"
 		},
 		{
 			"city": "San Antonio",
@@ -2410,6 +2610,10 @@
 		{
 			"city": "San Jose",
 			"code": "SJC"
+		},
+		{
+			"city": "San José (Costa Rica)",
+			"code": "SJO"
 		},
 		{
 			"city": "San José del Cabo",
@@ -2440,8 +2644,16 @@
 			"code": "SCQ"
 		},
 		{
+			"city": "Santiago de los Caballeros",
+			"code": "STI"
+		},
+		{
 			"city": "Santo Domingo",
 			"code": "SDQ"
+		},
+		{
+			"city": "Santorini",
+			"code": "JTR"
 		},
 		{
 			"city": "Sanya (Tianya)",
@@ -2454,6 +2666,10 @@
 		{
 			"city": "Sapporo",
 			"code": "CTS"
+		},
+		{
+			"city": "Sarajevo",
+			"code": "SJJ"
 		},
 		{
 			"city": "Saratov",
@@ -2482,6 +2698,10 @@
 		{
 			"city": "Sepang",
 			"code": "KUL"
+		},
+		{
+			"city": "Seville",
+			"code": "SVQ"
 		},
 		{
 			"city": "Shanghai (Minhang)",
@@ -2532,6 +2752,10 @@
 			"code": "ATH"
 		},
 		{
+			"city": "Split",
+			"code": "SPU"
+		},
+		{
 			"city": "St Louis",
 			"code": "STL"
 		},
@@ -2580,6 +2804,10 @@
 			"code": "TPA"
 		},
 		{
+			"city": "Tangier",
+			"code": "TNG"
+		},
+		{
 			"city": "Taoyuan (Dayuan)",
 			"code": "TPE"
 		},
@@ -2620,6 +2848,10 @@
 			"code": "TSN"
 		},
 		{
+			"city": "Tivat",
+			"code": "TIV"
+		},
+		{
 			"city": "Tocumen",
 			"code": "PTY"
 		},
@@ -2642,6 +2874,10 @@
 		{
 			"city": "Toulouse/Blagnac",
 			"code": "TLS"
+		},
+		{
+			"city": "Trabzon",
+			"code": "TZX"
 		},
 		{
 			"city": "Tripoli",
@@ -2682,6 +2918,10 @@
 		{
 			"city": "Ürümqi",
 			"code": "URC"
+		},
+		{
+			"city": "Valencia",
+			"code": "VLC"
 		},
 		{
 			"city": "Valletta",
@@ -2760,6 +3000,10 @@
 			"code": "YWG"
 		},
 		{
+			"city": "Wrocław",
+			"code": "WRO"
+		},
+		{
 			"city": "Wuhan (Huangpi)",
 			"code": "WUH"
 		},
@@ -2788,8 +3032,16 @@
 			"code": "EVN"
 		},
 		{
+			"city": "Zadar",
+			"code": "ZAD"
+		},
+		{
 			"city": "Zagreb",
 			"code": "ZAG"
+		},
+		{
+			"city": "Zakynthos",
+			"code": "ZTH"
 		},
 		{
 			"city": "Zandery",
