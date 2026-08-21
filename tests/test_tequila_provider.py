@@ -4,6 +4,7 @@ from typing import Any
 from src.app.models.flights import SearchQuery
 from src.app.services.providers import FlightProvider
 from src.app.services.providers.tequila import TequilaProvider
+from tests.fakes import ResponseStub
 
 QUERY = SearchQuery(
     origin_iata="FRA",
@@ -31,15 +32,6 @@ def itinerary(
         "duration": {"departure": 9300},
         "route": route,
     }
-
-
-class ResponseStub:
-    def __init__(self, body: dict[str, Any], status_code: int = 200) -> None:
-        self.body = body
-        self.status_code = status_code
-
-    def json(self) -> dict[str, Any]:
-        return self.body
 
 
 def ts(day: int, hour: int = 12) -> int:

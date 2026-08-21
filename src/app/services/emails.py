@@ -9,7 +9,7 @@ from typing import Any
 from jinja2 import Environment, FileSystemLoader
 
 from src.app.config import Settings
-from src.app.models.flights import FlightDeal, RankedDeal
+from src.app.models.flights import RankedDeal
 from src.app.services import mailer
 from src.app.services.digest import DigestResult
 from src.app.services.tokens import issue_token
@@ -33,18 +33,6 @@ FALLBACK_IMAGE = (
 # Rendered values are trusted internal data (usernames, provider results);
 # autoescape stays off. Revisit when usernames become untrusted input.
 _env = Environment(loader=FileSystemLoader(TEMPLATE_DIR), autoescape=False)  # noqa: S701 # nosec B701
-
-
-def _facts(deal: FlightDeal) -> str:
-    """The quality line on a deal card, e.g. "direct · 2h35 · dep 10:40"."""
-    if deal.stopovers:
-        label = "stop" if deal.stopovers == 1 else "stops"
-        via = dict.fromkeys(deal.via_cities + deal.return_via_cities)
-        stops = f"{deal.stopovers} {label} via {', '.join(via)}"
-    else:
-        stops = "direct"
-    hours, minutes = divmod(deal.duration_minutes, 60)
-    return f"{stops} · {hours}h{minutes:02d} · dep {deal.departs_at:%H:%M}"
 
 
 # Savings tiers vs the route's typical price in whole percent, best tier
@@ -100,10 +88,11 @@ def _present(
         # the freshness badge (#17) appends here too.
         "badges": badges,
         "anchor": anchor,
+        "reason": ranked.reason,
         # "depart", not "travel between": the window bounds outbound departures,
         # so the example trip's return may legitimately fall after it.
-        "dates": f"depart {window} · e.g. {deal.departs_at:%d.%m}–{deal.returns_at:%d.%m}",
-        "facts": _facts(deal),
+        "dates": f"depart {window} · e.g. {deal.trip_dates}",
+        "facts": deal.facts,
         "image_url": rng.choice(country_images) if country_images else FALLBACK_IMAGE,
     }
 

@@ -120,6 +120,26 @@ def test_price_anchor_from_earlier_runs_reaches_the_email(
     assert "typically ~310 EUR (−58%)" in captured[0]
 
 
+def test_reasons_reach_the_email_and_the_history(sqlite_db, monkeypatch) -> None:
+    reason = "Beat a 15 EUR cheaper option with a stop in Riga."
+    monkeypatch.setattr(
+        cli, "load_subscribers", lambda only_id: [subscriber("a@example.com")]
+    )
+
+    def fake_reasons(subscriber, deals, baselines, settings) -> None:
+        deals[0].reason = reason
+
+    monkeypatch.setattr(cli, "deal_reasons", fake_reasons)
+    captured: list[str] = []
+    monkeypatch.setattr(
+        cli.mailer, "send_email", lambda html, *a, **k: captured.append(html)
+    )
+    assert cli.run_digest(FakeProvider({"FI": [deal()]})) == 0
+    assert reason in captured[0]
+    with Session(get_engine()) as session:
+        assert session.scalars(select(SentDeal)).one().reason == reason
+
+
 def test_history_rows_written_for_candidates_and_sent_deals(
     sqlite_db, monkeypatch
 ) -> None:

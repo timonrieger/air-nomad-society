@@ -10,6 +10,10 @@ from src.app.services.history import OBSERVED_FIELDS
 
 TEST_SECRET = "test-secret-key-of-at-least-32-bytes!"  # gitleaks:allow
 
+# Tests never talk to the AI endpoint, whatever the developer's shell exports.
+for var in ("AI_API_KEY", "AI_BASE_URL", "AI_MODEL"):
+    os.environ.pop(var, None)
+
 # Every Settings field is required; tests never talk to real infra.
 for var, value in {
     "PUBLIC_BASE_URL": "http://localhost:5173",

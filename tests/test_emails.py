@@ -11,8 +11,12 @@ from tests.conftest import deal
 IMAGES = {"Finland": ["https://img.example/fi.jpg"]}
 
 
-def ranked(flight_deal: FlightDeal, source: DealSource = "favorite") -> RankedDeal:
-    return RankedDeal(deal=flight_deal, source=source, score=0.0)
+def ranked(
+    flight_deal: FlightDeal,
+    source: DealSource = "favorite",
+    reason: str | None = None,
+) -> RankedDeal:
+    return RankedDeal(deal=flight_deal, source=source, score=0.0, reason=reason)
 
 
 def render(
@@ -107,6 +111,13 @@ def test_anchor_line_at_typical_price_shows_no_savings() -> None:
 def test_no_anchor_without_baseline() -> None:
     html = render([ranked(deal())])
     assert "typically" not in html
+
+
+def test_reason_line_renders_when_present() -> None:
+    reason = "Direct at 10:40 — beat a cheaper red-eye with a stop."
+    html = render([ranked(deal(), reason=reason)])
+    assert reason in html
+    assert reason not in render([ranked(deal())])
 
 
 def test_quality_facts_line_for_direct_flight() -> None:

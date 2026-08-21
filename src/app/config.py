@@ -28,6 +28,12 @@ class Settings(BaseSettings):
     smtp_server: str
     smtp_port: int = 587
 
+    # Optional: per-deal AI reasoning lines in the digest, via any
+    # OpenAI-compatible chat-completions endpoint. No key → no lines.
+    ai_api_key: str | None = None
+    ai_base_url: str = "https://api.anthropic.com/v1"
+    ai_model: str = "claude-sonnet-5"
+
     # "dev" restricts the digest job to the subscriber with id MY_UUID.
     environment: str = "production"
     my_uuid: int | None = None

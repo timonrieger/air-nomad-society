@@ -19,6 +19,10 @@ logger = logging.getLogger(__name__)
 # every destination city of a country with headroom to spare.
 CANDIDATES_PER_COUNTRY = 30
 
+# Next-best candidates kept per searched country, so the AI reasoning line
+# can say what the winner beat.
+RUNNER_UP_COUNT = 2
+
 
 class DigestResult(BaseModel):
     """Deals across all searched countries, best score first."""
@@ -40,6 +44,7 @@ def build_digest(
     window_end = start + timedelta(days=subscriber.max_days_ahead)
 
     def best_pick(country: Country, source: DealSource) -> RankedDeal | None:
+        """The country's best-scoring candidate, carrying its beaten runner-ups."""
         query = SearchQuery(
             origin_iata=subscriber.departure_iata,
             destination_iata=country.code,
@@ -56,13 +61,18 @@ def build_digest(
             # (e.g. searching Germany from Frankfurt); skip those.
             if deal.departure_city != deal.arrival_city
         ]
-        if not candidates:
-            return None
-        score, best = min(
-            ((deal_score(deal), deal) for deal in candidates),
-            key=lambda scored: scored[0],
+        ranked = sorted(
+            (
+                RankedDeal(deal=deal, source=source, score=deal_score(deal))
+                for deal in candidates
+            ),
+            key=lambda pick: pick.score,
         )
-        return RankedDeal(deal=best, source=source, score=score)
+        if not ranked:
+            return None
+        winner = ranked[0]
+        winner.runner_ups = ranked[1 : 1 + RUNNER_UP_COUNT]
+        return winner
 
     favorites = set(subscriber.favorites)
     gems = select_gems(destinations, favorites, set(subscriber.excluded), rng=rng)

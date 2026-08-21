@@ -46,6 +46,23 @@ class FlightDeal(BaseModel):
         """Total stopovers across both legs; 0 means direct both ways."""
         return len(self.via_cities) + len(self.return_via_cities)
 
+    @property
+    def facts(self) -> str:
+        """The quality line, e.g. "direct · 2h35 · dep 10:40"."""
+        if self.stopovers:
+            label = "stop" if self.stopovers == 1 else "stops"
+            via = dict.fromkeys(self.via_cities + self.return_via_cities)
+            stops = f"{self.stopovers} {label} via {', '.join(via)}"
+        else:
+            stops = "direct"
+        hours, minutes = divmod(self.duration_minutes, 60)
+        return f"{stops} · {hours}h{minutes:02d} · dep {self.departs_at:%H:%M}"
+
+    @property
+    def trip_dates(self) -> str:
+        """The found trip's dates, e.g. "03.09–08.09"."""
+        return f"{self.departs_at:%d.%m}–{self.returns_at:%d.%m}"
+
 
 class RankedDeal(BaseModel):
     """A digest pick: the deal, where it came from, and how good it is."""
@@ -53,3 +70,10 @@ class RankedDeal(BaseModel):
     deal: FlightDeal
     source: DealSource = Field(description="Favorite-country pick or random discovery")
     score: float = Field(description="Deterministic deal score; lower is better")
+    runner_ups: list["RankedDeal"] = Field(
+        default_factory=list,
+        description="Beaten candidates from the same search, best score first",
+    )
+    reason: str | None = Field(
+        default=None, description="AI reasoning line shown on the deal card"
+    )

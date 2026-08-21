@@ -23,7 +23,8 @@
             <p style="margin: 0 0 10px;">{% for badge in flight.badges %}<span style="display: inline-block; background-color: #ffffff; border: 1px solid {{ t.gray_200 }}; border-radius: 999px; font-family: {{ t.font }}; font-size: 12px; font-weight: 600; color: {{ t.gray_800 }}; padding: 3px 12px; margin-right: 6px;">{{ badge }}</span>{% endfor %}</p>
             <p style="margin: 0 0 4px; font-family: {{ t.font }}; font-size: 20px; font-weight: 700; color: {{ t.gray_900 }};">{{ flight.deal.departure_city }} &ndash; {{ flight.deal.arrival_city }}</p>
             <p style="margin: 0 0 4px; font-family: {{ t.font }}; font-size: 14px; color: {{ t.gray_500 }};">{{ flight.deal.arrival_country }} &middot; {{ flight.dates }}</p>
-            <p style="margin: 0 0 16px; font-family: {{ t.font }}; font-size: 13px; color: {{ t.gray_500 }};">{{ flight.facts }}</p>
+            <p style="margin: 0 0 {{ "4px" if flight.reason else "16px" }}; font-family: {{ t.font }}; font-size: 13px; color: {{ t.gray_500 }};">{{ flight.facts }}</p>
+            {% if flight.reason %}<p style="margin: 0 0 16px; font-family: {{ t.font }}; font-size: 13px; font-style: italic; color: {{ t.gray_800 }};">{{ flight.reason | e }}</p>{% endif %}
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
               <tr>
                 <td style="vertical-align: middle;">
