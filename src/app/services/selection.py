@@ -3,7 +3,7 @@
 import random
 from collections.abc import Sequence
 
-from src.app.models.flights import FlightDeal
+from src.app.models.flights import DealSource, FlightDeal
 from src.app.models.history import SentHistory
 from src.app.services.refdata import Country
 
@@ -40,14 +40,19 @@ def deal_score(deal: FlightDeal) -> float:
     return deal.price * penalty
 
 
-def freshness_multiplier(deal: FlightDeal, history: SentHistory) -> float:
+def freshness_multiplier(
+    deal: FlightDeal, source: DealSource, history: SentHistory
+) -> float:
     """Score inflation for repetition — the top churn driver of deal digests.
 
     Country first, then city: a recently-sent country costs 25%, and a
     recently-sent city another 15% on top, so a repeating country rotates
-    its cities. A fare clearly below the cheapest recently sent one there
-    (≥15% cheaper) repeats with no penalty at all — that price drop is
-    exactly what is worth resending."""
+    its cities. Favorites are exempt from the country penalty — they are
+    re-sent every week by contract, so it would apply to them permanently
+    and just handicap them against gems — but still pay for repeating a
+    city. A fare clearly below the cheapest recently sent one there (≥15%
+    cheaper) repeats with no penalty at all — that price drop is exactly
+    what is worth resending."""
     if deal.arrival_country not in history.recent_countries:
         return 1.0
     best = history.recent_country_prices.get(deal.arrival_country)
@@ -55,7 +60,7 @@ def freshness_multiplier(deal: FlightDeal, history: SentHistory) -> float:
     # exactly-15%-cheaper fare.
     if best is not None and deal.price <= round(CLEARLY_BETTER_FRACTION * best, 2):
         return 1.0
-    multiplier = COUNTRY_REPEAT_PENALTY
+    multiplier = 1.0 if source == "favorite" else COUNTRY_REPEAT_PENALTY
     if deal.arrival_iata in history.recent_cities:
         multiplier *= CITY_REPEAT_PENALTY
     return multiplier

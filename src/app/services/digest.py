@@ -80,7 +80,8 @@ def build_digest(
                     source=source,
                     # The freshness multiplier steers repeating countries
                     # toward fresh cities and sinks repeats in the ranking.
-                    score=deal_score(deal) * freshness_multiplier(deal, history),
+                    score=deal_score(deal)
+                    * freshness_multiplier(deal, source, history),
                     origin_iata=origin_iata,
                 )
                 for origin_iata in subscriber.departure_airports
