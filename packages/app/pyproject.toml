@@ -1,0 +1,55 @@
+[project]
+name = "air-nomad-society"
+description = "Personalized flight deals delivered to your inbox."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.14"
+authors = [{name = "Timon Rieger", email = "contact@timonrieger.de"}]
+version = "0.1.0"
+
+dependencies = [
+    "alembic>=1.19.1,<2.0.0",
+    "email-validator>=2.1.1,<3.0.0",
+    "fastapi>=0.141.1,<0.142.0",
+    "httpx2>=2.12.0,<3.0.0",
+    "jinja2>=3.1.6,<4.0.0",
+    "psycopg2-binary>=2.9.9,<3.0.0",
+    "pydantic>=2.13.4,<3.0.0",
+    "pydantic-settings>=2.15.0,<3.0.0",
+    "pyjwt>=2.13.0,<3.0.0",
+    "sqlalchemy>=2.0.0,<3.0.0",
+]
+
+[project.urls]
+Repository = "https://github.com/timonrieger/air-nomad-society"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.0,<10.0.0",
+    "ty>=0.0.55,<0.0.56",
+    "uvicorn>=0.52.4,<0.53.0",
+]
+
+[tool.uv]
+# `packages/app` is the project root and import root; code lives in src/
+# (from src.services import ...); the project is run via entrypoints, not
+# installed as a distribution.
+package = false
+add-bounds = "major"
+
+# The Vercel project's Root Directory is packages/app; auto-detection scans
+# src/ for an ASGI `app`, kept explicit anyway.
+[tool.vercel]
+entrypoint = "src.main:app"
+
+# The database URL comes from src.config (DB_URI) in alembic/env.py,
+# never from this config.
+[tool.alembic]
+script_location = "%(here)s/alembic"
+prepend_sys_path = ["."]
+file_template = "%%(rev)s_%%(slug)s"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

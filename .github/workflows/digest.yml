@@ -33,7 +33,7 @@ jobs:
         uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14 # v4
 
       - name: Run digest
-        run: mise run digest
+        run: mise run '//packages/app:digest'
         env:
           DB_URI: ${{ secrets.DB_URI }}
           TEQUILA_API_KEY: ${{ secrets.TEQUILA_API_KEY }}

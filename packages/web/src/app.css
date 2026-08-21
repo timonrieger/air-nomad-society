@@ -1,0 +1,69 @@
+@import 'tailwindcss';
+/* Brand tokens (accent, gray scale, font stack) are generated from the single
+   definition in packages/app/src/brand.json — shared with the emails. */
+@import './brand.css';
+
+@theme {
+	/* Dark-theme roles picked from the shared gray scale. */
+	--color-surface: var(--color-gray-950);
+	--color-raised: var(--color-gray-900);
+	--color-line: var(--color-gray-800);
+	--color-ink: var(--color-gray-200);
+	--color-ink-muted: var(--color-gray-400);
+}
+
+@layer base {
+	body {
+		@apply bg-surface text-ink antialiased;
+	}
+
+	a {
+		@apply text-accent-bright hover:underline;
+	}
+}
+
+@layer components {
+	.btn {
+		@apply inline-block cursor-pointer rounded-lg bg-accent px-5 py-2.5 font-semibold text-white transition-colors hover:bg-accent-bright hover:no-underline disabled:cursor-default disabled:opacity-60;
+	}
+
+	.input {
+		@apply w-full rounded-lg border border-line bg-raised px-3 py-2 text-base text-ink focus:outline-2 focus:outline-accent;
+	}
+
+	.banner {
+		@apply my-5 rounded-lg border px-4 py-3;
+	}
+
+	.banner-success {
+		@apply border-green-600 text-green-500;
+	}
+
+	.banner-error {
+		@apply border-red-500 text-red-400;
+	}
+
+	.select-trigger {
+		@apply min-h-10 w-full cursor-pointer rounded-lg border border-line bg-raised px-3 py-2 text-left text-base text-ink focus:outline-2 focus:outline-accent;
+	}
+
+	.select-content {
+		@apply z-50 max-h-72 w-(--bits-combobox-anchor-width) overflow-y-auto rounded-lg border border-line bg-raised p-1;
+	}
+
+	.select-item {
+		@apply flex cursor-pointer items-center justify-between rounded-md px-3 py-1.5 text-sm data-highlighted:bg-accent data-highlighted:text-white;
+	}
+
+	.tooltip {
+		@apply z-50 max-w-64 rounded-md border border-line bg-raised px-2.5 py-1.5 text-xs text-ink shadow-lg;
+	}
+
+	.page-title {
+		@apply mt-10 text-3xl font-bold;
+	}
+
+	.eyebrow {
+		@apply text-sm font-semibold tracking-widest text-accent-bright uppercase;
+	}
+}

@@ -1,0 +1,20 @@
+[deps.pnpm]
+auto = true
+run = "pnpm install ${CI:+--frozen-lockfile}"
+
+[tasks.install]
+run = "pnpm install ${CI:+--frozen-lockfile}"
+description = "Install frontend dependencies; asserts the lockfile with --frozen-lockfile under CI"
+
+[tasks.install-upgrade]
+run = "pnpx --package=npm-check-updates ncu -i --format group"
+raw = true
+description = "Interactively upgrade frontend dependencies"
+
+[tasks.install-check]
+run = "pnpx --package=npm-check-updates ncu --format group"
+description = "Check frontend dependencies for updates"
+
+[tasks.dev]
+run = "pnpm dev"
+description = "Run the SvelteKit dev server"

@@ -6,7 +6,7 @@
 		"useIgnoreFile": true
 	},
 	"files": {
-		"includes": ["src/web/**", "!src/web/src/brand.css"]
+		"includes": ["packages/web/**", "!packages/web/src/brand.css"]
 	},
 	"css": {
 		"parser": {

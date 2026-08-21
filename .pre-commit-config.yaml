@@ -15,7 +15,16 @@ repos:
     hooks:
       - id: biome-check
         additional_dependencies: ["@biomejs/biome@2.5.9"]
-        files: ^src/web/
+        files: ^packages/web/
+
+  - repo: local
+    hooks:
+      - id: svelte-check
+        name: svelte-check
+        language: system
+        entry: bash -c 'cd packages/web && pnpm exec svelte-kit sync && pnpm exec svelte-check --tsconfig ./tsconfig.json'
+        files: ^packages/web/
+        pass_filenames: false
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.15.20
@@ -28,12 +37,14 @@ repos:
     rev: 0.11.25
     hooks:
       - id: uv-lock
+        args: [--project, packages/app]
+        files: ^packages/app/(pyproject\.toml|uv\.lock)$
 
   - repo: https://github.com/PyCQA/bandit
     rev: 1.9.4
     hooks:
       - id: bandit
-        exclude: "^tests"
+        exclude: "^packages/app/tests"
         # B101: asserts as guards are the house style (see CLAUDE.md); the
         # app doesn't run under python -O.
         args: [--skip, B101]
@@ -53,4 +64,4 @@ repos:
     rev: v0.0.55
     hooks:
       - id: ty
-        args: [--python, .venv]
+        args: [--project, packages/app, --python, packages/app/.venv]

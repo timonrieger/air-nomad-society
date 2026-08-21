@@ -1,0 +1,23 @@
+monorepo_root = true
+
+[settings]
+experimental = true # required for [deps]
+
+[tools]
+python = "3.14.6"
+uv = "0.11.25"
+
+[tasks.install]
+depends = ["//packages/app:install", "//packages/web:install"]
+alias = "i"
+description = "Install dependencies for all packages (alias: 'i'); asserts the lockfiles under CI"
+
+[tasks.setup]
+run = ["mise run install", "uvx prek install"]
+description = "Setup the project"
+
+[tasks.lint]
+# The svelte-check hook runs from packages/web and needs its node_modules.
+depends = ["//packages/web:install"]
+run = "uvx prek run --all-files"
+description = "Run pre-commit hooks"
