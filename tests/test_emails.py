@@ -17,7 +17,12 @@ def ranked(
     reason: str | None = None,
 ) -> RankedDeal:
     return RankedDeal(
-        deal=flight_deal, source=source, score=0.0, reason=reason, origin_iata="FRA"
+        deal=flight_deal,
+        source=source,
+        score=0.0,
+        quality_score=0.0,
+        reason=reason,
+        origin_iata="FRA",
     )
 
 

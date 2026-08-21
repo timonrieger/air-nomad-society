@@ -81,6 +81,7 @@ def sent(
         subscriber_id=subscriber_id,
         source=source,
         score=score,
+        quality_score=score,
         sent_at=sent_at,
         **deal(**deal_overrides).model_dump(include=SENT_FIELDS),
     )

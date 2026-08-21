@@ -100,8 +100,11 @@ def build_digest(
                     deal=deal,
                     source=source,
                     # The freshness multiplier steers repeating countries
-                    # toward fresh cities and sinks repeats in the ranking.
-                    score=deal_score(deal)
+                    # toward fresh cities and sinks repeats in the ranking;
+                    # the pure quality score rides along so history can tell
+                    # a worse deal from a repeat.
+                    quality_score=(quality := deal_score(deal)),
+                    score=quality
                     * freshness_multiplier(
                         deal,
                         source,

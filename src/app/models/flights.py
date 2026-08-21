@@ -69,7 +69,14 @@ class RankedDeal(BaseModel):
 
     deal: FlightDeal
     source: DealSource = Field(description="Favorite-country pick or random discovery")
-    score: float = Field(description="Deterministic deal score; lower is better")
+    score: float = Field(
+        description="Ranking score: quality inflated by freshness penalties; "
+        "lower is better"
+    )
+    quality_score: float = Field(
+        description="Deterministic comfort-adjusted score before freshness; "
+        "lower is better"
+    )
     runner_ups: list["RankedDeal"] = Field(
         default_factory=list,
         description="Beaten candidates from the same search, best score first",

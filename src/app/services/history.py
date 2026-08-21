@@ -142,6 +142,7 @@ def record_sent_deals(subscriber_id: int, deals: list[RankedDeal]) -> None:
                 subscriber_id=subscriber_id,
                 source=ranked.source,
                 score=ranked.score,
+                quality_score=ranked.quality_score,
                 reason=ranked.reason,
                 **ranked.deal.model_dump(include=SENT_FIELDS),
             )
