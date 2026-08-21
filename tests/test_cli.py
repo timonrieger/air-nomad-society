@@ -42,7 +42,7 @@ def test_one_failing_subscriber_does_not_block_the_rest(sqlite_db, monkeypatch) 
     subscribers = [subscriber("fails@example.com"), subscriber("works@example.com")]
     sent: list[str] = []
 
-    def fake_send(html: str, recipient: str, subject: str, settings, *_) -> None:
+    def fake_send(html: str, recipient: str, subject: str, settings) -> None:
         if recipient == "fails@example.com":
             raise RuntimeError("smtp exploded")
         sent.append(recipient)

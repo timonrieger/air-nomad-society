@@ -67,23 +67,16 @@ def run_digest(provider: FlightProvider) -> int:
                 logger.info("no deals for %s, skipping digest", subscriber.email)
                 continue
             deal_reasons(subscriber, result, settings)
-            unsubscribe_token = issue_token(subscriber.id, "unsubscribe")
             html = emails.render_digest(
                 username=subscriber.username,
                 update_token=issue_token(subscriber.id, "update"),
-                unsubscribe_token=unsubscribe_token,
+                unsubscribe_token=issue_token(subscriber.id, "unsubscribe"),
                 digest=result,
                 images=data.images,
                 base_url=settings.public_base_url,
                 favorites_configured=bool(subscriber.favorites),
             )
-            mailer.send_email(
-                html,
-                subscriber.email,
-                emails.DIGEST_SUBJECT,
-                settings,
-                emails.unsubscribe_endpoint(unsubscribe_token, settings),
-            )
+            mailer.send_email(html, subscriber.email, emails.DIGEST_SUBJECT, settings)
             record_sent_deals(subscriber.id, result)
             logger.info("sent digest to %s", subscriber.email)
         except Exception:
@@ -106,21 +99,14 @@ def run_announcement(subject: str, body_file: str) -> int:
     failures = 0
     for subscriber in subscribers:
         try:
-            unsubscribe_token = issue_token(subscriber.id, "unsubscribe")
             html = emails.render_announcement(
                 username=subscriber.username,
                 paragraphs=paragraphs,
                 update_token=issue_token(subscriber.id, "update"),
-                unsubscribe_token=unsubscribe_token,
+                unsubscribe_token=issue_token(subscriber.id, "unsubscribe"),
                 base_url=settings.public_base_url,
             )
-            mailer.send_email(
-                html,
-                subscriber.email,
-                subject,
-                settings,
-                emails.unsubscribe_endpoint(unsubscribe_token, settings),
-            )
+            mailer.send_email(html, subscriber.email, subject, settings)
             logger.info("announced to %s", subscriber.email)
         except Exception:
             failures += 1

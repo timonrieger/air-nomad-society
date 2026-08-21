@@ -119,15 +119,6 @@ def render_announcement(
     )
 
 
-def unsubscribe_endpoint(token: str, settings: Settings) -> str | None:
-    """The API URL mail clients POST for one-click unsubscribe (RFC 8058).
-
-    None when API_BASE_URL is unset, which drops the header entirely."""
-    if settings.api_base_url is None:
-        return None
-    return f"{settings.api_base_url}/unsubscribe?token={token}"
-
-
 def render_confirmation(username: str, confirm_url: str) -> str:
     return _env.get_template("confirm.html.j2").render(
         t=TOKENS, username=username, confirm_url=confirm_url
