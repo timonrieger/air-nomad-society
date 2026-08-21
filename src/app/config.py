@@ -1,6 +1,5 @@
 from functools import lru_cache
 
-from pydantic import computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -42,7 +41,6 @@ class Settings(BaseSettings):
     # links in emails.
     public_base_url: str
 
-    @computed_field
     @property
     def digest_only_id(self) -> int | None:
         """The single subscriber the digest is restricted to, in dev only."""
