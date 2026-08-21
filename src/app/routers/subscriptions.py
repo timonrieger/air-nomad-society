@@ -17,6 +17,13 @@ router = APIRouter()
 SessionDep = Annotated[Session, Depends(get_session)]
 
 
+def _all_known(values: list[str], known: frozenset[str], label: str) -> list[str]:
+    unknown = set(values) - known
+    if unknown:
+        raise ValueError(f"unknown {label}: {', '.join(sorted(unknown))}")
+    return values
+
+
 class SubscriptionIn(BaseModel):
     username: str = Field(min_length=3, max_length=20)
     email: EmailStr
@@ -32,12 +39,7 @@ class SubscriptionIn(BaseModel):
     @field_validator("departure_airports")
     @classmethod
     def _known_cities(cls, value: list[str]) -> list[str]:
-        unknown = set(value) - refdata.city_codes()
-        if unknown:
-            raise ValueError(
-                f"unknown departure city codes: {', '.join(sorted(unknown))}"
-            )
-        return value
+        return _all_known(value, refdata.city_codes(), "departure city codes")
 
     @field_validator("currency")
     @classmethod
@@ -49,10 +51,7 @@ class SubscriptionIn(BaseModel):
     @field_validator("favorite_countries", "excluded_countries")
     @classmethod
     def _known_countries(cls, value: list[str]) -> list[str]:
-        unknown = set(value) - refdata.country_names()
-        if unknown:
-            raise ValueError(f"unknown countries: {', '.join(sorted(unknown))}")
-        return value
+        return _all_known(value, refdata.country_names(), "countries")
 
     @model_validator(mode="after")
     def _ranges(self) -> "SubscriptionIn":

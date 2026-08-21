@@ -82,7 +82,6 @@ class RankedDeal(BaseModel):
         description="Destination country never emailed to this subscriber before",
     )
     origin_iata: str = Field(
-        default="",
         description="The searched departure airport this pick came from — the "
         "partition key for price observations",
     )

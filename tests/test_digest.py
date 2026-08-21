@@ -35,8 +35,8 @@ SUBSCRIBER = Subscriber(
 def test_favorites_and_discoveries_ranked_into_one_list() -> None:
     provider = FakeProvider(
         {
-            "FI": [deal(price=200)],
-            "ES": [
+            ("FRA", "FI"): [deal(price=200)],
+            ("FRA", "ES"): [
                 deal(
                     price=90,
                     arrival_iata="ES",
@@ -64,7 +64,7 @@ def test_favorites_and_discoveries_ranked_into_one_list() -> None:
 def test_best_scoring_candidate_wins_over_cheapest() -> None:
     cheap_stopover = deal(price=100, via_cities=["Riga"])
     direct = deal(price=110)
-    provider = FakeProvider({"FI": [cheap_stopover, direct]})
+    provider = FakeProvider({("FRA", "FI"): [cheap_stopover, direct]})
     result = build_digest(
         SUBSCRIBER, provider, DESTINATIONS, SentHistory(), rng=random.Random(1)
     )
@@ -77,7 +77,7 @@ def test_best_scoring_candidate_wins_over_cheapest() -> None:
 def test_repeating_favorite_prefers_a_fresh_city() -> None:
     helsinki = deal(price=100)
     turku = deal(price=104, arrival_iata="TKU", arrival_city="Turku")
-    provider = FakeProvider({"FI": [helsinki, turku]})
+    provider = FakeProvider({("FRA", "FI"): [helsinki, turku]})
     history = SentHistory(
         recent_countries={"Finland"},
         recent_cities={"HEL"},
@@ -93,7 +93,7 @@ def test_repeating_favorite_prefers_a_fresh_city() -> None:
 
 
 def test_first_time_country_is_flagged_once_history_exists() -> None:
-    provider = FakeProvider({"FI": [deal()]})
+    provider = FakeProvider({("FRA", "FI"): [deal()]})
     seen_spain = SentHistory(all_countries={"Spain"})
     result = build_digest(
         SUBSCRIBER, provider, DESTINATIONS, seen_spain, rng=random.Random(1)
@@ -104,7 +104,7 @@ def test_first_time_country_is_flagged_once_history_exists() -> None:
 
 def test_brand_new_subscribers_get_no_first_time_flags() -> None:
     # With no history at all, badging every card would say nothing.
-    provider = FakeProvider({"FI": [deal()]})
+    provider = FakeProvider({("FRA", "FI"): [deal()]})
     result = build_digest(
         SUBSCRIBER, provider, DESTINATIONS, SentHistory(), rng=random.Random(1)
     )
@@ -114,7 +114,7 @@ def test_brand_new_subscribers_get_no_first_time_flags() -> None:
 
 def test_searches_fan_out_per_departure_airport() -> None:
     subscriber = SUBSCRIBER.model_copy(update={"departure_airports": ["FRA", "BER"]})
-    provider = FakeProvider({"FI": [deal()]})
+    provider = FakeProvider({("FRA", "FI"): [deal()]})
     build_digest(
         subscriber, provider, DESTINATIONS, SentHistory(), rng=random.Random(1)
     )
@@ -156,7 +156,7 @@ def test_search_window_derives_from_subscriber() -> None:
 
 
 def test_same_city_deals_are_dropped() -> None:
-    provider = FakeProvider({"FI": [deal(arrival_city="Frankfurt")]})
+    provider = FakeProvider({("FRA", "FI"): [deal(arrival_city="Frankfurt")]})
     result = build_digest(
         SUBSCRIBER, provider, DESTINATIONS, SentHistory(), rng=random.Random(1)
     )

@@ -1,5 +1,6 @@
 import logging
 import time
+from collections import deque
 from datetime import datetime, timezone
 from typing import Any
 
@@ -13,8 +14,9 @@ REQUEST_TIMEOUT = 30
 RATE_LIMIT_ATTEMPTS = 2
 RATE_LIMIT_WAIT = 10
 # Tequila's quota is 30 requests per minute; multi-departure fan-out can
-# burst well past it, so every request is paced to the quota up front.
-MIN_REQUEST_INTERVAL = 60 / 30
+# burst well past it, so requests pace themselves against a sliding window —
+# bursts under the quota run unthrottled, only genuine overflow waits.
+RATE_LIMIT_PER_MINUTE = 30
 
 
 def _local(epoch: int) -> datetime:
@@ -37,13 +39,15 @@ class TequilaProvider:
         # same host, so this saves a TLS handshake per request.
         self._session = requests.Session()
         self._session.headers["apikey"] = api_key
-        self._next_request_at = 0.0
+        self._request_times: deque[float] = deque(maxlen=RATE_LIMIT_PER_MINUTE)
 
     def _pace(self) -> None:
-        wait = self._next_request_at - time.monotonic()
-        if wait > 0:
-            time.sleep(wait)
-        self._next_request_at = time.monotonic() + MIN_REQUEST_INTERVAL
+        """The quota-th-latest request must be a minute old before the next."""
+        if len(self._request_times) == RATE_LIMIT_PER_MINUTE:
+            wait = 60 - (time.monotonic() - self._request_times[0])
+            if wait > 0:
+                time.sleep(wait)
+        self._request_times.append(time.monotonic())
 
     def search_top(self, query: SearchQuery, count: int) -> list[FlightDeal]:
         # The direct-only pass is not redundant: in a single price-sorted
