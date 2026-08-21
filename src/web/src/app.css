@@ -44,11 +44,11 @@
 	}
 
 	.select-trigger {
-		@apply min-h-10 w-full cursor-pointer rounded-lg border border-line bg-raised px-3 py-2 text-left text-base text-ink focus:outline-2 focus:outline-accent data-placeholder:text-ink-muted;
+		@apply min-h-10 w-full cursor-pointer rounded-lg border border-line bg-raised px-3 py-2 text-left text-base text-ink focus:outline-2 focus:outline-accent;
 	}
 
 	.select-content {
-		@apply z-50 max-h-72 w-(--bits-select-anchor-width) overflow-y-auto rounded-lg border border-line bg-raised p-1;
+		@apply z-50 max-h-72 w-(--bits-combobox-anchor-width) overflow-y-auto rounded-lg border border-line bg-raised p-1;
 	}
 
 	.select-item {
