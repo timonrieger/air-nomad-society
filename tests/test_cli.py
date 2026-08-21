@@ -121,8 +121,10 @@ def test_price_anchor_from_earlier_runs_reaches_the_email(
     assert "typically ~310 EUR (−58%)" in captured[0]
     with Session(get_engine()) as session:
         recorded = session.scalars(select(SentDeal)).one()
-    # The quoted savings and the searched origin are frozen at send time.
+    # The quoted savings, typical price and searched origin are frozen at
+    # send time.
     assert recorded.savings_percent == 58
+    assert recorded.usual_price == 310
     assert recorded.origin_iata == "FRA"
     assert recorded.arrival_city == "Helsinki"
 

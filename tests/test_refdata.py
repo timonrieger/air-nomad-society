@@ -59,7 +59,10 @@ def test_every_country_has_images_and_no_key_is_orphaned() -> None:
 
 
 def test_every_image_entry_is_a_non_empty_list_of_urls() -> None:
-    """An empty list crashes the digest: `random.choice([])` raises IndexError."""
+    """An empty list crashes the digest: `random.choice([])` raises IndexError.
+
+    The query-string check backs country_images(), which appends the card
+    sizing params with a plain &."""
     for country, urls in refdata.load().images.items():
         assert urls, f"{country} has no images; drop the key to use the fallback"
-        assert all(url.startswith("https://") for url in urls), country
+        assert all(url.startswith("https://") and "?" in url for url in urls), country

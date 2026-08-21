@@ -21,7 +21,6 @@ from src.app.services.selection import deal_score
 BASELINE_WINDOW_WEEKS = 26
 MIN_OBSERVATION_DAYS = 4
 FRESHNESS_WINDOW_WEEKS = 8
-WALL_WINDOW_WEEKS = 4
 
 
 def _utcnow() -> datetime:
@@ -150,40 +149,14 @@ def sent_history(subscriber_id: int) -> SentHistory:
     return history
 
 
-def wall_deals(count: int) -> list[SentDeal]:
-    """Recent sent deals for the public wall.
-
-    Aggregated across subscribers: identical routes at the same price
-    collapse to the newest send, and nothing subscriber-specific leaves
-    this function's rows unread. Best savings first, then newest; the
-    savings are the ones recorded at send time, so the wall always quotes
-    exactly what the digest email quoted."""
-    since = _utcnow() - timedelta(weeks=WALL_WINDOW_WEEKS)
-    statement = (
-        select(SentDeal)
-        .where(SentDeal.sent_at >= since)
-        .order_by(SentDeal.sent_at.asc())
-    )
-    with session_scope() as session:
-        rows = list(session.scalars(statement))
-    unique = {
-        (row.departure_iata, row.arrival_iata, row.price, row.currency): row
-        for row in rows  # ascending sent_at: the newest duplicate wins
-    }
-    scored = sorted(
-        unique.values(),
-        key=lambda row: (
-            row.savings_percent is None,
-            -(row.savings_percent or 0),
-            -row.sent_at.timestamp(),
-        ),
-    )
-    return scored[:count]
-
-
 def record_sent_deals(subscriber_id: int, digest: DigestResult) -> None:
-    insert_rows(
-        [
+    rows = []
+    for ranked in digest.deals:
+        # The savings and typical price the email quoted, frozen at send
+        # time as quoted — round(baseline) is the integer the anchor line
+        # prints — so the public wall shows exactly these numbers.
+        baseline = digest.baseline_for(ranked)
+        rows.append(
             SentDeal(
                 subscriber_id=subscriber_id,
                 source=ranked.source,
@@ -192,16 +165,12 @@ def record_sent_deals(subscriber_id: int, digest: DigestResult) -> None:
                 # deterministic on the deal, so the two can never drift.
                 quality_score=deal_score(ranked.deal),
                 origin_iata=ranked.origin_iata,
-                # The savings the email quoted, frozen at send time — the
-                # public wall shows exactly this number.
                 savings_percent=(
-                    savings_percent(ranked.deal.price, baseline)
-                    if (baseline := digest.baseline_for(ranked))
-                    else None
+                    savings_percent(ranked.deal.price, baseline) if baseline else None
                 ),
+                usual_price=round(baseline) if baseline else None,
                 reason=ranked.reason,
                 **ranked.deal.model_dump(include=SENT_FIELDS),
             )
-            for ranked in digest.deals
-        ]
-    )
+        )
+    insert_rows(rows)

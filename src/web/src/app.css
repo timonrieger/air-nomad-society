@@ -63,7 +63,4 @@
 		@apply mt-10 text-3xl font-bold;
 	}
 
-	.nav-link {
-		@apply text-ink-muted hover:text-ink hover:no-underline;
-	}
 }

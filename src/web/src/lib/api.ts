@@ -49,15 +49,18 @@ export type SubscriptionIn = {
 /** Form bounds mirroring SubscriptionIn in src/app/routers/subscriptions.py. */
 export const LIMITS = { usernameMin: 3, usernameMax: 20, maxDaysAhead: 365, gemCountMax: 10 } as const;
 
+/** One public wall card, display-ready — see WallDeal in src/app/routers/deals.py. */
 export type WallDeal = {
+	destination: string;
+	country: string;
 	departure_city: string;
-	arrival_city: string | null;
-	arrival_country: string;
 	price: number;
 	currency: string;
 	savings_percent: number | null;
+	usual_price: number | null;
 	badge: string | null;
 	found_on: string;
+	image_url: string;
 };
 
 export function tokenFromUrl(): string | null {

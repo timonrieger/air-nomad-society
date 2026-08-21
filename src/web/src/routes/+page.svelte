@@ -1,4 +1,20 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+	import { fetchDeals, type WallDeal } from '$lib/api';
+
+	let deals = $state<WallDeal[]>([]);
+
+	onMount(async () => {
+		// The wall is a garnish on the landing page: if the API is down the
+		// section simply stays hidden.
+		deals = await fetchDeals().catch(() => []);
+	});
+
+	const foundOn = (deal: WallDeal) => {
+		const [, month, day] = deal.found_on.split('-');
+		return `found ${day}.${month}.`;
+	};
+
 	const features = [
 		{
 			title: 'Personalized Deals, With a Reason',
@@ -75,6 +91,55 @@
 	</p>
 	<a class="btn" href="/subscribe">Subscribe For Free</a>
 </section>
+
+{#if deals.length > 0}
+	<section class="mb-12">
+		<h2 class="mb-1 text-2xl font-semibold">Get flights like these</h2>
+		<p class="mb-4 text-ink-muted">
+			Recently sent to our subscribers — every digest is picked for its subscriber's own cities and
+			favorite countries.
+		</p>
+		<div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+			{#each deals as deal (deal)}
+				<article class="overflow-hidden rounded-xl border border-line bg-raised">
+					<div class="relative">
+						<img
+							class="h-40 w-full object-cover"
+							src={deal.image_url}
+							alt={deal.destination}
+							loading="lazy"
+						/>
+						{#if deal.badge}
+							<span
+								class="absolute top-3 left-3 rounded-full border border-line bg-raised px-2.5 py-0.5 text-xs font-semibold"
+							>
+								{deal.badge}
+							</span>
+						{/if}
+					</div>
+					<div class="p-5">
+						<h3 class="font-semibold">{deal.destination}</h3>
+						<p class="text-sm text-ink-muted">
+							{deal.country} · from {deal.departure_city} · {foundOn(deal)}
+						</p>
+						<p class="mt-3 text-xl font-bold text-accent-bright">
+							{deal.price}
+							{deal.currency}
+							{#if deal.savings_percent != null && deal.usual_price != null}
+								<span class="text-sm font-normal text-ink-muted">
+									<s>usually ~{deal.usual_price} {deal.currency}</s>
+								</span>
+							{/if}
+						</p>
+					</div>
+				</article>
+			{/each}
+		</div>
+		<p class="mt-8 text-center">
+			<a class="btn" href="/subscribe">Get deals like these in your inbox</a>
+		</p>
+	</section>
+{/if}
 
 <section>
 	<h2 class="mb-4 text-2xl font-semibold">Benefits</h2>
