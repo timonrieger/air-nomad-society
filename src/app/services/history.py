@@ -11,8 +11,9 @@ from uuid import uuid4
 from sqlalchemy import select
 
 from src.app.db import PriceObservation, SentDeal, insert_rows, session_scope
-from src.app.models.flights import FlightDeal, RankedDeal, SearchQuery
+from src.app.models.flights import FlightDeal, SearchQuery
 from src.app.models.history import SentHistory
+from src.app.services.digest import DigestResult
 from src.app.services.emails import savings_percent
 from src.app.services.providers import FlightProvider
 from src.app.services.selection import deal_score
@@ -39,6 +40,7 @@ OBSERVED_FIELDS = {
 }
 
 SENT_FIELDS = {
+    "departure_city",
     "departure_iata",
     "arrival_city",
     "arrival_iata",
@@ -139,15 +141,15 @@ def sent_history(subscriber_id: int) -> SentHistory:
     return history
 
 
-def wall_deals(count: int) -> list[tuple[SentDeal, int | None]]:
-    """Recent sent deals for the public wall, with their savings vs typical.
+def wall_deals(count: int) -> list[SentDeal]:
+    """Recent sent deals for the public wall.
 
     Aggregated across subscribers: identical routes at the same price
     collapse to the newest send, and nothing subscriber-specific leaves
-    this function's rows unread. Best savings first, then newest; savings
-    are None while a route's baseline is still thin."""
-    now = _utcnow()
-    since = now - timedelta(weeks=WALL_WINDOW_WEEKS)
+    this function's rows unread. Best savings first, then newest; the
+    savings are the ones recorded at send time, so the wall always quotes
+    exactly what the digest email quoted."""
+    since = _utcnow() - timedelta(weeks=WALL_WINDOW_WEEKS)
     statement = (
         select(SentDeal)
         .where(SentDeal.sent_at >= since)
@@ -159,32 +161,18 @@ def wall_deals(count: int) -> list[tuple[SentDeal, int | None]]:
         (row.departure_iata, row.arrival_iata, row.price, row.currency): row
         for row in rows  # ascending sent_at: the newest duplicate wins
     }
-    by_currency: defaultdict[str, list[SentDeal]] = defaultdict(list)
-    for row in unique.values():
-        by_currency[row.currency].append(row)
-    scored: list[tuple[SentDeal, int | None]] = []
-    for currency, group in by_currency.items():
-        typical = route_baselines(
-            {(row.departure_iata, row.arrival_iata) for row in group},
-            currency,
-            before=now,
-        )
-        for row in group:
-            baseline = typical.get((row.departure_iata, row.arrival_iata))
-            scored.append(
-                (row, savings_percent(row.price, baseline) if baseline else None)
-            )
-    scored.sort(
-        key=lambda pair: (
-            pair[1] is None,
-            -(pair[1] or 0),
-            -pair[0].sent_at.timestamp(),
-        )
+    scored = sorted(
+        unique.values(),
+        key=lambda row: (
+            row.savings_percent is None,
+            -(row.savings_percent or 0),
+            -row.sent_at.timestamp(),
+        ),
     )
     return scored[:count]
 
 
-def record_sent_deals(subscriber_id: int, deals: list[RankedDeal]) -> None:
+def record_sent_deals(subscriber_id: int, digest: DigestResult) -> None:
     insert_rows(
         [
             SentDeal(
@@ -194,9 +182,17 @@ def record_sent_deals(subscriber_id: int, deals: list[RankedDeal]) -> None:
                 # Recomputed rather than carried on RankedDeal: deal_score is
                 # deterministic on the deal, so the two can never drift.
                 quality_score=deal_score(ranked.deal),
+                origin_iata=ranked.origin_iata,
+                # The savings the email quoted, frozen at send time — the
+                # public wall shows exactly this number.
+                savings_percent=(
+                    savings_percent(ranked.deal.price, baseline)
+                    if (baseline := digest.baseline_for(ranked))
+                    else None
+                ),
                 reason=ranked.reason,
                 **ranked.deal.model_dump(include=SENT_FIELDS),
             )
-            for ranked in deals
+            for ranked in digest.deals
         ]
     )

@@ -38,21 +38,30 @@ class WallDeal(BaseModel):
 def read_deals(response: Response) -> list[WallDeal]:
     """Recent notable deals, aggregated across subscribers — no personal data."""
     global _cache
-    response.headers["Cache-Control"] = f"public, max-age={WALL_CACHE_SECONDS}"
+    # s-maxage: Vercel's edge only caches function responses that carry it.
+    response.headers["Cache-Control"] = (
+        f"public, max-age={WALL_CACHE_SECONDS}, s-maxage={WALL_CACHE_SECONDS}"
+    )
     if _cache and time.monotonic() - _cache[0] < WALL_CACHE_SECONDS:
         return _cache[1]
     wall = [
         WallDeal(
-            departure_city=city_names().get(row.departure_iata, row.departure_iata),
+            # Pre-0008 rows carry no name; reference data covers most codes.
+            departure_city=row.departure_city
+            or city_names().get(row.departure_iata, row.departure_iata),
             arrival_city=row.arrival_city,
             arrival_country=row.arrival_country,
             price=row.price,
             currency=row.currency,
-            savings_percent=savings,
-            badge=savings_badge(savings) if savings is not None else None,
+            savings_percent=row.savings_percent,
+            badge=(
+                savings_badge(row.savings_percent)
+                if row.savings_percent is not None
+                else None
+            ),
             found_on=row.sent_at.date(),
         )
-        for row, savings in wall_deals(WALL_DEAL_COUNT)
+        for row in wall_deals(WALL_DEAL_COUNT)
     ]
     _cache = (time.monotonic(), wall)
     return wall

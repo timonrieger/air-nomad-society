@@ -79,11 +79,18 @@ class SentDeal(Base):
     No foreign key on purpose: history stays useful after unsubscribes."""
 
     __tablename__ = "sent_deal"
-    __table_args__ = (Index("ix_sent_deal_subscriber", "subscriber_id", "sent_at"),)
+    __table_args__ = (
+        Index("ix_sent_deal_subscriber", "subscriber_id", "sent_at"),
+        Index("ix_sent_deal_sent_at", "sent_at"),
+    )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     subscriber_id: Mapped[int] = mapped_column(Integer)
+    departure_city: Mapped[str | None] = mapped_column(String, nullable=True)
     departure_iata: Mapped[str] = mapped_column(String)
+    # The searched origin (observation partition key), not the itinerary's
+    # flyFrom airport — a LON search can depart LHR.
+    origin_iata: Mapped[str | None] = mapped_column(String, nullable=True)
     arrival_city: Mapped[str | None] = mapped_column(String, nullable=True)
     arrival_iata: Mapped[str] = mapped_column(String)
     arrival_country: Mapped[str] = mapped_column(String)
@@ -94,6 +101,8 @@ class SentDeal(Base):
     # server_default only satisfies SQLite's ADD COLUMN NOT NULL rule; the
     # digest always writes the real value.
     quality_score: Mapped[float] = mapped_column(Float, server_default="0")
+    # The savings the digest email quoted; the wall shows the same number.
+    savings_percent: Mapped[int | None] = mapped_column(Integer, nullable=True)
     reason: Mapped[str | None] = mapped_column(String, nullable=True)
     sent_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 

@@ -138,7 +138,7 @@ def test_deals_wall_is_public_anonymized_and_cached(sqlite_db, monkeypatch) -> N
         assert [
             (deal["departure_city"], deal["arrival_city"], deal["arrival_country"])
             for deal in body
-        ] == [("Frankfurt am Main", "Helsinki", "Finland")]  # name from refdata
+        ] == [("Frankfurt", "Helsinki", "Finland")]  # names stored at send time
         assert "subscriber_id" not in body[0]
         assert body[0]["savings_percent"] is None  # no baseline seeded
         assert body[0]["badge"] is None

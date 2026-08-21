@@ -61,7 +61,7 @@ def run_digest(provider: FlightProvider) -> int:
                 base_url=settings.public_base_url,
             )
             mailer.send_email(html, subscriber.email, emails.DIGEST_SUBJECT, settings)
-            record_sent_deals(subscriber.id, result.deals)
+            record_sent_deals(subscriber.id, result)
             logger.info("sent digest to %s", subscriber.email)
         except Exception:
             failures += 1
