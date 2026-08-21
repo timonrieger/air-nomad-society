@@ -154,7 +154,7 @@
 		<Field
 			required
 			label="Departure cities"
-			hint="Every deal flies from one of these; the best deal across them wins."
+			hint="Pick up to 5. Every deal flies from one of these; the best deal across them wins."
 		>
 			<SelectMenu
 				items={cityItems}
@@ -203,8 +203,8 @@
 			<SelectMenu items={countryItems} placeholder="Select countries" multiple bind:value={favorites} />
 		</Field>
 		<Field
-			label="Exclude from gems"
-			hint="Never picked as random gems. Favorites are unaffected."
+			label="Exclude from discoveries"
+			hint="Never picked as surprise discoveries. Favorites are unaffected."
 		>
 			<SelectMenu items={countryItems} placeholder="Select countries" multiple bind:value={excluded} />
 		</Field>

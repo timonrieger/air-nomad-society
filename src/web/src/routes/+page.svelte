@@ -1,20 +1,20 @@
 <script lang="ts">
 	const features = [
 		{
-			title: 'Get Personalized Flight Deals',
-			text: "Deals are tailored based on your preferences. No need for frequent searches - you'll get flight options that fit your travel interests.",
+			title: 'Personalized Deals, With a Reason',
+			text: 'Deals are picked for your favorite countries, travel dates and departure cities — and each one can carry a short, personal note on why it beat the alternatives.',
 			img: 'https://images.unsplash.com/photo-1567927663055-efed28734f1f?w=800&auto=format&fit=crop&q=60',
 			alt: 'Mountain with ocean view'
 		},
 		{
 			title: 'Discover Unusual Destinations',
-			text: 'Find unique travel spots easily. Alongside deals for favorite destinations, discover new places you may not have considered.',
+			text: 'Alongside your favorites, every digest mixes in surprise discoveries — and it remembers what you have seen, so it never cycles the same places week after week.',
 			img: 'https://images.unsplash.com/photo-1615449551620-d4b780ef9387?w=800&auto=format&fit=crop&q=60',
 			alt: 'Sailing boat on the ocean'
 		},
 		{
-			title: 'No More Lengthy Flight Searches',
-			text: 'With a single weekly email, get relevant flight details without needing to conduct lengthy searches.',
+			title: 'Know a Good Price on Sight',
+			text: 'Every deal shows what the route typically costs, and 💸 great and 🔥 exceptional prices are badged — one weekly email, no comparison tabs.',
 			img: 'https://images.unsplash.com/photo-1609948679766-a6d38be3bae4?w=800&auto=format&fit=crop&q=60',
 			alt: 'Beach'
 		}
@@ -35,11 +35,27 @@
 		},
 		{
 			q: 'What does "Favorite Destinations" mean?',
-			a: 'Mark certain countries as favorites to receive deals specifically for those locations each week.'
+			a: 'Mark certain countries as favorites and every weekly email includes the best deal we found for each of them.'
 		},
 		{
 			q: 'Will I get flight deals for non-favorite destinations?',
-			a: "Yes. Alongside your favorites, emails mix in discovery deals — surprising destinations you haven't marked, each labeled with a discovery badge."
+			a: "Yes. Alongside your favorites, emails mix in discovery deals — surprising destinations you haven't marked, each labeled with a ✨ discovery badge."
+		},
+		{
+			q: 'Will I see the same deals every week?',
+			a: 'No. The digest remembers what you have already been sent: repeats only come back on clearly better prices, repeating countries rotate their cities, and destinations you have never been sent are marked ✨ new for you.'
+		},
+		{
+			q: 'What does "typically ~X" under a price mean?',
+			a: "That's what the route usually costs, from our own recent search history. The percentage shows how far below typical today's fare is, and the best savings earn a 💸 great price or 🔥 exceptional price badge."
+		},
+		{
+			q: 'Why does each deal have a little note on it?',
+			a: 'Every deal can carry a one-line reason, written for you: why it was picked, what it beat, and how it fits your preferences.'
+		},
+		{
+			q: 'Can I depart from more than one city?',
+			a: 'Yes — pick up to 5 departure cities. Every destination is searched from each of them, the best deal wins, and each card shows which city it flies from.'
 		},
 		{
 			q: 'How far ahead do the flight deals cover?',
