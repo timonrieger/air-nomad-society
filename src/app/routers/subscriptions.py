@@ -83,17 +83,12 @@ class SubscriptionIn(BaseModel):
 
 
 def _columns(payload: SubscriptionIn) -> dict[str, Any]:
-    return {
-        "username": payload.username,
-        "email": payload.email,
+    # The dumped field names match the AirNomads columns, so new scalar
+    # preferences persist without touching this function.
+    return payload.model_dump(
+        exclude={"departure_airports", "favorite_countries", "excluded_countries"}
+    ) | {
         "departure_airports": ",".join(payload.departure_airports),
-        "currency": payload.currency,
-        "min_nights": payload.min_nights,
-        "max_nights": payload.max_nights,
-        "min_days_ahead": payload.min_days_ahead,
-        "max_days_ahead": payload.max_days_ahead,
-        "cadence": payload.cadence,
-        "gem_count": payload.gem_count,
         "travel_countries": ",".join(payload.favorite_countries),
         "excluded_countries": ",".join(payload.excluded_countries) or None,
     }
