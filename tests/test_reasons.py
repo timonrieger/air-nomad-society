@@ -3,6 +3,7 @@ from datetime import date
 
 import src.app.services.reasons as reasons_module
 from src.app.config import Settings, get_settings
+from src.app.models.flights import RankedDeal
 from src.app.services.digest import DigestResult
 from src.app.services.reasons import deal_reasons
 from tests.conftest import deal
@@ -30,7 +31,7 @@ def chat_response(content: str) -> ResponseStub:
     return ResponseStub({"choices": [{"message": {"content": content}}]})
 
 
-def reasons_with_response(monkeypatch, response: ResponseStub):
+def reasons_with_response(monkeypatch, response: ResponseStub) -> list[RankedDeal]:
     calls: list[dict] = []
 
     def fake_post(url, **kwargs):

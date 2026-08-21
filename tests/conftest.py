@@ -7,6 +7,7 @@ from src.app.config import Settings, get_settings
 from src.app.db import Base, PriceObservation, SentDeal, get_engine
 from src.app.models.flights import FlightDeal
 from src.app.services.history import OBSERVED_FIELDS, SENT_FIELDS
+from src.app.services.selection import deal_score
 
 TEST_SECRET = "test-secret-key-of-at-least-32-bytes!"  # gitleaks:allow
 
@@ -77,13 +78,14 @@ def sent(
     """A SentDeal row built from deal(), the way record_sent_deals does.
 
     sent_at=None leaves the stamp to the DB server default (i.e. "just now")."""
+    flight = deal(**deal_overrides)
     return SentDeal(
         subscriber_id=subscriber_id,
         source=source,
         score=score,
-        quality_score=score,
+        quality_score=deal_score(flight),
         sent_at=sent_at,
-        **deal(**deal_overrides).model_dump(include=SENT_FIELDS),
+        **flight.model_dump(include=SENT_FIELDS),
     )
 
 

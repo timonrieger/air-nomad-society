@@ -145,21 +145,27 @@ def build_digest(
         )
         for source, country in searches
     ]
-    # One baseline fetch for every searched route: the waiver consults them
-    # during ranking, and DigestResult carries them for the anchor line.
-    baselines = baselines_for(
-        {
-            (origin_iata, deal.arrival_iata)
-            for _, candidates in found
-            for origin_iata, deal in candidates
-        }
-    )
+    # Baselines feed two things: the repeat waiver — which only candidates in
+    # recently-sent countries can consult — and the winners' anchor lines.
+    # Fetch the waiver-eligible routes, rank, then top up whatever winning
+    # routes that fetch didn't cover, so history growth never drags the whole
+    # candidate cross-product into every run.
+    eligible = {
+        (origin_iata, deal.arrival_iata)
+        for _, candidates in found
+        for origin_iata, deal in candidates
+        if deal.arrival_country in history.recent_countries
+    }
+    baselines = baselines_for(eligible) if eligible else {}
     deals = [
         pick
         for source, candidates in found
         if (pick := best_pick(source, candidates, baselines))
     ]
     deals.sort(key=lambda pick: pick.score)
+    winner_routes = {(pick.origin_iata, pick.deal.arrival_iata) for pick in deals}
+    if missing := winner_routes - eligible:
+        baselines |= baselines_for(missing)
     logger.info("digest for %s: %d deals", subscriber.email, len(deals))
     return DigestResult(
         deals=deals,

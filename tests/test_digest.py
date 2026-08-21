@@ -3,7 +3,7 @@ from datetime import date
 
 from src.app.db import AirNomads
 from src.app.models.subscriber import Subscriber
-from src.app.services.digest import build_digest
+from src.app.services.digest import DigestResult, build_digest
 from src.app.models.history import SentHistory
 from src.app.services.selection import deal_score
 from src.app.services.refdata import Country
@@ -11,7 +11,14 @@ from tests.conftest import deal
 from tests.fakes import FakeProvider
 
 
-def digest(subscriber, provider, history=None, baselines=None, rng=None, today=None):
+def digest(
+    subscriber: Subscriber,
+    provider: FakeProvider,
+    history: SentHistory | None = None,
+    baselines: dict[tuple[str, str], float] | None = None,
+    rng: random.Random | None = None,
+    today: date | None = None,
+) -> DigestResult:
     """build_digest with the test defaults spelled once."""
     return build_digest(
         subscriber,
@@ -115,6 +122,41 @@ def test_clearly_below_typical_repeats_without_penalty() -> None:
     finland = [r for r in result.deals if r.deal.arrival_country == "Finland"]
     assert finland[0].score == deal_score(finland[0].deal)
     assert result.baselines == typical
+
+
+def test_baselines_fetched_for_waiver_candidates() -> None:
+    # Finland is recently sent, so every Finland candidate route is
+    # waiver-eligible; they already cover the winner — exactly one fetch.
+    subscriber = SUBSCRIBER.model_copy(update={"departure_airports": ["FRA", "BER"]})
+    berlin_deal = deal(price=200, departure_city="Berlin", departure_iata="BER")
+    provider = FakeProvider({("FRA", "FI"): [deal()], ("BER", "FI"): [berlin_deal]})
+    history = SentHistory(recent_countries={"Finland"}, all_countries={"Finland"})
+    fetched: list[set[tuple[str, str]]] = []
+
+    def lookup(routes: set[tuple[str, str]]) -> dict[tuple[str, str], float]:
+        fetched.append(routes)
+        return {}
+
+    build_digest(
+        subscriber, provider, DESTINATIONS, history, lookup, rng=random.Random(1)
+    )
+    assert fetched == [{("FRA", "HEL"), ("BER", "HEL")}]
+
+
+def test_baselines_topped_up_for_winners_outside_the_waiver() -> None:
+    # Nothing recently sent → no waiver fetch; the winning route is still
+    # fetched so the anchor line can render.
+    provider = FakeProvider({("FRA", "FI"): [deal()]})
+    fetched: list[set[tuple[str, str]]] = []
+
+    def lookup(routes: set[tuple[str, str]]) -> dict[tuple[str, str], float]:
+        fetched.append(routes)
+        return {}
+
+    build_digest(
+        SUBSCRIBER, provider, DESTINATIONS, SentHistory(), lookup, rng=random.Random(1)
+    )
+    assert fetched == [{("FRA", "HEL")}]
 
 
 def test_first_time_country_is_flagged_once_history_exists() -> None:
