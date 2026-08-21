@@ -6,7 +6,7 @@ export const API_URL: string = import.meta.env.VITE_API_URL as string;
 if (!API_URL) throw new Error('VITE_API_URL was not set at build time');
 
 /** Mirrors Cadence in src/app/models/subscriber.py. */
-export type Cadence = 'weekly' | 'biweekly';
+export type Cadence = 'weekly' | 'biweekly' | 'monthly';
 
 export type RefData = {
 	cities: { city: string; code: string }[];
