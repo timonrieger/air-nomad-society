@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 import src.app.cli as cli
 from src.app.db import PriceObservation, SentDeal, get_engine, insert_rows
 from src.app.models.subscriber import Subscriber
-from tests.conftest import deal, observation
+from tests.conftest import deal, observation, sent
 from tests.fakes import FakeProvider
 
 
@@ -148,7 +148,8 @@ def test_freshness_reads_the_sent_history_between_runs(sqlite_db, monkeypatch) -
     monkeypatch.setattr(
         cli.mailer, "send_email", lambda html, *a, **k: captured.append(html)
     )
-    # First run: Finland was never sent, so the deal is new for you.
+    # Some history exists (Spain, once), but Finland was never sent — new for you.
+    insert_rows([sent(arrival_country="Spain", arrival_iata="PMI")])
     assert cli.run_digest(FakeProvider({"FI": [deal()]})) == 0
     assert "✨ new for you" in captured[0]
     # Second run: same deal repeats at the same price — no badge, and the
@@ -156,7 +157,8 @@ def test_freshness_reads_the_sent_history_between_runs(sqlite_db, monkeypatch) -
     assert cli.run_digest(FakeProvider({"FI": [deal()]})) == 0
     assert "✨ new for you" not in captured[1]
     with Session(get_engine()) as session:
-        first, second = [s.score for s in session.scalars(select(SentDeal))]
+        finland = select(SentDeal).where(SentDeal.arrival_country == "Finland")
+        first, second = [s.score for s in session.scalars(finland)]
     assert second > first
 
 

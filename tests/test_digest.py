@@ -4,7 +4,7 @@ from datetime import date
 from src.app.db import AirNomads
 from src.app.models.subscriber import Subscriber
 from src.app.services.digest import build_digest
-from src.app.services.history import SentHistory
+from src.app.models.history import SentHistory
 from src.app.services.refdata import Country
 from tests.conftest import deal
 from tests.fakes import FakeProvider
@@ -93,13 +93,24 @@ def test_repeating_favorite_prefers_a_fresh_city() -> None:
     assert finland[0].first_time is False
 
 
-def test_first_time_country_is_flagged() -> None:
+def test_first_time_country_is_flagged_once_history_exists() -> None:
+    provider = FakeProvider({"FI": [deal()]})
+    seen_spain = SentHistory(all_countries={"Spain"})
+    result = build_digest(
+        SUBSCRIBER, provider, DESTINATIONS, seen_spain, rng=random.Random(1)
+    )
+    finland = [r for r in result.deals if r.deal.arrival_country == "Finland"]
+    assert finland[0].first_time is True
+
+
+def test_brand_new_subscribers_get_no_first_time_flags() -> None:
+    # With no history at all, badging every card would say nothing.
     provider = FakeProvider({"FI": [deal()]})
     result = build_digest(
         SUBSCRIBER, provider, DESTINATIONS, SentHistory(), rng=random.Random(1)
     )
     finland = [r for r in result.deals if r.deal.arrival_country == "Finland"]
-    assert finland[0].first_time is True
+    assert finland[0].first_time is False
 
 
 def test_search_window_derives_from_subscriber() -> None:

@@ -9,7 +9,7 @@ from pydantic import BaseModel
 
 from src.app.models.subscriber import Subscriber
 from src.app.models.flights import DealSource, RankedDeal, SearchQuery
-from src.app.services.history import SentHistory
+from src.app.models.history import SentHistory
 from src.app.services.providers import FlightProvider
 from src.app.services.refdata import Country
 from src.app.services.selection import (
@@ -85,7 +85,12 @@ def build_digest(
             return None
         winner = ranked[0]
         winner.runner_ups = ranked[1 : 1 + RUNNER_UP_COUNT]
-        winner.first_time = winner.deal.arrival_country not in history.all_countries
+        # Only meaningful once some history exists: a brand-new subscriber's
+        # first digest would otherwise badge every single card.
+        winner.first_time = (
+            bool(history.all_countries)
+            and winner.deal.arrival_country not in history.all_countries
+        )
         return winner
 
     favorites = set(subscriber.favorites)

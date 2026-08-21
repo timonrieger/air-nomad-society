@@ -1,7 +1,7 @@
 import random
 from datetime import datetime
 
-from src.app.services.history import SentHistory
+from src.app.models.history import SentHistory
 from src.app.services.refdata import Country
 from src.app.services.selection import (
     deal_score,
@@ -94,6 +94,24 @@ def test_recent_country_penalty_and_clearly_better_waiver() -> None:
     assert freshness_multiplier(deal(price=140), history) == 1.25
     # ≥15% below the cheapest recently sent price repeats without penalty.
     assert freshness_multiplier(deal(price=127), history) == 1.0
+
+
+def test_waiver_clears_the_city_penalty_too() -> None:
+    # A clear price drop recurs in the same city; that is the point of it.
+    history = SentHistory(
+        recent_countries={"Finland"},
+        recent_country_prices={"Finland": 150.0},
+        recent_cities={"HEL"},
+    )
+    assert freshness_multiplier(deal(price=127), history) == 1.0
+
+
+def test_waiver_holds_at_exactly_15_percent_despite_float_rounding() -> None:
+    history = SentHistory(
+        recent_countries={"Finland"}, recent_country_prices={"Finland": 18.0}
+    )
+    # 0.85 × 18.00 is 15.299999… in doubles; 15.30 must still be waived.
+    assert freshness_multiplier(deal(price=15.30), history) == 1.0
 
 
 def test_recent_country_without_comparable_price_is_always_penalized() -> None:

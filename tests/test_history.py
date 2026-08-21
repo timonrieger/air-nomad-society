@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta
 
 from src.app.db import PriceObservation, insert_rows
+from src.app.models.history import SentHistory
 from src.app.services.history import (
     BASELINE_WINDOW_WEEKS,
     FRESHNESS_WINDOW_WEEKS,
-    SentHistory,
     _utcnow,
     route_baselines,
     sent_history,
