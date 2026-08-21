@@ -12,6 +12,9 @@ logger = logging.getLogger(__name__)
 REQUEST_TIMEOUT = 30
 RATE_LIMIT_ATTEMPTS = 2
 RATE_LIMIT_WAIT = 10
+# Tequila's quota is 30 requests per minute; multi-departure fan-out can
+# burst well past it, so every request is paced to the quota up front.
+MIN_REQUEST_INTERVAL = 60 / 30
 
 
 def _local(epoch: int) -> datetime:
@@ -34,6 +37,13 @@ class TequilaProvider:
         # same host, so this saves a TLS handshake per request.
         self._session = requests.Session()
         self._session.headers["apikey"] = api_key
+        self._next_request_at = 0.0
+
+    def _pace(self) -> None:
+        wait = self._next_request_at - time.monotonic()
+        if wait > 0:
+            time.sleep(wait)
+        self._next_request_at = time.monotonic() + MIN_REQUEST_INTERVAL
 
     def search_top(self, query: SearchQuery, count: int) -> list[FlightDeal]:
         # The direct-only pass is not redundant: in a single price-sorted
@@ -65,6 +75,7 @@ class TequilaProvider:
         # A response without a "data" key means we got rate limited: back off
         # and retry before giving up on the destination.
         for attempt in range(RATE_LIMIT_ATTEMPTS):
+            self._pace()
             response = self._session.get(
                 f"{self.endpoint}/search", params=params, timeout=REQUEST_TIMEOUT
             )

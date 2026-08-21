@@ -20,8 +20,7 @@ SUBSCRIBER = Subscriber(
     id=1,
     username="Timon",
     email="timon@example.com",
-    departure_city="Frankfurt",
-    departure_iata="FRA",
+    departure_airports=["FRA"],
     currency="EUR",
     min_nights=3,
     max_nights=7,
@@ -113,6 +112,30 @@ def test_brand_new_subscribers_get_no_first_time_flags() -> None:
     assert finland[0].first_time is False
 
 
+def test_searches_fan_out_per_departure_airport() -> None:
+    subscriber = SUBSCRIBER.model_copy(update={"departure_airports": ["FRA", "BER"]})
+    provider = FakeProvider({"FI": [deal()]})
+    build_digest(
+        subscriber, provider, DESTINATIONS, SentHistory(), rng=random.Random(1)
+    )
+    finland_queries = [q for q in provider.queries if q.destination_iata == "FI"]
+    assert [q.origin_iata for q in finland_queries] == ["FRA", "BER"]
+
+
+def test_best_deal_across_airports_wins_and_keeps_its_origin() -> None:
+    subscriber = SUBSCRIBER.model_copy(update={"departure_airports": ["FRA", "BER"]})
+    frankfurt = deal(price=140)
+    berlin = deal(price=120, departure_city="Berlin", departure_iata="BER")
+    provider = FakeProvider({("FRA", "FI"): [frankfurt], ("BER", "FI"): [berlin]})
+    result = build_digest(
+        subscriber, provider, DESTINATIONS, SentHistory(), rng=random.Random(1)
+    )
+    finland = [r for r in result.deals if r.deal.arrival_country == "Finland"]
+    assert finland[0].deal == berlin
+    assert finland[0].origin_iata == "BER"
+    assert [r.deal for r in finland[0].runner_ups] == [frankfurt]
+
+
 def test_search_window_derives_from_subscriber() -> None:
     provider = FakeProvider()
     result = build_digest(
@@ -145,8 +168,7 @@ def test_subscriber_from_row_parses_country_lists() -> None:
         id=3,
         username="t",
         email="t@example.com",
-        departure_city="Berlin",
-        departure_iata="BER",
+        departure_airports="BER,MUC",
         currency="eur",
         min_nights=2,
         max_nights=5,
@@ -158,6 +180,7 @@ def test_subscriber_from_row_parses_country_lists() -> None:
     )
 
     subscriber = Subscriber.from_row(row)
+    assert subscriber.departure_airports == ["BER", "MUC"]
     assert subscriber.favorites == ["Finland", "Spain"]
     assert subscriber.excluded == []
     assert subscriber.confirmed is False

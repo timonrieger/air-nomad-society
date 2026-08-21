@@ -47,13 +47,18 @@ def run_digest(provider: FlightProvider) -> int:
                 logger.info("no deals for %s, skipping digest", subscriber.email)
                 continue
             # before=started_at: the run's own candidates never anchor
-            # themselves.
-            baselines = route_baselines(
-                subscriber.departure_iata,
-                {ranked.deal.arrival_iata for ranked in result.deals},
-                subscriber.currency,
-                before=recording.started_at,
-            )
+            # themselves. Keyed per departure airport — the same route can
+            # have very different typical prices from different origins.
+            baselines = {
+                (origin_iata, arrival_iata): baseline
+                for origin_iata in subscriber.departure_airports
+                for arrival_iata, baseline in route_baselines(
+                    origin_iata,
+                    {ranked.deal.arrival_iata for ranked in result.deals},
+                    subscriber.currency,
+                    before=recording.started_at,
+                ).items()
+            }
             deal_reasons(subscriber, result.deals, baselines, settings)
             html = emails.render_digest(
                 username=subscriber.username,

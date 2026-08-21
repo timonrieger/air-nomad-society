@@ -14,7 +14,7 @@ from src.app.services.tokens import issue_token
 PAYLOAD = {
     "username": "Timon",
     "email": "api@example.com",
-    "departure_iata": "FRA",
+    "departure_airports": ["FRA"],
     "currency": "EUR",
     "min_nights": 3,
     "max_nights": 7,

@@ -20,7 +20,7 @@ SessionDep = Annotated[Session, Depends(get_session)]
 class SubscriptionIn(BaseModel):
     username: str = Field(min_length=3, max_length=20)
     email: EmailStr
-    departure_iata: str
+    departure_airports: list[str] = Field(min_length=1)
     currency: str
     min_nights: int = Field(ge=1)
     max_nights: int = Field(ge=1)
@@ -29,11 +29,14 @@ class SubscriptionIn(BaseModel):
     favorite_countries: list[str] = Field(min_length=1)
     excluded_countries: list[str] = []
 
-    @field_validator("departure_iata")
+    @field_validator("departure_airports")
     @classmethod
-    def _known_city(cls, value: str) -> str:
-        if value not in refdata.city_codes():
-            raise ValueError("unknown departure city code")
+    def _known_cities(cls, value: list[str]) -> list[str]:
+        unknown = set(value) - refdata.city_codes()
+        if unknown:
+            raise ValueError(
+                f"unknown departure city codes: {', '.join(sorted(unknown))}"
+            )
         return value
 
     @field_validator("currency")
@@ -70,8 +73,7 @@ def _columns(payload: SubscriptionIn) -> dict[str, Any]:
     return {
         "username": payload.username,
         "email": payload.email,
-        "departure_city": refdata.city_name(payload.departure_iata),
-        "departure_iata": payload.departure_iata,
+        "departure_airports": ",".join(payload.departure_airports),
         "currency": payload.currency,
         "min_nights": payload.min_nights,
         "max_nights": payload.max_nights,

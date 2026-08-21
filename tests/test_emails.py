@@ -16,14 +16,16 @@ def ranked(
     source: DealSource = "favorite",
     reason: str | None = None,
 ) -> RankedDeal:
-    return RankedDeal(deal=flight_deal, source=source, score=0.0, reason=reason)
+    return RankedDeal(
+        deal=flight_deal, source=source, score=0.0, reason=reason, origin_iata="FRA"
+    )
 
 
 def render(
     deals: list[RankedDeal],
     window_start: date = date(2026, 9, 1),
     window_end: date = date(2026, 9, 30),
-    baselines: dict[str, float] | None = None,
+    baselines: dict[tuple[str, str], float] | None = None,
 ) -> str:
     return render_digest(
         username="Timon",
@@ -82,28 +84,28 @@ def test_provenance_badges() -> None:
 
 def test_anchor_line_with_savings_and_exceptional_badge() -> None:
     # 129 vs a 310 median: −58%, comfortably past the 40% tier.
-    html = render([ranked(deal())], baselines={"HEL": 310.0})
+    html = render([ranked(deal())], baselines={("FRA", "HEL"): 310.0})
     assert "typically ~310 EUR (−58%)" in html
     assert "🔥 exceptional price" in html
 
 
 def test_anchor_line_with_great_badge() -> None:
     # 129 vs 180: −28%, past the 25% tier but short of 40%.
-    html = render([ranked(deal())], baselines={"HEL": 180.0})
+    html = render([ranked(deal())], baselines={("FRA", "HEL"): 180.0})
     assert "typically ~180 EUR (−28%)" in html
     assert "💸 great price" in html
     assert "🔥" not in html
 
 
 def test_anchor_line_below_tiers_has_no_badge() -> None:
-    html = render([ranked(deal())], baselines={"HEL": 140.0})
+    html = render([ranked(deal())], baselines={("FRA", "HEL"): 140.0})
     assert "typically ~140 EUR (−7%)" in html
     assert "🔥" not in html and "💸" not in html
 
 
 def test_anchor_line_at_typical_price_shows_no_savings() -> None:
     # 129 vs a 120 median: pricier than typical, no percent bragging.
-    html = render([ranked(deal())], baselines={"HEL": 120.0})
+    html = render([ranked(deal())], baselines={("FRA", "HEL"): 120.0})
     assert "typically ~120 EUR" in html
     assert "(−" not in html
 

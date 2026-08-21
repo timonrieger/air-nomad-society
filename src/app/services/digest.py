@@ -8,7 +8,7 @@ from datetime import date, timedelta
 from pydantic import BaseModel
 
 from src.app.models.subscriber import Subscriber
-from src.app.models.flights import DealSource, RankedDeal, SearchQuery
+from src.app.models.flights import DealSource, FlightDeal, RankedDeal, SearchQuery
 from src.app.models.history import SentHistory
 from src.app.services.providers import FlightProvider
 from src.app.services.refdata import Country
@@ -50,10 +50,9 @@ def build_digest(
     window_start = start + timedelta(days=subscriber.min_days_ahead)
     window_end = start + timedelta(days=subscriber.max_days_ahead)
 
-    def best_pick(country: Country, source: DealSource) -> RankedDeal | None:
-        """The country's best-scoring candidate, carrying its beaten runner-ups."""
+    def search(origin_iata: str, country: Country) -> list[FlightDeal]:
         query = SearchQuery(
-            origin_iata=subscriber.departure_iata,
+            origin_iata=origin_iata,
             destination_iata=country.code,
             date_from=window_start,
             date_to=window_end,
@@ -61,13 +60,17 @@ def build_digest(
             max_nights=subscriber.max_nights,
             currency=subscriber.currency,
         )
-        candidates = [
+        return [
             deal
             for deal in provider.search_top(query, CANDIDATES_PER_COUNTRY)
             # A candidate's destination can be the origin city itself
             # (e.g. searching Germany from Frankfurt); skip those.
             if deal.departure_city != deal.arrival_city
         ]
+
+    def best_pick(country: Country, source: DealSource) -> RankedDeal | None:
+        """The country's best-scoring candidate across every departure airport,
+        carrying its beaten runner-ups."""
         ranked = sorted(
             (
                 RankedDeal(
@@ -76,8 +79,10 @@ def build_digest(
                     # The freshness multiplier steers repeating countries
                     # toward fresh cities and sinks repeats in the ranking.
                     score=deal_score(deal) * freshness_multiplier(deal, history),
+                    origin_iata=origin_iata,
                 )
-                for deal in candidates
+                for origin_iata in subscriber.departure_airports
+                for deal in search(origin_iata, country)
             ),
             key=lambda pick: pick.score,
         )

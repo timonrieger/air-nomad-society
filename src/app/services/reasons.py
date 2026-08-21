@@ -47,7 +47,9 @@ def _card(deal: FlightDeal) -> dict[str, object]:
 
 
 def _payload(
-    subscriber: Subscriber, deals: list[RankedDeal], baselines: dict[str, float]
+    subscriber: Subscriber,
+    deals: list[RankedDeal],
+    baselines: dict[tuple[str, str], float],
 ) -> dict[str, object]:
     return {
         "subscriber": {
@@ -59,7 +61,9 @@ def _payload(
                 "id": index,
                 "picked_as": ranked.source,
                 **_card(ranked.deal),
-                "typical_price": baselines.get(ranked.deal.arrival_iata),
+                "typical_price": baselines.get(
+                    (ranked.origin_iata, ranked.deal.arrival_iata)
+                ),
                 "beat_these_runner_ups": [
                     _card(runner_up.deal) for runner_up in ranked.runner_ups
                 ],
@@ -72,7 +76,7 @@ def _payload(
 def deal_reasons(
     subscriber: Subscriber,
     deals: list[RankedDeal],
-    baselines: dict[str, float],
+    baselines: dict[tuple[str, str], float],
     settings: Settings,
 ) -> None:
     """Attach one reason per pick in place; a no-op when unconfigured or failed."""
