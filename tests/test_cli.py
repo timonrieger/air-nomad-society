@@ -97,12 +97,16 @@ def test_deal_fields_reach_the_email(sqlite_db, monkeypatch) -> None:
 def test_price_anchor_from_earlier_runs_reaches_the_email(
     sqlite_db, monkeypatch
 ) -> None:
-    # Four observations from an earlier run anchor FRA→HEL at a 310 median.
-    week_ago = datetime.now() - timedelta(weeks=1)
+    # Observations from four earlier runs anchor FRA→HEL at a 310 median.
+    month_ago = datetime.now() - timedelta(weeks=4)
     insert_rows(
         [
-            observation(search_id="old", price=price, observed_at=week_ago)
-            for price in (300, 305, 315, 320)
+            observation(
+                search_id="old",
+                price=price,
+                observed_at=month_ago + timedelta(weeks=index),
+            )
+            for index, price in enumerate((300, 305, 315, 320))
         ]
     )
     captured: list[str] = []

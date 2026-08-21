@@ -47,20 +47,24 @@ def _facts(deal: FlightDeal) -> str:
     return f"{stops} · {hours}h{minutes:02d} · dep {deal.departs_at:%H:%M}"
 
 
-# Savings tiers vs the route's typical price, best tier first; below the
-# smallest cut the anchor line still shows but no badge is earned.
-SAVINGS_TIERS: list[tuple[float, str]] = [
-    (0.40, "🔥 exceptional price"),
-    (0.25, "💸 great price"),
+# Savings tiers vs the route's typical price in whole percent, best tier
+# first; below the smallest cut the anchor line still shows but no badge is
+# earned.
+SAVINGS_TIERS: list[tuple[int, str]] = [
+    (40, "🔥 exceptional price"),
+    (25, "💸 great price"),
 ]
 
 
 def _anchor(price: float, baseline: float, currency: str) -> tuple[str, str | None]:
-    """The "typically ~X" line and the earned tier badge, if any."""
-    savings = 1 - price / baseline
+    """The "typically ~X" line and the earned tier badge, if any.
+
+    Both come from the same rounded percent, so the badge never contradicts
+    the savings the card shows."""
+    savings = round((1 - price / baseline) * 100)
     line = f"typically ~{baseline:.0f} {currency}"
-    if savings >= 0.01:
-        line += f" (−{savings:.0%})"
+    if savings >= 1:
+        line += f" (−{savings}%)"
     badge = next((label for cut, label in SAVINGS_TIERS if savings >= cut), None)
     return line, badge
 
