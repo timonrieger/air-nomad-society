@@ -83,9 +83,10 @@ def test_subscribe_creates_unconfirmed_and_sends_confirmation(client, outbox) ->
 def test_confirm_flow_and_409_once_confirmed(client, outbox, confirmed_at) -> None:
     subscriber_id = client.post("/subscribe", json=PAYLOAD).json()["id"]
 
-    # resubscribing while unconfirmed resends the link instead of failing
+    # resubscribing while unconfirmed succeeds, but inside the resend
+    # cooldown no second email goes out
     assert client.post("/subscribe", json=PAYLOAD).status_code == 200
-    assert len(outbox) == 2
+    assert len(outbox) == 1
 
     token = issue_token(subscriber_id, "confirm")
     response = client.get(f"/confirm?token={token}")
@@ -96,6 +97,19 @@ def test_confirm_flow_and_409_once_confirmed(client, outbox, confirmed_at) -> No
     # confirming twice is harmless; resubscribing now conflicts
     assert client.get(f"/confirm?token={token}").status_code == 200
     assert client.post("/subscribe", json=PAYLOAD).status_code == 409
+
+
+def test_resubscribe_resends_only_after_the_cooldown(client, outbox, engine) -> None:
+    client.post("/subscribe", json=PAYLOAD)
+    # A day on, the pending row is old enough for a fresh link.
+    with Session(engine) as session:
+        member = session.scalars(
+            select(AirNomads).where(AirNomads.email == PAYLOAD["email"])
+        ).one()
+        member.created_at = datetime.now() - timedelta(days=1, hours=1)
+        session.commit()
+    assert client.post("/subscribe", json=PAYLOAD).status_code == 200
+    assert len(outbox) == 2
 
 
 def test_confirm_rejects_other_action_tokens(client, confirmed_at) -> None:
