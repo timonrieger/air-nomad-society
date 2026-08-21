@@ -14,7 +14,7 @@ export type RefData = {
 export type Subscription = {
 	username: string;
 	email: string;
-	departure_iata: string;
+	departure_airports: string[];
 	currency: string;
 	min_nights: number;
 	max_nights: number;
@@ -28,7 +28,7 @@ export type Subscription = {
 export type SubscriptionIn = {
 	username: string;
 	email: string;
-	departure_iata: string;
+	departure_airports: string[];
 	currency: string;
 	min_nights: number;
 	max_nights: number;

@@ -33,7 +33,7 @@ def reasons_with_response(monkeypatch, response: ResponseStub) -> list[RankedDea
 
     monkeypatch.setattr(reasons_module.requests, "post", fake_post)
     deals = picks()
-    deal_reasons(SUBSCRIBER, deals, {"HEL": 310.0}, configured())
+    deal_reasons(SUBSCRIBER, deals, {("FRA", "HEL"): 310.0}, configured())
     body = calls[0]["json"]
     payload = json.loads(body["messages"][1]["content"])
     assert calls[0]["url"] == "https://api.anthropic.com/v1/chat/completions"

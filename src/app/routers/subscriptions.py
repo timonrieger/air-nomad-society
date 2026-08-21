@@ -17,10 +17,17 @@ router = APIRouter()
 SessionDep = Annotated[Session, Depends(get_session)]
 
 
+def _all_known(values: list[str], known: frozenset[str], label: str) -> list[str]:
+    unknown = set(values) - known
+    if unknown:
+        raise ValueError(f"unknown {label}: {', '.join(sorted(unknown))}")
+    return values
+
+
 class SubscriptionIn(BaseModel):
     username: str = Field(min_length=3, max_length=20)
     email: EmailStr
-    departure_iata: str
+    departure_airports: list[str] = Field(min_length=1, max_length=5)
     currency: str
     min_nights: int = Field(ge=1)
     max_nights: int = Field(ge=1)
@@ -29,12 +36,12 @@ class SubscriptionIn(BaseModel):
     favorite_countries: list[str] = Field(min_length=1)
     excluded_countries: list[str] = []
 
-    @field_validator("departure_iata")
+    @field_validator("departure_airports")
     @classmethod
-    def _known_city(cls, value: str) -> str:
-        if value not in refdata.city_codes():
-            raise ValueError("unknown departure city code")
-        return value
+    def _known_cities(cls, value: list[str]) -> list[str]:
+        if len(set(value)) != len(value):
+            raise ValueError("duplicate departure city codes")
+        return _all_known(value, refdata.city_codes(), "departure city codes")
 
     @field_validator("currency")
     @classmethod
@@ -46,10 +53,7 @@ class SubscriptionIn(BaseModel):
     @field_validator("favorite_countries", "excluded_countries")
     @classmethod
     def _known_countries(cls, value: list[str]) -> list[str]:
-        unknown = set(value) - refdata.country_names()
-        if unknown:
-            raise ValueError(f"unknown countries: {', '.join(sorted(unknown))}")
-        return value
+        return _all_known(value, refdata.country_names(), "countries")
 
     @model_validator(mode="after")
     def _ranges(self) -> "SubscriptionIn":
@@ -70,8 +74,7 @@ def _columns(payload: SubscriptionIn) -> dict[str, Any]:
     return {
         "username": payload.username,
         "email": payload.email,
-        "departure_city": refdata.city_name(payload.departure_iata),
-        "departure_iata": payload.departure_iata,
+        "departure_airports": ",".join(payload.departure_airports),
         "currency": payload.currency,
         "min_nights": payload.min_nights,
         "max_nights": payload.max_nights,

@@ -46,12 +46,3 @@ def country_names() -> frozenset[str]:
 @lru_cache
 def city_codes() -> frozenset[str]:
     return frozenset(city.code for city in load().cities)
-
-
-@lru_cache
-def _cities_by_code() -> dict[str, str]:
-    return {city.code: city.city for city in load().cities}
-
-
-def city_name(iata: str) -> str:
-    return _cities_by_code()[iata]

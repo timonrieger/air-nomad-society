@@ -27,13 +27,15 @@ def spread(prices: tuple[float, ...], **overrides) -> list[PriceObservation]:
     ]
 
 
-def baselines(arrival_iatas: set[str] | None = None) -> dict[str, float]:
-    return route_baselines("FRA", arrival_iatas or {"HEL"}, "EUR", before=RUN_STARTED)
+def baselines(
+    routes: set[tuple[str, str]] | None = None,
+) -> dict[tuple[str, str], float]:
+    return route_baselines(routes or {("FRA", "HEL")}, "EUR", before=RUN_STARTED)
 
 
 def test_median_over_window(sqlite_db) -> None:
     insert_rows(spread((100, 200, 300, 400)))
-    assert baselines() == {"HEL": 250.0}
+    assert baselines() == {("FRA", "HEL"): 250.0}
 
 
 def test_routes_below_minimum_days_are_omitted(sqlite_db) -> None:
@@ -47,6 +49,20 @@ def test_single_day_of_observations_does_not_anchor(sqlite_db) -> None:
     assert baselines() == {}
 
 
+def test_multi_origin_routes_do_not_cross_pollinate(sqlite_db) -> None:
+    # FRA→TKU sits inside the IN-filter cross product of the requested
+    # routes but is neither of them; it must not mint a baseline.
+    insert_rows(
+        spread((100, 200, 300, 400))
+        + spread((500, 600, 700, 800), origin_iata="BER", arrival_iata="TKU")
+        + spread((999, 999, 999, 999), arrival_iata="TKU")
+    )
+    assert baselines({("FRA", "HEL"), ("BER", "TKU")}) == {
+        ("FRA", "HEL"): 250.0,
+        ("BER", "TKU"): 650.0,
+    }
+
+
 def test_only_matching_route_and_currency_count(sqlite_db) -> None:
     insert_rows(
         spread((100, 200, 300, 400))
@@ -54,7 +70,7 @@ def test_only_matching_route_and_currency_count(sqlite_db) -> None:
         + spread((999, 999, 999, 999), origin_iata="BER")
         + spread((999, 999, 999, 999), arrival_iata="TKU")
     )
-    assert baselines() == {"HEL": 250.0}
+    assert baselines() == {("FRA", "HEL"): 250.0}
 
 
 def test_sent_history_splits_recent_from_ever(sqlite_db) -> None:
@@ -91,4 +107,4 @@ def test_current_run_and_stale_observations_are_excluded(sqlite_db) -> None:
             )
         ]
     )
-    assert baselines() == {"HEL": 250.0}
+    assert baselines() == {("FRA", "HEL"): 250.0}

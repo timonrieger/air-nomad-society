@@ -19,7 +19,7 @@
 
 	let username = $state('');
 	let email = $state('');
-	let departureIata = $state('');
+	let departureAirports = $state<string[]>([]);
 	let currency = $state('');
 	let minNights = $state(3);
 	let maxNights = $state(7);
@@ -38,7 +38,7 @@
 		nativeValid = formEl!.checkValidity();
 	}
 	const canSubmit = $derived(
-		nativeValid && departureIata !== '' && currency !== '' && favorites.length > 0
+		nativeValid && departureAirports.length > 0 && currency !== '' && favorites.length > 0
 	);
 
 	const toItems = (values: string[]) => values.map((v) => ({ value: v, label: v }));
@@ -68,7 +68,7 @@
 			updating = true;
 			username = current.username;
 			email = current.email;
-			departureIata = current.departure_iata;
+			departureAirports = current.departure_airports;
 			currency = current.currency;
 			minNights = current.min_nights;
 			maxNights = current.max_nights;
@@ -88,7 +88,7 @@
 			{
 				username,
 				email,
-				departure_iata: departureIata,
+				departure_airports: departureAirports,
 				currency,
 				min_nights: minNights,
 				max_nights: maxNights,
@@ -151,8 +151,17 @@
 		>
 			<input class="input" type="email" required disabled={updating} bind:value={email} />
 		</Field>
-		<Field required label="Departure city" hint="Your city, or the nearest major one.">
-			<SelectMenu items={cityItems} placeholder="Select a city" bind:value={departureIata} />
+		<Field
+			required
+			label="Departure cities"
+			hint="Every deal flies from one of these; the best deal across them wins."
+		>
+			<SelectMenu
+				items={cityItems}
+				placeholder="Select cities"
+				multiple
+				bind:value={departureAirports}
+			/>
 		</Field>
 		<Field required label="Currency" hint="Prices are shown in this currency.">
 			<SelectMenu items={currencyItems} placeholder="Select a currency" bind:value={currency} />

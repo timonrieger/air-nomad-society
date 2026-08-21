@@ -19,7 +19,6 @@ def test_lookup_helpers_cover_the_data() -> None:
     data = refdata.load()
     assert len(refdata.country_choices()) == len(data.countries)
     assert refdata.city_codes() == {city.code for city in data.cities}
-    assert refdata.city_name(data.cities[0].code) == data.cities[0].city
 
 
 def test_countries_are_named_with_unique_iso_codes() -> None:

@@ -70,12 +70,12 @@ def _present(
     ranked: RankedDeal,
     window: str,
     images: dict[str, list[str]],
-    baselines: dict[str, float],
+    baselines: dict[tuple[str, str], float],
     rng: random.Random,
 ) -> dict[str, Any]:
     deal = ranked.deal
     country_images = images.get(deal.arrival_country)
-    baseline = baselines.get(deal.arrival_iata)
+    baseline = baselines.get((ranked.origin_iata, deal.arrival_iata))
     anchor, tier = (
         _anchor(deal.price, baseline, deal.currency) if baseline else (None, None)
     )
@@ -105,7 +105,7 @@ def render_digest(
     unsubscribe_token: str,
     digest: DigestResult,
     images: dict[str, list[str]],
-    baselines: dict[str, float],
+    baselines: dict[tuple[str, str], float],
     base_url: str,
     rng: random.Random | None = None,
 ) -> str:

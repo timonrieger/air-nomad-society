@@ -12,8 +12,9 @@ class Subscriber(BaseModel):
     id: int = Field(description="Primary key in the air_nomads table")
     username: str = Field(description="Display name used in the email greeting")
     email: str = Field(description="Address the digest is sent to")
-    departure_city: str = Field(description="Name of the departure city")
-    departure_iata: str = Field(description="IATA code all searches fly from")
+    departure_airports: list[str] = Field(
+        description="IATA codes searches fly from; every one is searched"
+    )
     currency: str = Field(description="ISO 4217 currency code for listed prices")
     min_nights: int = Field(description="Minimum nights per trip")
     max_nights: int = Field(description="Maximum nights per trip")
@@ -31,8 +32,7 @@ class Subscriber(BaseModel):
             id=row.id,
             username=row.username,
             email=row.email,
-            departure_city=row.departure_city,
-            departure_iata=row.departure_iata,
+            departure_airports=_split(row.departure_airports),
             currency=row.currency.upper(),
             min_nights=row.min_nights,
             max_nights=row.max_nights,

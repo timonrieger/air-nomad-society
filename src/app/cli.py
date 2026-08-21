@@ -49,8 +49,10 @@ def run_digest(provider: FlightProvider) -> int:
             # before=started_at: the run's own candidates never anchor
             # themselves.
             baselines = route_baselines(
-                subscriber.departure_iata,
-                {ranked.deal.arrival_iata for ranked in result.deals},
+                {
+                    (ranked.origin_iata, ranked.deal.arrival_iata)
+                    for ranked in result.deals
+                },
                 subscriber.currency,
                 before=recording.started_at,
             )

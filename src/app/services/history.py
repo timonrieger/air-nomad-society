@@ -76,36 +76,42 @@ class RecordingProvider:
 
 
 def route_baselines(
-    origin_iata: str, arrival_iatas: set[str], currency: str, before: datetime
-) -> dict[str, float]:
-    """Median observed price per arrival city over the rolling window.
+    routes: set[tuple[str, str]], currency: str, before: datetime
+) -> dict[tuple[str, str], float]:
+    """Median observed price per (origin, arrival) route over the rolling window.
 
-    Only observations strictly before `before` count (pass the run start, so a
-    run's own candidates never anchor themselves), and only in the subscriber's
-    currency (prices in different currencies are not comparable). Routes
-    observed on fewer than MIN_OBSERVATION_DAYS distinct days are omitted —
-    a single day's snapshot is not history, and no anchor beats a shaky one."""
+    Keyed per departure airport — the same arrival can price very differently
+    from different origins. Only observations strictly before `before` count
+    (pass the run start, so a run's own candidates never anchor themselves),
+    and only in the subscriber's currency (prices in different currencies are
+    not comparable). Routes observed on fewer than MIN_OBSERVATION_DAYS
+    distinct days are omitted — a single day's snapshot is not history, and
+    no anchor beats a shaky one."""
     statement = select(
+        PriceObservation.origin_iata,
         PriceObservation.arrival_iata,
         PriceObservation.price,
         PriceObservation.observed_at,
     ).where(
-        PriceObservation.origin_iata == origin_iata,
-        PriceObservation.arrival_iata.in_(arrival_iatas),
+        PriceObservation.origin_iata.in_({origin for origin, _ in routes}),
+        PriceObservation.arrival_iata.in_({arrival for _, arrival in routes}),
         PriceObservation.currency == currency,
         PriceObservation.observed_at >= before - timedelta(weeks=BASELINE_WINDOW_WEEKS),
         PriceObservation.observed_at < before,
     )
-    prices: dict[str, list[float]] = defaultdict(list)
-    days: dict[str, set[date]] = defaultdict(set)
+    prices: dict[tuple[str, str], list[float]] = defaultdict(list)
+    days: dict[tuple[str, str], set[date]] = defaultdict(set)
     with session_scope() as session:
-        for arrival_iata, price, observed_at in session.execute(statement):
-            prices[arrival_iata].append(price)
-            days[arrival_iata].add(observed_at.date())
+        for origin_iata, arrival_iata, price, observed_at in session.execute(statement):
+            route = (origin_iata, arrival_iata)
+            # The two IN filters over-select pair combinations; keep exact routes.
+            if route in routes:
+                prices[route].append(price)
+                days[route].add(observed_at.date())
     return {
-        arrival_iata: median(values)
-        for arrival_iata, values in prices.items()
-        if len(days[arrival_iata]) >= MIN_OBSERVATION_DAYS
+        route: median(values)
+        for route, values in prices.items()
+        if len(days[route]) >= MIN_OBSERVATION_DAYS
     }
 
 

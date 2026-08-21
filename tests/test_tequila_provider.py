@@ -114,3 +114,30 @@ def test_rate_limited_then_empty_returns_no_deals(monkeypatch) -> None:
         lambda self, *a, **k: ResponseStub({"error": "rate limited"}, status_code=429),
     )
     assert TequilaProvider("https://t", "key").search_top(QUERY, 10) == []
+
+
+def test_pacing_kicks_in_only_at_the_quota(monkeypatch) -> None:
+    from src.app.services.providers.tequila import RATE_LIMIT_PER_MINUTE
+
+    provider = TequilaProvider("https://t", "key")
+    slept: list[float] = []
+    clock = {"now": 1000.0}
+    monkeypatch.setattr(
+        "src.app.services.providers.tequila.time.monotonic", lambda: clock["now"]
+    )
+    monkeypatch.setattr(
+        "src.app.services.providers.tequila.time.sleep",
+        lambda seconds: slept.append(seconds),
+    )
+    # A burst up to the quota runs unthrottled.
+    for _ in range(RATE_LIMIT_PER_MINUTE):
+        provider._pace()
+    assert slept == []
+    # The next request waits out the rest of the oldest request's minute.
+    clock["now"] = 1010.0
+    provider._pace()
+    assert slept == [50.0]
+    # A minute later the window is clear again.
+    clock["now"] = 1100.0
+    provider._pace()
+    assert slept == [50.0]

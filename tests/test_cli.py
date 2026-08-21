@@ -24,8 +24,7 @@ def subscriber(email: str) -> Subscriber:
         id=1,
         username="u",
         email=email,
-        departure_city="Frankfurt",
-        departure_iata="FRA",
+        departure_airports=["FRA"],
         currency="EUR",
         min_nights=2,
         max_nights=5,
@@ -49,7 +48,7 @@ def test_one_failing_subscriber_does_not_block_the_rest(sqlite_db, monkeypatch) 
     monkeypatch.setattr(cli, "load_subscribers", lambda only_id: subscribers)
     monkeypatch.setattr(cli.mailer, "send_email", fake_send)
 
-    failures = cli.run_digest(FakeProvider({"FI": [deal()]}))
+    failures = cli.run_digest(FakeProvider({("FRA", "FI"): [deal()]}))
     assert failures == 1
     assert sent == ["works@example.com"]
 
@@ -59,7 +58,7 @@ def test_all_successful_returns_zero(sqlite_db, monkeypatch) -> None:
         cli, "load_subscribers", lambda only_id: [subscriber("a@example.com")]
     )
     monkeypatch.setattr(cli.mailer, "send_email", lambda *a, **k: None)
-    assert cli.run_digest(FakeProvider({"FI": [deal()]})) == 0
+    assert cli.run_digest(FakeProvider({("FRA", "FI"): [deal()]})) == 0
 
 
 def test_empty_digest_is_not_sent(sqlite_db, monkeypatch) -> None:
@@ -78,7 +77,7 @@ def test_empty_digest_is_not_sent(sqlite_db, monkeypatch) -> None:
 
 
 def test_deal_fields_reach_the_email(sqlite_db, monkeypatch) -> None:
-    provider = FakeProvider({"FI": [deal()]})
+    provider = FakeProvider({("FRA", "FI"): [deal()]})
     captured: list[tuple[str, str]] = []
     monkeypatch.setattr(
         cli, "load_subscribers", lambda only_id: [subscriber("a@example.com")]
@@ -116,7 +115,7 @@ def test_price_anchor_from_earlier_runs_reaches_the_email(
     monkeypatch.setattr(
         cli.mailer, "send_email", lambda html, *a, **k: captured.append(html)
     )
-    assert cli.run_digest(FakeProvider({"FI": [deal()]})) == 0
+    assert cli.run_digest(FakeProvider({("FRA", "FI"): [deal()]})) == 0
     assert "typically ~310 EUR (−58%)" in captured[0]
 
 
@@ -134,7 +133,7 @@ def test_reasons_reach_the_email_and_the_history(sqlite_db, monkeypatch) -> None
     monkeypatch.setattr(
         cli.mailer, "send_email", lambda html, *a, **k: captured.append(html)
     )
-    assert cli.run_digest(FakeProvider({"FI": [deal()]})) == 0
+    assert cli.run_digest(FakeProvider({("FRA", "FI"): [deal()]})) == 0
     assert reason in captured[0]
     with Session(get_engine()) as session:
         assert session.scalars(select(SentDeal)).one().reason == reason
@@ -150,11 +149,11 @@ def test_freshness_reads_the_sent_history_between_runs(sqlite_db, monkeypatch) -
     )
     # Some history exists (Spain, once), but Finland was never sent — new for you.
     insert_rows([sent(arrival_country="Spain", arrival_iata="PMI")])
-    assert cli.run_digest(FakeProvider({"FI": [deal()]})) == 0
+    assert cli.run_digest(FakeProvider({("FRA", "FI"): [deal()]})) == 0
     assert "✨ new for you" in captured[0]
     # Second run: same deal repeats at the same price — no badge, and the
     # recorded score carries the repeat penalties.
-    assert cli.run_digest(FakeProvider({"FI": [deal()]})) == 0
+    assert cli.run_digest(FakeProvider({("FRA", "FI"): [deal()]})) == 0
     assert "✨ new for you" not in captured[1]
     with Session(get_engine()) as session:
         finland = select(SentDeal).where(SentDeal.arrival_country == "Finland")
@@ -166,7 +165,7 @@ def test_history_rows_written_for_candidates_and_sent_deals(
     sqlite_db, monkeypatch
 ) -> None:
     cheap, direct = deal(price=100, via_cities=["Riga"]), deal(price=110)
-    provider = FakeProvider({"FI": [cheap, direct]})
+    provider = FakeProvider({("FRA", "FI"): [cheap, direct]})
     monkeypatch.setattr(
         cli, "load_subscribers", lambda only_id: [subscriber("a@example.com")]
     )
@@ -190,7 +189,7 @@ def test_history_rows_written_for_candidates_and_sent_deals(
 
 
 def test_no_sent_deals_recorded_when_email_fails(sqlite_db, monkeypatch) -> None:
-    provider = FakeProvider({"FI": [deal()]})
+    provider = FakeProvider({("FRA", "FI"): [deal()]})
     monkeypatch.setattr(
         cli, "load_subscribers", lambda only_id: [subscriber("a@example.com")]
     )

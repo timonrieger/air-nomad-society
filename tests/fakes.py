@@ -21,12 +21,14 @@ class ResponseStub:
 
 
 class FakeProvider:
-    """In-memory FlightProvider for tests: maps destination IATA -> candidates."""
+    """In-memory FlightProvider: maps (origin, destination) IATAs to candidates."""
 
-    def __init__(self, deals: dict[str, list[FlightDeal]] | None = None) -> None:
+    def __init__(
+        self, deals: dict[tuple[str, str], list[FlightDeal]] | None = None
+    ) -> None:
         self.deals = deals or {}
         self.queries: list[SearchQuery] = []
 
     def search_top(self, query: SearchQuery, count: int) -> list[FlightDeal]:
         self.queries.append(query)
-        return self.deals.get(query.destination_iata, [])[:count]
+        return self.deals.get((query.origin_iata, query.destination_iata), [])[:count]
