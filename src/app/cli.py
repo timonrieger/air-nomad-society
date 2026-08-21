@@ -10,6 +10,7 @@ from src.app.services.history import (
     RecordingProvider,
     record_sent_deals,
     route_baselines,
+    sent_history,
 )
 from src.app.services.reasons import deal_reasons
 from src.app.services.providers import FlightProvider
@@ -36,7 +37,12 @@ def run_digest(provider: FlightProvider) -> int:
     failures = 0
     for subscriber in subscribers:
         try:
-            result = build_digest(subscriber, recording, data.countries)
+            result = build_digest(
+                subscriber,
+                recording,
+                data.countries,
+                history=sent_history(subscriber.id, subscriber.currency),
+            )
             if not result.deals:
                 logger.info("no deals for %s, skipping digest", subscriber.email)
                 continue

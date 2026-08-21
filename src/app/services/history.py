@@ -8,6 +8,7 @@ from datetime import date, datetime, timedelta, timezone
 from statistics import median
 from uuid import uuid4
 
+from pydantic import BaseModel, Field
 from sqlalchemy import select
 
 from src.app.db import PriceObservation, SentDeal, insert_rows, session_scope
@@ -16,6 +17,7 @@ from src.app.services.providers import FlightProvider
 
 BASELINE_WINDOW_WEEKS = 26
 MIN_OBSERVATION_DAYS = 4
+FRESHNESS_WINDOW_WEEKS = 8
 
 
 def _utcnow() -> datetime:
@@ -97,6 +99,53 @@ def route_baselines(
         for arrival_iata, values in prices.items()
         if len(days[arrival_iata]) >= MIN_OBSERVATION_DAYS
     }
+
+
+class SentHistory(BaseModel):
+    """What a subscriber has already been emailed, split for freshness rules."""
+
+    recent_countries: set[str] = Field(
+        default_factory=set,
+        description="Countries sent within the freshness window",
+    )
+    recent_country_prices: dict[str, float] = Field(
+        default_factory=dict,
+        description="Cheapest recently sent price per country, current currency only",
+    )
+    recent_cities: set[str] = Field(
+        default_factory=set,
+        description="Arrival IATAs sent within the freshness window",
+    )
+    all_countries: set[str] = Field(
+        default_factory=set,
+        description="Every country ever emailed to this subscriber",
+    )
+
+
+def sent_history(subscriber_id: int, currency: str) -> SentHistory:
+    """The subscriber's sent-deal history as the freshness rules consume it.
+
+    The price map only trusts rows in the subscriber's current currency — a
+    price sent under an old currency setting cannot gate the repeat waiver."""
+    cutoff = _utcnow() - timedelta(weeks=FRESHNESS_WINDOW_WEEKS)
+    statement = select(
+        SentDeal.arrival_country,
+        SentDeal.arrival_iata,
+        SentDeal.price,
+        SentDeal.currency,
+        SentDeal.sent_at,
+    ).where(SentDeal.subscriber_id == subscriber_id)
+    history = SentHistory()
+    with session_scope() as session:
+        for country, city, price, row_currency, sent_at in session.execute(statement):
+            history.all_countries.add(country)
+            if sent_at >= cutoff:
+                history.recent_countries.add(country)
+                history.recent_cities.add(city)
+                if row_currency == currency:
+                    prices = history.recent_country_prices
+                    prices[country] = min(price, prices.get(country, price))
+    return history
 
 
 def record_sent_deals(subscriber_id: int, deals: list[RankedDeal]) -> None:

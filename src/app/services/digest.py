@@ -9,9 +9,15 @@ from pydantic import BaseModel
 
 from src.app.models.subscriber import Subscriber
 from src.app.models.flights import DealSource, RankedDeal, SearchQuery
+from src.app.services.history import SentHistory
 from src.app.services.providers import FlightProvider
 from src.app.services.refdata import Country
-from src.app.services.selection import deal_score, favorite_destinations, select_gems
+from src.app.services.selection import (
+    deal_score,
+    favorite_destinations,
+    freshness_multiplier,
+    select_gems,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +42,7 @@ def build_digest(
     subscriber: Subscriber,
     provider: FlightProvider,
     destinations: list[Country],
+    history: SentHistory,
     rng: random.Random | None = None,
     today: date | None = None,
 ) -> DigestResult:
@@ -63,7 +70,13 @@ def build_digest(
         ]
         ranked = sorted(
             (
-                RankedDeal(deal=deal, source=source, score=deal_score(deal))
+                RankedDeal(
+                    deal=deal,
+                    source=source,
+                    # The freshness multiplier steers repeating countries
+                    # toward fresh cities and sinks repeats in the ranking.
+                    score=deal_score(deal) * freshness_multiplier(deal, history),
+                )
                 for deal in candidates
             ),
             key=lambda pick: pick.score,
@@ -72,10 +85,17 @@ def build_digest(
             return None
         winner = ranked[0]
         winner.runner_ups = ranked[1 : 1 + RUNNER_UP_COUNT]
+        winner.first_time = winner.deal.arrival_country not in history.all_countries
         return winner
 
     favorites = set(subscriber.favorites)
-    gems = select_gems(destinations, favorites, set(subscriber.excluded), rng=rng)
+    gems = select_gems(
+        destinations,
+        favorites,
+        set(subscriber.excluded),
+        recent=history.recent_countries,
+        rng=rng,
+    )
     deals = [
         pick
         for country in favorite_destinations(destinations, favorites)
