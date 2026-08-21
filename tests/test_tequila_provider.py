@@ -67,7 +67,7 @@ WITH_STOPS = itinerary(
 
 def test_direct_flight_maps_fields_timezone_fixed(monkeypatch) -> None:
     monkeypatch.setattr(
-        "src.app.services.providers.tequila.requests.Session.get",
+        "src.app.services.providers.tequila.httpx2.Client.get",
         lambda self, *a, **k: ResponseStub({"data": [DIRECT]}),
     )
     provider: FlightProvider = TequilaProvider("https://t", "key")
@@ -95,7 +95,7 @@ def test_direct_pass_precedes_stopover_pass(monkeypatch) -> None:
         return ResponseStub({"data": [WITH_STOPS, DIRECT]})
 
     monkeypatch.setattr(
-        "src.app.services.providers.tequila.requests.Session.get", fake_get
+        "src.app.services.providers.tequila.httpx2.Client.get", fake_get
     )
     deals = TequilaProvider("https://t", "key").search_top(QUERY, 10)
     assert [p["max_sector_stopovers"] for p in captured] == [0, 1]
@@ -110,7 +110,7 @@ def test_direct_pass_precedes_stopover_pass(monkeypatch) -> None:
 def test_rate_limited_then_empty_returns_no_deals(monkeypatch) -> None:
     monkeypatch.setattr("src.app.services.providers.tequila.time.sleep", lambda s: None)
     monkeypatch.setattr(
-        "src.app.services.providers.tequila.requests.Session.get",
+        "src.app.services.providers.tequila.httpx2.Client.get",
         lambda self, *a, **k: ResponseStub({"error": "rate limited"}, status_code=429),
     )
     assert TequilaProvider("https://t", "key").search_top(QUERY, 10) == []

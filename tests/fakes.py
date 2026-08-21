@@ -1,12 +1,12 @@
 from typing import Any
 
-import requests
+import httpx2
 
 from src.app.models.flights import FlightDeal, SearchQuery
 
 
 class ResponseStub:
-    """A canned requests.Response: json body plus status code."""
+    """A canned httpx2.Response: json body plus status code."""
 
     def __init__(self, body: dict[str, Any], status_code: int = 200) -> None:
         self.body = body
@@ -17,7 +17,7 @@ class ResponseStub:
 
     def raise_for_status(self) -> None:
         if self.status_code >= 400:
-            raise requests.HTTPError(f"status {self.status_code}")
+            raise httpx2.HTTPError(f"status {self.status_code}")
 
 
 class FakeProvider:
