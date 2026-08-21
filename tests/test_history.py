@@ -1,33 +1,18 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 
-from src.app.db import PriceObservation, SentDeal, insert_rows
+from src.app.db import PriceObservation, insert_rows
 from src.app.services.history import (
     BASELINE_WINDOW_WEEKS,
     FRESHNESS_WINDOW_WEEKS,
     SentHistory,
+    _utcnow,
     route_baselines,
     sent_history,
 )
-from tests.conftest import observation
+from tests.conftest import observation, sent
 
 RUN_STARTED = datetime(2026, 9, 1, 6, 0)
-NOW = datetime.now(timezone.utc).replace(tzinfo=None)
-
-
-def sent(**overrides) -> SentDeal:
-    fields: dict = {
-        "subscriber_id": 1,
-        "departure_iata": "FRA",
-        "arrival_iata": "HEL",
-        "arrival_country": "Finland",
-        "price": 150.0,
-        "currency": "EUR",
-        "source": "favorite",
-        "score": 160.0,
-        "sent_at": NOW - timedelta(weeks=1),
-    }
-    fields.update(overrides)
-    return SentDeal(**fields)
+NOW = _utcnow()
 
 
 def spread(prices: tuple[float, ...], **overrides) -> list[PriceObservation]:

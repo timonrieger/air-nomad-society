@@ -4,9 +4,9 @@ from datetime import datetime
 import pytest
 
 from src.app.config import Settings, get_settings
-from src.app.db import Base, PriceObservation, get_engine
+from src.app.db import Base, PriceObservation, SentDeal, get_engine
 from src.app.models.flights import FlightDeal
-from src.app.services.history import OBSERVED_FIELDS
+from src.app.services.history import OBSERVED_FIELDS, SENT_FIELDS
 
 TEST_SECRET = "test-secret-key-of-at-least-32-bytes!"  # gitleaks:allow
 
@@ -65,6 +65,25 @@ def deal(**overrides) -> FlightDeal:
     }
     fields.update(overrides)
     return FlightDeal(**fields)
+
+
+def sent(
+    subscriber_id: int = 1,
+    source: str = "favorite",
+    score: float = 160.0,
+    sent_at: datetime | None = None,
+    **deal_overrides,
+) -> SentDeal:
+    """A SentDeal row built from deal(), the way record_sent_deals does.
+
+    sent_at=None leaves the stamp to the DB server default (i.e. "just now")."""
+    return SentDeal(
+        subscriber_id=subscriber_id,
+        source=source,
+        score=score,
+        sent_at=sent_at,
+        **deal(**deal_overrides).model_dump(include=SENT_FIELDS),
+    )
 
 
 def observation(

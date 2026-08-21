@@ -35,6 +35,14 @@ OBSERVED_FIELDS = {
     "duration_minutes",
 }
 
+SENT_FIELDS = {
+    "departure_iata",
+    "arrival_iata",
+    "arrival_country",
+    "price",
+    "currency",
+}
+
 
 class RecordingProvider:
     """Wraps a provider and logs every candidate it returns.
@@ -128,23 +136,26 @@ def sent_history(subscriber_id: int, currency: str) -> SentHistory:
     The price map only trusts rows in the subscriber's current currency — a
     price sent under an old currency setting cannot gate the repeat waiver."""
     cutoff = _utcnow() - timedelta(weeks=FRESHNESS_WINDOW_WEEKS)
-    statement = select(
+    recent = select(
         SentDeal.arrival_country,
         SentDeal.arrival_iata,
         SentDeal.price,
         SentDeal.currency,
-        SentDeal.sent_at,
-    ).where(SentDeal.subscriber_id == subscriber_id)
+    ).where(SentDeal.subscriber_id == subscriber_id, SentDeal.sent_at >= cutoff)
+    ever = (
+        select(SentDeal.arrival_country)
+        .where(SentDeal.subscriber_id == subscriber_id)
+        .distinct()
+    )
     history = SentHistory()
     with session_scope() as session:
-        for country, city, price, row_currency, sent_at in session.execute(statement):
-            history.all_countries.add(country)
-            if sent_at >= cutoff:
-                history.recent_countries.add(country)
-                history.recent_cities.add(city)
-                if row_currency == currency:
-                    prices = history.recent_country_prices
-                    prices[country] = min(price, prices.get(country, price))
+        history.all_countries.update(session.scalars(ever))
+        for country, city, price, row_currency in session.execute(recent):
+            history.recent_countries.add(country)
+            history.recent_cities.add(city)
+            if row_currency == currency:
+                prices = history.recent_country_prices
+                prices[country] = min(price, prices.get(country, price))
     return history
 
 
@@ -156,15 +167,7 @@ def record_sent_deals(subscriber_id: int, deals: list[RankedDeal]) -> None:
                 source=ranked.source,
                 score=ranked.score,
                 reason=ranked.reason,
-                **ranked.deal.model_dump(
-                    include={
-                        "departure_iata",
-                        "arrival_iata",
-                        "arrival_country",
-                        "price",
-                        "currency",
-                    }
-                ),
+                **ranked.deal.model_dump(include=SENT_FIELDS),
             )
             for ranked in deals
         ]
