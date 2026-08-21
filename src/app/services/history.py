@@ -14,6 +14,7 @@ from src.app.db import PriceObservation, SentDeal, insert_rows, session_scope
 from src.app.models.flights import FlightDeal, RankedDeal, SearchQuery
 from src.app.models.history import SentHistory
 from src.app.services.providers import FlightProvider
+from src.app.services.selection import deal_score
 
 BASELINE_WINDOW_WEEKS = 26
 MIN_OBSERVATION_DAYS = 4
@@ -115,18 +116,12 @@ def route_baselines(
     }
 
 
-def sent_history(subscriber_id: int, currency: str) -> SentHistory:
-    """The subscriber's sent-deal history as the freshness rules consume it.
-
-    The price map only trusts rows in the subscriber's current currency — a
-    price sent under an old currency setting cannot gate the repeat waiver."""
+def sent_history(subscriber_id: int) -> SentHistory:
+    """The subscriber's sent-deal history as the freshness rules consume it."""
     cutoff = _utcnow() - timedelta(weeks=FRESHNESS_WINDOW_WEEKS)
-    recent = select(
-        SentDeal.arrival_country,
-        SentDeal.arrival_iata,
-        SentDeal.price,
-        SentDeal.currency,
-    ).where(SentDeal.subscriber_id == subscriber_id, SentDeal.sent_at >= cutoff)
+    recent = select(SentDeal.arrival_country, SentDeal.arrival_iata).where(
+        SentDeal.subscriber_id == subscriber_id, SentDeal.sent_at >= cutoff
+    )
     ever = (
         select(SentDeal.arrival_country)
         .where(SentDeal.subscriber_id == subscriber_id)
@@ -135,12 +130,9 @@ def sent_history(subscriber_id: int, currency: str) -> SentHistory:
     history = SentHistory()
     with session_scope() as session:
         history.all_countries.update(session.scalars(ever))
-        for country, city, price, row_currency in session.execute(recent):
+        for country, city in session.execute(recent):
             history.recent_countries.add(country)
             history.recent_cities.add(city)
-            if row_currency == currency:
-                prices = history.recent_country_prices
-                prices[country] = min(price, prices.get(country, price))
     return history
 
 
@@ -151,6 +143,9 @@ def record_sent_deals(subscriber_id: int, deals: list[RankedDeal]) -> None:
                 subscriber_id=subscriber_id,
                 source=ranked.source,
                 score=ranked.score,
+                # Recomputed rather than carried on RankedDeal: deal_score is
+                # deterministic on the deal, so the two can never drift.
+                quality_score=deal_score(ranked.deal),
                 reason=ranked.reason,
                 **ranked.deal.model_dump(include=SENT_FIELDS),
             )

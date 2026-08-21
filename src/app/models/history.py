@@ -8,10 +8,6 @@ class SentHistory(BaseModel):
         default_factory=set,
         description="Countries sent within the freshness window",
     )
-    recent_country_prices: dict[str, float] = Field(
-        default_factory=dict,
-        description="Cheapest recently sent price per country, current currency only",
-    )
     recent_cities: set[str] = Field(
         default_factory=set,
         description="Arrival IATAs sent within the freshness window",

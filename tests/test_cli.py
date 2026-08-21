@@ -125,8 +125,8 @@ def test_reasons_reach_the_email_and_the_history(sqlite_db, monkeypatch) -> None
         cli, "load_subscribers", lambda only_id: [subscriber("a@example.com")]
     )
 
-    def fake_reasons(subscriber, deals, baselines, settings) -> None:
-        deals[0].reason = reason
+    def fake_reasons(subscriber, digest, settings) -> None:
+        digest.deals[0].reason = reason
 
     monkeypatch.setattr(cli, "deal_reasons", fake_reasons)
     captured: list[str] = []
@@ -152,13 +152,17 @@ def test_freshness_reads_the_sent_history_between_runs(sqlite_db, monkeypatch) -
     assert cli.run_digest(FakeProvider({("FRA", "FI"): [deal()]})) == 0
     assert "✨ new for you" in captured[0]
     # Second run: same deal repeats at the same price — no badge, and the
-    # recorded score carries the repeat penalties.
+    # recorded ranking score carries the repeat penalties while the quality
+    # score stays what the deal is worth.
     assert cli.run_digest(FakeProvider({("FRA", "FI"): [deal()]})) == 0
     assert "✨ new for you" not in captured[1]
     with Session(get_engine()) as session:
         finland = select(SentDeal).where(SentDeal.arrival_country == "Finland")
-        first, second = [s.score for s in session.scalars(finland)]
+        rows = session.scalars(finland).all()
+        first, second = [row.score for row in rows]
+        qualities = {row.quality_score for row in rows}
     assert second > first
+    assert qualities == {first}  # run 1 was unpenalized: score == quality
 
 
 def test_history_rows_written_for_candidates_and_sent_deals(

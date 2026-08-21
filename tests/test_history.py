@@ -79,21 +79,18 @@ def test_sent_history_splits_recent_from_ever(sqlite_db) -> None:
         [
             sent(),
             sent(price=120),
-            # Recently sent, but the old currency cannot gate the waiver.
-            sent(price=90, currency="USD"),
             sent(arrival_country="Spain", arrival_iata="PMI", sent_at=outside_window),
         ]
     )
-    history = sent_history(1, "EUR")
+    history = sent_history(1)
     assert history.recent_countries == {"Finland"}
-    assert history.recent_country_prices == {"Finland": 120.0}
     assert history.recent_cities == {"HEL"}
     assert history.all_countries == {"Finland", "Spain"}
 
 
 def test_sent_history_is_scoped_to_the_subscriber(sqlite_db) -> None:
     insert_rows([sent(subscriber_id=2)])
-    assert sent_history(1, "EUR") == SentHistory()
+    assert sent_history(1) == SentHistory()
 
 
 def test_current_run_and_stale_observations_are_excluded(sqlite_db) -> None:

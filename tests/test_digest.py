@@ -3,11 +3,33 @@ from datetime import date
 
 from src.app.db import AirNomads
 from src.app.models.subscriber import Subscriber
-from src.app.services.digest import build_digest
+from src.app.services.digest import DigestResult, build_digest
 from src.app.models.history import SentHistory
+from src.app.services.selection import deal_score
 from src.app.services.refdata import Country
 from tests.conftest import deal
 from tests.fakes import FakeProvider
+
+
+def digest(
+    subscriber: Subscriber,
+    provider: FakeProvider,
+    history: SentHistory | None = None,
+    baselines: dict[tuple[str, str], float] | None = None,
+    rng: random.Random | None = None,
+    today: date | None = None,
+) -> DigestResult:
+    """build_digest with the test defaults spelled once."""
+    return build_digest(
+        subscriber,
+        provider,
+        DESTINATIONS,
+        history or SentHistory(),
+        baselines_for=lambda routes: baselines or {},
+        rng=rng or random.Random(1),
+        today=today,
+    )
+
 
 DESTINATIONS = [
     Country(country="Finland", code="FI"),
@@ -46,9 +68,7 @@ def test_favorites_and_discoveries_ranked_into_one_list() -> None:
             ],
         }
     )
-    result = build_digest(
-        SUBSCRIBER, provider, DESTINATIONS, SentHistory(), rng=random.Random(7)
-    )
+    result = digest(SUBSCRIBER, provider, rng=random.Random(7))
     by_country = {r.deal.arrival_country: r.source for r in result.deals}
     assert by_country["Finland"] == "favorite"
     # Gems drawn from {Spain, Germany}: Finland is a favorite, Japan excluded.
@@ -65,9 +85,7 @@ def test_best_scoring_candidate_wins_over_cheapest() -> None:
     cheap_stopover = deal(price=100, via_cities=["Riga"])
     direct = deal(price=110)
     provider = FakeProvider({("FRA", "FI"): [cheap_stopover, direct]})
-    result = build_digest(
-        SUBSCRIBER, provider, DESTINATIONS, SentHistory(), rng=random.Random(1)
-    )
+    result = digest(SUBSCRIBER, provider)
     finland = [r for r in result.deals if r.deal.arrival_country == "Finland"]
     assert finland[0].deal == direct
     # The beaten candidate rides along as a runner-up for the reasoning line.
@@ -83,21 +101,68 @@ def test_repeating_favorite_prefers_a_fresh_city() -> None:
         recent_cities={"HEL"},
         all_countries={"Finland"},
     )
-    result = build_digest(
-        SUBSCRIBER, provider, DESTINATIONS, history, rng=random.Random(1)
-    )
+    result = digest(SUBSCRIBER, provider, history=history)
     finland = [r for r in result.deals if r.deal.arrival_country == "Finland"]
     # Helsinki is slightly cheaper but was just sent; Turku is fresh.
     assert finland[0].deal == turku
     assert finland[0].first_time is False
 
 
+def test_clearly_below_typical_repeats_without_penalty() -> None:
+    # HEL was just sent, but 129.99 is ≥15% under its 310 typical price —
+    # the repeat escapes both penalties and the baseline reaches the result.
+    provider = FakeProvider({("FRA", "FI"): [deal()]})
+    history = SentHistory(
+        recent_countries={"Finland"},
+        recent_cities={"HEL"},
+        all_countries={"Finland"},
+    )
+    typical = {("FRA", "HEL"): 310.0}
+    result = digest(SUBSCRIBER, provider, history=history, baselines=typical)
+    finland = [r for r in result.deals if r.deal.arrival_country == "Finland"]
+    assert finland[0].score == deal_score(finland[0].deal)
+    assert result.baselines == typical
+
+
+def test_baselines_fetched_for_waiver_candidates() -> None:
+    # Finland is recently sent, so every Finland candidate route is
+    # waiver-eligible; they already cover the winner — exactly one fetch.
+    subscriber = SUBSCRIBER.model_copy(update={"departure_airports": ["FRA", "BER"]})
+    berlin_deal = deal(price=200, departure_city="Berlin", departure_iata="BER")
+    provider = FakeProvider({("FRA", "FI"): [deal()], ("BER", "FI"): [berlin_deal]})
+    history = SentHistory(recent_countries={"Finland"}, all_countries={"Finland"})
+    fetched: list[set[tuple[str, str]]] = []
+
+    def lookup(routes: set[tuple[str, str]]) -> dict[tuple[str, str], float]:
+        fetched.append(routes)
+        return {}
+
+    build_digest(
+        subscriber, provider, DESTINATIONS, history, lookup, rng=random.Random(1)
+    )
+    assert fetched == [{("FRA", "HEL"), ("BER", "HEL")}]
+
+
+def test_baselines_topped_up_for_winners_outside_the_waiver() -> None:
+    # Nothing recently sent → no waiver fetch; the winning route is still
+    # fetched so the anchor line can render.
+    provider = FakeProvider({("FRA", "FI"): [deal()]})
+    fetched: list[set[tuple[str, str]]] = []
+
+    def lookup(routes: set[tuple[str, str]]) -> dict[tuple[str, str], float]:
+        fetched.append(routes)
+        return {}
+
+    build_digest(
+        SUBSCRIBER, provider, DESTINATIONS, SentHistory(), lookup, rng=random.Random(1)
+    )
+    assert fetched == [{("FRA", "HEL")}]
+
+
 def test_first_time_country_is_flagged_once_history_exists() -> None:
     provider = FakeProvider({("FRA", "FI"): [deal()]})
     seen_spain = SentHistory(all_countries={"Spain"})
-    result = build_digest(
-        SUBSCRIBER, provider, DESTINATIONS, seen_spain, rng=random.Random(1)
-    )
+    result = digest(SUBSCRIBER, provider, history=seen_spain)
     finland = [r for r in result.deals if r.deal.arrival_country == "Finland"]
     assert finland[0].first_time is True
 
@@ -105,9 +170,7 @@ def test_first_time_country_is_flagged_once_history_exists() -> None:
 def test_brand_new_subscribers_get_no_first_time_flags() -> None:
     # With no history at all, badging every card would say nothing.
     provider = FakeProvider({("FRA", "FI"): [deal()]})
-    result = build_digest(
-        SUBSCRIBER, provider, DESTINATIONS, SentHistory(), rng=random.Random(1)
-    )
+    result = digest(SUBSCRIBER, provider)
     finland = [r for r in result.deals if r.deal.arrival_country == "Finland"]
     assert finland[0].first_time is False
 
@@ -115,9 +178,7 @@ def test_brand_new_subscribers_get_no_first_time_flags() -> None:
 def test_searches_fan_out_per_departure_airport() -> None:
     subscriber = SUBSCRIBER.model_copy(update={"departure_airports": ["FRA", "BER"]})
     provider = FakeProvider({("FRA", "FI"): [deal()]})
-    build_digest(
-        subscriber, provider, DESTINATIONS, SentHistory(), rng=random.Random(1)
-    )
+    digest(subscriber, provider)
     finland_queries = [q for q in provider.queries if q.destination_iata == "FI"]
     assert [q.origin_iata for q in finland_queries] == ["FRA", "BER"]
 
@@ -127,9 +188,7 @@ def test_best_deal_across_airports_wins_and_keeps_its_origin() -> None:
     frankfurt = deal(price=140)
     berlin = deal(price=120, departure_city="Berlin", departure_iata="BER")
     provider = FakeProvider({("FRA", "FI"): [frankfurt], ("BER", "FI"): [berlin]})
-    result = build_digest(
-        subscriber, provider, DESTINATIONS, SentHistory(), rng=random.Random(1)
-    )
+    result = digest(subscriber, provider)
     finland = [r for r in result.deals if r.deal.arrival_country == "Finland"]
     assert finland[0].deal == berlin
     assert finland[0].origin_iata == "BER"
@@ -138,14 +197,7 @@ def test_best_deal_across_airports_wins_and_keeps_its_origin() -> None:
 
 def test_search_window_derives_from_subscriber() -> None:
     provider = FakeProvider()
-    result = build_digest(
-        SUBSCRIBER,
-        provider,
-        DESTINATIONS,
-        SentHistory(),
-        rng=random.Random(1),
-        today=date(2026, 1, 1),
-    )
+    result = digest(SUBSCRIBER, provider, today=date(2026, 1, 1))
     assert result.window_start == date(2026, 1, 11)
     assert result.window_end == date(2026, 2, 10)
     query = provider.queries[0]
@@ -157,9 +209,7 @@ def test_search_window_derives_from_subscriber() -> None:
 
 def test_same_city_deals_are_dropped() -> None:
     provider = FakeProvider({("FRA", "FI"): [deal(arrival_city="Frankfurt")]})
-    result = build_digest(
-        SUBSCRIBER, provider, DESTINATIONS, SentHistory(), rng=random.Random(1)
-    )
+    result = digest(SUBSCRIBER, provider)
     assert result.deals == []
 
 
@@ -168,9 +218,7 @@ def test_deals_to_another_departure_city_are_dropped() -> None:
     subscriber = SUBSCRIBER.model_copy(update={"departure_airports": ["FRA", "BER"]})
     to_berlin = deal(arrival_iata="BER", arrival_city="Berlin")
     provider = FakeProvider({("FRA", "FI"): [to_berlin]})
-    result = build_digest(
-        subscriber, provider, DESTINATIONS, SentHistory(), rng=random.Random(1)
-    )
+    result = digest(subscriber, provider)
     assert result.deals == []
 
 

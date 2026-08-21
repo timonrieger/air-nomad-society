@@ -11,8 +11,9 @@ import logging
 import requests
 
 from src.app.config import Settings
-from src.app.models.flights import FlightDeal, RankedDeal
+from src.app.models.flights import FlightDeal
 from src.app.models.subscriber import Subscriber
+from src.app.services.digest import DigestResult
 
 logger = logging.getLogger(__name__)
 
@@ -46,11 +47,7 @@ def _card(deal: FlightDeal) -> dict[str, object]:
     }
 
 
-def _payload(
-    subscriber: Subscriber,
-    deals: list[RankedDeal],
-    baselines: dict[tuple[str, str], float],
-) -> dict[str, object]:
+def _payload(subscriber: Subscriber, digest: DigestResult) -> dict[str, object]:
     return {
         "subscriber": {
             "favorite_countries": subscriber.favorites,
@@ -61,23 +58,18 @@ def _payload(
                 "id": index,
                 "picked_as": ranked.source,
                 **_card(ranked.deal),
-                "typical_price": baselines.get(
-                    (ranked.origin_iata, ranked.deal.arrival_iata)
-                ),
+                "typical_price": digest.baseline_for(ranked),
                 "beat_these_runner_ups": [
                     _card(runner_up.deal) for runner_up in ranked.runner_ups
                 ],
             }
-            for index, ranked in enumerate(deals)
+            for index, ranked in enumerate(digest.deals)
         ],
     }
 
 
 def deal_reasons(
-    subscriber: Subscriber,
-    deals: list[RankedDeal],
-    baselines: dict[tuple[str, str], float],
-    settings: Settings,
+    subscriber: Subscriber, digest: DigestResult, settings: Settings
 ) -> None:
     """Attach one reason per pick in place; a no-op when unconfigured or failed."""
     if not settings.ai_api_key:
@@ -88,13 +80,13 @@ def deal_reasons(
             headers={"Authorization": f"Bearer {settings.ai_api_key}"},
             json={
                 "model": settings.ai_model,
-                "max_tokens": TOKEN_HEADROOM + TOKENS_PER_REASON * len(deals),
+                "max_tokens": TOKEN_HEADROOM + TOKENS_PER_REASON * len(digest.deals),
                 "messages": [
                     {"role": "system", "content": SYSTEM_PROMPT},
                     {
                         "role": "user",
                         "content": json.dumps(
-                            _payload(subscriber, deals, baselines),
+                            _payload(subscriber, digest),
                             ensure_ascii=False,
                             separators=(",", ":"),
                         ),
@@ -108,7 +100,7 @@ def deal_reasons(
         content = content.removeprefix("```json").removeprefix("```")
         content = content.removesuffix("```")
         reasons = json.loads(content)
-        for index, ranked in enumerate(deals):
+        for index, ranked in enumerate(digest.deals):
             reason = reasons.get(str(index))
             if isinstance(reason, str) and 0 < len(reason) <= REASON_MAX_CHARS:
                 ranked.reason = reason
