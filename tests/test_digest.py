@@ -11,7 +11,7 @@ from tests.conftest import deal
 from tests.fakes import FakeProvider
 
 
-def digest(subscriber, provider, history=None, baselines=None, **kwargs):
+def digest(subscriber, provider, history=None, baselines=None, rng=None, today=None):
     """build_digest with the test defaults spelled once."""
     return build_digest(
         subscriber,
@@ -19,8 +19,8 @@ def digest(subscriber, provider, history=None, baselines=None, **kwargs):
         DESTINATIONS,
         history or SentHistory(),
         baselines_for=lambda routes: baselines or {},
-        rng=kwargs.pop("rng", random.Random(1)),
-        **kwargs,
+        rng=rng or random.Random(1),
+        today=today,
     )
 
 

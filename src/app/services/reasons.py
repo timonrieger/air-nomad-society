@@ -58,9 +58,7 @@ def _payload(subscriber: Subscriber, digest: DigestResult) -> dict[str, object]:
                 "id": index,
                 "picked_as": ranked.source,
                 **_card(ranked.deal),
-                "typical_price": digest.baselines.get(
-                    (ranked.origin_iata, ranked.deal.arrival_iata)
-                ),
+                "typical_price": digest.baseline_for(ranked),
                 "beat_these_runner_ups": [
                     _card(runner_up.deal) for runner_up in ranked.runner_ups
                 ],

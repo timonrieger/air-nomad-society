@@ -5,7 +5,9 @@ penalties, so as a quality signal it conflates "worse deal" with
 "repeat". The pure comfort-adjusted score is now recorded alongside it,
 keeping history clean for anything that reads scores as quality.
 The server default only satisfies SQLite's ADD COLUMN NOT NULL rule;
-the digest always writes the real value.
+existing rows are backfilled from score — exact for every unpenalized
+row and a tight upper bound otherwise — and the digest always writes
+the real value going forward.
 
 Revision ID: 0007
 Revises: 0006
@@ -25,6 +27,7 @@ def upgrade() -> None:
         "sent_deal",
         sa.Column("quality_score", sa.Float(), nullable=False, server_default="0"),
     )
+    op.execute("UPDATE sent_deal SET quality_score = score")
 
 
 def downgrade() -> None:

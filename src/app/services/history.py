@@ -14,6 +14,7 @@ from src.app.db import PriceObservation, SentDeal, insert_rows, session_scope
 from src.app.models.flights import FlightDeal, RankedDeal, SearchQuery
 from src.app.models.history import SentHistory
 from src.app.services.providers import FlightProvider
+from src.app.services.selection import deal_score
 
 BASELINE_WINDOW_WEEKS = 26
 MIN_OBSERVATION_DAYS = 4
@@ -142,7 +143,9 @@ def record_sent_deals(subscriber_id: int, deals: list[RankedDeal]) -> None:
                 subscriber_id=subscriber_id,
                 source=ranked.source,
                 score=ranked.score,
-                quality_score=ranked.quality_score,
+                # Recomputed rather than carried on RankedDeal: deal_score is
+                # deterministic on the deal, so the two can never drift.
+                quality_score=deal_score(ranked.deal),
                 reason=ranked.reason,
                 **ranked.deal.model_dump(include=SENT_FIELDS),
             )

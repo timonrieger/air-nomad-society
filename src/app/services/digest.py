@@ -45,6 +45,10 @@ class DigestResult(BaseModel):
     window_start: date
     window_end: date
 
+    def baseline_for(self, ranked: RankedDeal) -> float | None:
+        """The typical price of the route this pick was searched on."""
+        return self.baselines.get((ranked.origin_iata, ranked.deal.arrival_iata))
+
 
 def build_digest(
     subscriber: Subscriber,
@@ -58,7 +62,6 @@ def build_digest(
     start = today or date.today()
     window_start = start + timedelta(days=subscriber.min_days_ahead)
     window_end = start + timedelta(days=subscriber.max_days_ahead)
-    baselines: dict[tuple[str, str], float] = {}
 
     def search(origin_iata: str, country: Country) -> list[FlightDeal]:
         query = SearchQuery(
@@ -80,36 +83,26 @@ def build_digest(
             and deal.arrival_iata not in subscriber.departure_airports
         ]
 
-    def best_pick(country: Country, source: DealSource) -> RankedDeal | None:
-        """The country's best-scoring candidate across every departure airport,
-        carrying its beaten runner-ups."""
-        candidates = [
-            (origin_iata, deal)
-            for origin_iata in subscriber.departure_airports
-            for deal in search(origin_iata, country)
-        ]
-        if not candidates:
-            return None
-        typical = baselines_for(
-            {(origin_iata, deal.arrival_iata) for origin_iata, deal in candidates}
-        )
-        baselines.update(typical)
+    def best_pick(
+        source: DealSource,
+        candidates: list[tuple[str, FlightDeal]],
+        baselines: dict[tuple[str, str], float],
+    ) -> RankedDeal | None:
+        """One country's best-scoring candidate across every departure
+        airport, carrying its beaten runner-ups."""
         ranked = sorted(
             (
                 RankedDeal(
                     deal=deal,
                     source=source,
                     # The freshness multiplier steers repeating countries
-                    # toward fresh cities and sinks repeats in the ranking;
-                    # the pure quality score rides along so history can tell
-                    # a worse deal from a repeat.
-                    quality_score=(quality := deal_score(deal)),
-                    score=quality
+                    # toward fresh cities and sinks repeats in the ranking.
+                    score=deal_score(deal)
                     * freshness_multiplier(
                         deal,
                         source,
                         history,
-                        typical.get((origin_iata, deal.arrival_iata)),
+                        baselines.get((origin_iata, deal.arrival_iata)),
                     ),
                     origin_iata=origin_iata,
                 )
@@ -117,6 +110,8 @@ def build_digest(
             ),
             key=lambda pick: pick.score,
         )
+        if not ranked:
+            return None
         winner = ranked[0]
         winner.runner_ups = ranked[1 : 1 + RUNNER_UP_COUNT]
         # Only meaningful once some history exists: a brand-new subscriber's
@@ -135,11 +130,35 @@ def build_digest(
         recent=history.recent_countries,
         rng=rng,
     )
+    searches: list[tuple[DealSource, Country]] = [
+        ("favorite", country)
+        for country in favorite_destinations(destinations, favorites)
+    ] + [("discovery", country) for country in gems]
+    found = [
+        (
+            source,
+            [
+                (origin_iata, deal)
+                for origin_iata in subscriber.departure_airports
+                for deal in search(origin_iata, country)
+            ],
+        )
+        for source, country in searches
+    ]
+    # One baseline fetch for every searched route: the waiver consults them
+    # during ranking, and DigestResult carries them for the anchor line.
+    baselines = baselines_for(
+        {
+            (origin_iata, deal.arrival_iata)
+            for _, candidates in found
+            for origin_iata, deal in candidates
+        }
+    )
     deals = [
         pick
-        for country in favorite_destinations(destinations, favorites)
-        if (pick := best_pick(country, "favorite"))
-    ] + [pick for country in gems if (pick := best_pick(country, "discovery"))]
+        for source, candidates in found
+        if (pick := best_pick(source, candidates, baselines))
+    ]
     deals.sort(key=lambda pick: pick.score)
     logger.info("digest for %s: %d deals", subscriber.email, len(deals))
     return DigestResult(
