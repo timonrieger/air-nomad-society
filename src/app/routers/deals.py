@@ -1,4 +1,4 @@
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Response
@@ -27,7 +27,6 @@ class WallDeal(BaseModel):
     the digest email printed, so the wall can never disagree with it."""
 
     destination: str = Field(description="Destination city, country as fallback")
-    country: str = Field(description="Destination country name")
     departure_city: str = Field(description="Name of the departure city")
     price: int = Field(description="Round-trip price in `currency` as emailed")
     currency: str = Field(description="ISO 4217 currency code of the prices")
@@ -38,7 +37,6 @@ class WallDeal(BaseModel):
         description="The route's typical price as the email quoted it"
     )
     badge: str | None = Field(description="Savings-tier badge the deal earned")
-    found_on: date = Field(description="Date the deal went out in a digest")
     image_url: str = Field(description="Destination image for the card")
 
 
@@ -65,7 +63,6 @@ def read_deals(session: SessionDep, response: Response) -> list[WallDeal]:
     return [
         WallDeal(
             destination=row.arrival_city or row.arrival_country,
-            country=row.arrival_country,
             departure_city=row.departure_city or row.departure_iata,
             price=int(row.price),  # int(): the email prints prices this way
             currency=row.currency,
@@ -76,7 +73,6 @@ def read_deals(session: SessionDep, response: Response) -> list[WallDeal]:
                 if row.savings_percent is not None
                 else None
             ),
-            found_on=row.sent_at.date(),
             image_url=country_images(images, row.arrival_country)[0],
         )
         for row in best[:WALL_DEAL_COUNT]

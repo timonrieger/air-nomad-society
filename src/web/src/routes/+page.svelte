@@ -10,11 +10,6 @@
 		deals = await fetchDeals().catch(() => []);
 	});
 
-	const foundOn = (deal: WallDeal) => {
-		const [, month, day] = deal.found_on.split('-');
-		return `found ${day}.${month}.`;
-	};
-
 	const features = [
 		{
 			title: 'Personalized Deals, With a Reason',
@@ -118,10 +113,7 @@
 						{/if}
 					</div>
 					<div class="p-5">
-						<h3 class="font-semibold">{deal.destination}</h3>
-						<p class="text-sm text-ink-muted">
-							{deal.country} · from {deal.departure_city} · {foundOn(deal)}
-						</p>
+						<h3 class="font-semibold">{deal.departure_city} – {deal.destination}</h3>
 						<p class="mt-3 text-xl font-bold text-accent-bright">
 							{deal.price}
 							{deal.currency}
