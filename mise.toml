@@ -21,7 +21,6 @@ run = ["mise run install", "uvx prek install"]
 description = "Setup the project"
 
 [tasks.lint]
-# The svelte-check hook runs from packages/web and needs its node_modules.
-depends = ["//packages/web:install"]
+depends = ["install"]
 run = "uvx prek run --all-files"
 description = "Run pre-commit hooks"
