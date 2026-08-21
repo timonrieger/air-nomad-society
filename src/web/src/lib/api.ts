@@ -52,14 +52,12 @@ export const LIMITS = { usernameMin: 3, usernameMax: 20, maxDaysAhead: 365, gemC
 /** One public wall card, display-ready — see WallDeal in src/app/routers/deals.py. */
 export type WallDeal = {
 	destination: string;
-	country: string;
 	departure_city: string;
 	price: number;
 	currency: string;
 	savings_percent: number | null;
 	usual_price: number | null;
 	badge: string | null;
-	found_on: string;
 	image_url: string;
 };
 
