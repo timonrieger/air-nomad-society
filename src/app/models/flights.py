@@ -77,3 +77,7 @@ class RankedDeal(BaseModel):
     reason: str | None = Field(
         default=None, description="AI reasoning line shown on the deal card"
     )
+    first_time: bool = Field(
+        default=False,
+        description="Destination country never emailed to this subscriber before",
+    )

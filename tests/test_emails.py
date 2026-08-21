@@ -113,6 +113,13 @@ def test_no_anchor_without_baseline() -> None:
     assert "typically" not in html
 
 
+def test_new_for_you_badge_for_first_time_countries() -> None:
+    pick = ranked(deal())
+    pick.first_time = True
+    assert "✨ new for you" in render([pick])
+    assert "✨ new for you" not in render([ranked(deal())])
+
+
 def test_reason_line_renders_when_present() -> None:
     reason = "Direct at 10:40 — beat a cheaper red-eye with a stop."
     html = render([ranked(deal(), reason=reason)])

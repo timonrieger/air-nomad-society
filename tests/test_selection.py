@@ -1,8 +1,14 @@
 import random
 from datetime import datetime
 
+from src.app.models.history import SentHistory
 from src.app.services.refdata import Country
-from src.app.services.selection import deal_score, favorite_destinations, select_gems
+from src.app.services.selection import (
+    deal_score,
+    favorite_destinations,
+    freshness_multiplier,
+    select_gems,
+)
 from tests.conftest import deal
 
 DESTINATIONS = [
@@ -38,6 +44,7 @@ def test_gems_exclude_favorites_and_excluded_countries() -> None:
             DESTINATIONS,
             favorites={"Finland", "Japan"},
             excluded={"Brazil"},
+            recent=set(),
             count=3,
             rng=rng,
         )
@@ -51,10 +58,72 @@ def test_gems_are_unique_and_capped_by_pool_size() -> None:
         DESTINATIONS,
         favorites={"Finland", "Spain", "Japan", "Brazil"},
         excluded={"Canada", "Kenya"},
+        recent=set(),
         count=5,
         rng=random.Random(1),
     )
     assert [gem.country for gem in gems] == ["Norway"]
+
+
+def test_gems_prefer_countries_not_recently_sent() -> None:
+    rng = random.Random(7)
+    recent = {"Spain", "Brazil", "Canada", "Kenya"}
+    for _ in range(50):
+        gems = select_gems(DESTINATIONS, set(), set(), recent=recent, count=3, rng=rng)
+        # Three fresh countries exist, so no recently-sent one is picked.
+        assert {gem.country for gem in gems} == {"Finland", "Japan", "Norway"}
+
+
+def test_gems_top_up_from_recent_when_fresh_pool_runs_short() -> None:
+    recent = {d.country for d in DESTINATIONS} - {"Norway"}
+    gems = select_gems(
+        DESTINATIONS, set(), set(), recent=recent, count=3, rng=random.Random(1)
+    )
+    assert len(gems) == 3
+    assert "Norway" in {gem.country for gem in gems}
+
+
+def test_fresh_deal_is_not_penalized() -> None:
+    assert freshness_multiplier(deal(), SentHistory()) == 1.0
+
+
+def test_recent_country_penalty_and_clearly_better_waiver() -> None:
+    history = SentHistory(
+        recent_countries={"Finland"}, recent_country_prices={"Finland": 150.0}
+    )
+    assert freshness_multiplier(deal(price=140), history) == 1.25
+    # ≥15% below the cheapest recently sent price repeats without penalty.
+    assert freshness_multiplier(deal(price=127), history) == 1.0
+
+
+def test_waiver_clears_the_city_penalty_too() -> None:
+    # A clear price drop recurs in the same city; that is the point of it.
+    history = SentHistory(
+        recent_countries={"Finland"},
+        recent_country_prices={"Finland": 150.0},
+        recent_cities={"HEL"},
+    )
+    assert freshness_multiplier(deal(price=127), history) == 1.0
+
+
+def test_waiver_holds_at_exactly_15_percent_despite_float_rounding() -> None:
+    history = SentHistory(
+        recent_countries={"Finland"}, recent_country_prices={"Finland": 18.0}
+    )
+    # 0.85 × 18.00 is 15.299999… in doubles; 15.30 must still be waived.
+    assert freshness_multiplier(deal(price=15.30), history) == 1.0
+
+
+def test_recent_country_without_comparable_price_is_always_penalized() -> None:
+    history = SentHistory(recent_countries={"Finland"})
+    assert freshness_multiplier(deal(price=1), history) == 1.25
+
+
+def test_recent_city_penalty_stacks_on_country() -> None:
+    history = SentHistory(recent_countries={"Finland"}, recent_cities={"HEL"})
+    assert freshness_multiplier(deal(price=999), history) == 1.25 * 1.15
+    fresh_city = deal(price=999, arrival_iata="TKU")
+    assert freshness_multiplier(fresh_city, history) == 1.25
 
 
 def test_favorite_destinations_keeps_reference_order() -> None:

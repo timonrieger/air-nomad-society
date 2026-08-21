@@ -82,6 +82,8 @@ def _present(
     badges = ["⭐ favorite" if ranked.source == "favorite" else "✨ discovery"]
     if tier:
         badges.append(tier)
+    if ranked.first_time:
+        badges.append("✨ new for you")
     return {
         "deal": deal,
         # One badge slot per card: provenance, then the earned savings tier;

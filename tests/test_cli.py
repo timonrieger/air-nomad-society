@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 import src.app.cli as cli
 from src.app.db import PriceObservation, SentDeal, get_engine, insert_rows
 from src.app.models.subscriber import Subscriber
-from tests.conftest import deal, observation
+from tests.conftest import deal, observation, sent
 from tests.fakes import FakeProvider
 
 
@@ -138,6 +138,28 @@ def test_reasons_reach_the_email_and_the_history(sqlite_db, monkeypatch) -> None
     assert reason in captured[0]
     with Session(get_engine()) as session:
         assert session.scalars(select(SentDeal)).one().reason == reason
+
+
+def test_freshness_reads_the_sent_history_between_runs(sqlite_db, monkeypatch) -> None:
+    monkeypatch.setattr(
+        cli, "load_subscribers", lambda only_id: [subscriber("a@example.com")]
+    )
+    captured: list[str] = []
+    monkeypatch.setattr(
+        cli.mailer, "send_email", lambda html, *a, **k: captured.append(html)
+    )
+    # Some history exists (Spain, once), but Finland was never sent — new for you.
+    insert_rows([sent(arrival_country="Spain", arrival_iata="PMI")])
+    assert cli.run_digest(FakeProvider({"FI": [deal()]})) == 0
+    assert "✨ new for you" in captured[0]
+    # Second run: same deal repeats at the same price — no badge, and the
+    # recorded score carries the repeat penalties.
+    assert cli.run_digest(FakeProvider({"FI": [deal()]})) == 0
+    assert "✨ new for you" not in captured[1]
+    with Session(get_engine()) as session:
+        finland = select(SentDeal).where(SentDeal.arrival_country == "Finland")
+        first, second = [s.score for s in session.scalars(finland)]
+    assert second > first
 
 
 def test_history_rows_written_for_candidates_and_sent_deals(

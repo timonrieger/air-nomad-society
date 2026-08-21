@@ -1,10 +1,18 @@
 from datetime import datetime, timedelta
 
 from src.app.db import PriceObservation, insert_rows
-from src.app.services.history import BASELINE_WINDOW_WEEKS, route_baselines
-from tests.conftest import observation
+from src.app.models.history import SentHistory
+from src.app.services.history import (
+    BASELINE_WINDOW_WEEKS,
+    FRESHNESS_WINDOW_WEEKS,
+    _utcnow,
+    route_baselines,
+    sent_history,
+)
+from tests.conftest import observation, sent
 
 RUN_STARTED = datetime(2026, 9, 1, 6, 0)
+NOW = _utcnow()
 
 
 def spread(prices: tuple[float, ...], **overrides) -> list[PriceObservation]:
@@ -47,6 +55,29 @@ def test_only_matching_route_and_currency_count(sqlite_db) -> None:
         + spread((999, 999, 999, 999), arrival_iata="TKU")
     )
     assert baselines() == {"HEL": 250.0}
+
+
+def test_sent_history_splits_recent_from_ever(sqlite_db) -> None:
+    outside_window = NOW - timedelta(weeks=FRESHNESS_WINDOW_WEEKS + 1)
+    insert_rows(
+        [
+            sent(),
+            sent(price=120),
+            # Recently sent, but the old currency cannot gate the waiver.
+            sent(price=90, currency="USD"),
+            sent(arrival_country="Spain", arrival_iata="PMI", sent_at=outside_window),
+        ]
+    )
+    history = sent_history(1, "EUR")
+    assert history.recent_countries == {"Finland"}
+    assert history.recent_country_prices == {"Finland": 120.0}
+    assert history.recent_cities == {"HEL"}
+    assert history.all_countries == {"Finland", "Spain"}
+
+
+def test_sent_history_is_scoped_to_the_subscriber(sqlite_db) -> None:
+    insert_rows([sent(subscriber_id=2)])
+    assert sent_history(1, "EUR") == SentHistory()
 
 
 def test_current_run_and_stale_observations_are_excluded(sqlite_db) -> None:
