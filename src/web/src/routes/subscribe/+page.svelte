@@ -227,7 +227,11 @@
 		>
 			<input class="input" type="number" min="0" max={LIMITS.gemCountMax} required bind:value={gemCount} />
 		</Field>
-		<Field required label="Favorite destinations" hint="You get deals for these in every digest.">
+		<Field
+			required
+			label="Favorite destinations"
+			hint="Pick up to 10. You get deals for these in every digest."
+		>
 			<SelectMenu items={countryItems} placeholder="Select countries" multiple bind:value={favorites} />
 		</Field>
 		<Field
