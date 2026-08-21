@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Annotated, Any, Literal
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, EmailStr, Field, field_validator, model_validator
@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from src.app.config import get_settings
 from src.app.db import AirNomads, get_session
-from src.app.models.subscriber import Subscriber
+from src.app.models.subscriber import Cadence, Subscriber
 from src.app.services import emails, refdata
 from src.app.services.tokens import Action, verify_token
 
@@ -33,7 +33,7 @@ class SubscriptionIn(BaseModel):
     max_nights: int = Field(ge=1)
     min_days_ahead: int = Field(ge=1, le=365)
     max_days_ahead: int = Field(ge=1, le=365)
-    cadence: Literal["weekly", "biweekly"] = "weekly"
+    cadence: Cadence = "weekly"
     gem_count: int = Field(default=5, ge=0, le=10)
     favorite_countries: list[str] = Field(min_length=1)
     excluded_countries: list[str] = []

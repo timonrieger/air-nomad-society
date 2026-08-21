@@ -227,13 +227,10 @@ def test_biweekly_subscribers_skip_until_due(sqlite_db, monkeypatch) -> None:
         "send_email",
         lambda html, recipient, *a, **k: sent_to.append(recipient),
     )
-    insert_rows([sent()])  # a digest landed just now
+    # The last digest is eleven days old — past the gap, so this run sends.
+    insert_rows([sent(sent_at=datetime.now() - timedelta(days=11))])
     assert cli.run_digest(FakeProvider({("FRA", "FI"): [deal()]})) == 0
-    assert sent_to == []
-    # Eleven days on, the gap has passed: age the record and rerun.
-    with Session(get_engine()) as session:
-        for row in session.scalars(select(SentDeal)):
-            row.sent_at = datetime.now() - timedelta(days=11)
-        session.commit()
+    assert sent_to == ["a@example.com"]
+    # That run recorded its own sent deals; an immediate rerun is not due.
     assert cli.run_digest(FakeProvider({("FRA", "FI"): [deal()]})) == 0
     assert sent_to == ["a@example.com"]

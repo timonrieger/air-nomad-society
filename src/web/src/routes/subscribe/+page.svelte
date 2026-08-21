@@ -109,10 +109,7 @@
 				favorite_countries: favorites,
 				// Selected regions expand into their countries on submit.
 				excluded_countries: [
-					...new Set([
-						...excluded,
-						...excludedRegions.flatMap((region) => refdata?.regions[region] ?? [])
-					])
+					...new Set([...excluded, ...excludedRegions.flatMap((region) => refdata!.regions[region])])
 				]
 			},
 			token

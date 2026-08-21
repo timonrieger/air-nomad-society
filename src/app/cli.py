@@ -22,9 +22,9 @@ from src.app.services.tokens import issue_token
 logger = logging.getLogger(__name__)
 
 # Minimum days since the last delivered digest before the weekly run sends
-# again. Between one run (7 days) and two (14), so biweekly subscribers skip
-# exactly every other run — no dispatch rework needed.
-CADENCE_GAP_DAYS = {"weekly": 0, "biweekly": 10}
+# to a biweekly subscriber again. Between one run (7 days) and two (14), so
+# they skip exactly every other run — no dispatch rework needed.
+BIWEEKLY_GAP_DAYS = 10
 
 
 def run_digest(provider: FlightProvider) -> int:
@@ -44,11 +44,13 @@ def run_digest(provider: FlightProvider) -> int:
     failures = 0
     for subscriber in subscribers:
         try:
-            gap = CADENCE_GAP_DAYS[subscriber.cadence]
-            last = last_sent_at(subscriber.id) if gap else None
-            if last and last > recording.started_at - timedelta(days=gap):
-                logger.info("not due yet for %s, skipping", subscriber.email)
-                continue
+            if subscriber.cadence == "biweekly":
+                last = last_sent_at(subscriber.id)
+                if last and last > recording.started_at - timedelta(
+                    days=BIWEEKLY_GAP_DAYS
+                ):
+                    logger.info("not due yet for %s, skipping", subscriber.email)
+                    continue
             result = build_digest(
                 subscriber,
                 recording,

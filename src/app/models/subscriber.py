@@ -1,9 +1,11 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 from pydantic import BaseModel, Field
 
 if TYPE_CHECKING:
     from src.app.db import AirNomads
+
+Cadence = Literal["weekly", "biweekly"]
 
 
 class Subscriber(BaseModel):
@@ -20,7 +22,7 @@ class Subscriber(BaseModel):
     max_nights: int = Field(description="Maximum nights per trip")
     min_days_ahead: int = Field(description="Search window start, days from today")
     max_days_ahead: int = Field(description="Search window end, days from today")
-    cadence: str = Field(description="Digest cadence: weekly or biweekly")
+    cadence: Cadence = Field(description="How often the digest is sent")
     gem_count: int = Field(description="Surprise discoveries per digest")
     favorites: list[str] = Field(
         description="Favorite country names, always searched for deals"
