@@ -195,26 +195,6 @@ def test_no_sent_deals_recorded_when_email_fails(sqlite_db, monkeypatch) -> None
         assert len(session.scalars(select(PriceObservation)).all()) == 1
 
 
-def test_announcement_reaches_every_subscriber_despite_failures(
-    monkeypatch, tmp_path
-) -> None:
-    subscribers = [subscriber("fails@example.com"), subscriber("works@example.com")]
-    monkeypatch.setattr(cli, "load_subscribers", lambda only_id: subscribers)
-    sent_to: list[tuple[str, str]] = []
-
-    def fake_send(html: str, recipient: str, subject: str, settings) -> None:
-        if recipient == "fails@example.com":
-            raise RuntimeError("smtp exploded")
-        assert "Monthly cadence is here." in html
-        sent_to.append((recipient, subject))
-
-    monkeypatch.setattr(cli.mailer, "send_email", fake_send)
-    body = tmp_path / "update.txt"
-    body.write_text("Monthly cadence is here.\n\nEnjoy!")
-    assert cli.main(["announce", "Fresh features", str(body)]) == 1
-    assert sent_to == [("works@example.com", "Fresh features")]
-
-
 @pytest.mark.parametrize(("cadence", "stale_days"), [("biweekly", 11), ("monthly", 25)])
 def test_slow_cadences_send_once_due_then_skip(
     sqlite_db, monkeypatch, cadence, stale_days

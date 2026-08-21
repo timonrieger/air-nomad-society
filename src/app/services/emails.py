@@ -101,24 +101,6 @@ def render_digest(
     )
 
 
-def render_announcement(
-    username: str,
-    paragraphs: list[str],
-    update_token: str,
-    unsubscribe_token: str,
-    base_url: str,
-) -> str:
-    """A product-update email: the supplied paragraphs in the brand frame."""
-    return _env.get_template("announcement.html.j2").render(
-        t=TOKENS,
-        username=username,
-        paragraphs=paragraphs,
-        site_url=base_url,
-        update_url=f"{base_url}/subscribe?token={update_token}",
-        unsubscribe_url=f"{base_url}/unsubscribe?token={unsubscribe_token}",
-    )
-
-
 def render_confirmation(username: str, confirm_url: str) -> str:
     return _env.get_template("confirm.html.j2").render(
         t=TOKENS, username=username, confirm_url=confirm_url
