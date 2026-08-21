@@ -2,7 +2,7 @@ import random
 
 from src.app.models.flights import DealSource, FlightDeal, RankedDeal
 from src.app.services.digest import DigestResult
-from src.app.services.emails import render_digest
+from src.app.services.emails import render_announcement, render_digest
 from src.app.services.refdata import FALLBACK_IMAGE
 from tests.conftest import deal
 
@@ -134,6 +134,22 @@ def test_profile_links_use_base_url_and_action_tokens() -> None:
     assert "https://example.test/subscribe?token=upd123" in html
     assert "https://example.test/unsubscribe?token=unsub123" in html
     assert "ans.timonrieger.de/subscribe" not in html
+
+
+def test_announcement_renders_paragraphs_and_profile_links() -> None:
+    html = render_announcement(
+        username="Timon",
+        paragraphs=["Monthly cadence is here.", "Pick it in your preferences."],
+        update_token="upd123",
+        unsubscribe_token="unsub123",
+        base_url="https://example.test",
+    )
+    assert "Hi Timon!" in html
+    assert "Monthly cadence is here." in html
+    assert "Pick it in your preferences." in html
+    assert "https://example.test/subscribe?token=upd123" in html
+    assert "https://example.test/unsubscribe?token=unsub123" in html
+    assert "{{" not in html and "{%" not in html
 
 
 def test_renders_a_card_per_deal() -> None:
