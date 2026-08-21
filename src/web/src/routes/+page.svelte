@@ -120,14 +120,14 @@
 		<div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
 			{#each deals as deal (deal)}
 				<a
-					class="block overflow-hidden rounded-xl border border-line bg-raised hover:border-ink-muted hover:no-underline"
+					class="group block overflow-hidden rounded-xl border border-line bg-raised transition hover:-translate-y-1 hover:border-ink-muted hover:no-underline"
 					href={deal.link}
 					target="_blank"
 					rel="sponsored noopener"
 				>
-					<div class="relative">
+					<div class="relative overflow-hidden">
 						<img
-							class="h-40 w-full object-cover"
+							class="h-40 w-full object-cover transition-transform duration-300 group-hover:scale-105"
 							src={deal.image_url}
 							alt={deal.destination}
 							loading="lazy"
