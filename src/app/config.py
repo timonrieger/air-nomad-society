@@ -41,6 +41,11 @@ class Settings(BaseSettings):
     # links in emails.
     public_base_url: str
 
+    # Optional: this API's own public origin. Mail clients POST to it for
+    # one-click unsubscribe (RFC 8058), so it is the API and not the
+    # frontend. Unset means the emails simply carry no List-Unsubscribe.
+    api_base_url: str | None = None
+
     @property
     def digest_only_id(self) -> int | None:
         """The single subscriber the digest is restricted to, in dev only."""
