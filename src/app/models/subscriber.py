@@ -1,11 +1,76 @@
 from typing import TYPE_CHECKING, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator, model_validator
+
+from src.app.services import refdata
 
 if TYPE_CHECKING:
     from src.app.db import AirNomads
 
 Cadence = Literal["weekly", "biweekly", "monthly"]
+
+
+def _all_known(values: list[str], known: frozenset[str], label: str) -> list[str]:
+    # Rejecting duplicates also bounds every list at its reference data.
+    if len(set(values)) != len(values):
+        raise ValueError(f"duplicate {label}")
+    unknown = set(values) - known
+    if unknown:
+        raise ValueError(f"unknown {label}: {', '.join(sorted(unknown))}")
+    return values
+
+
+class SubscriptionIn(BaseModel):
+    """The subscribe/update request body, validated against reference data."""
+
+    username: str = Field(min_length=3, max_length=20)
+    email: EmailStr
+    departure_airports: list[str] = Field(min_length=1, max_length=5)
+    currency: str
+    min_nights: int = Field(ge=1)
+    max_nights: int = Field(ge=1)
+    min_days_ahead: int = Field(ge=1, le=365)
+    max_days_ahead: int = Field(ge=1, le=365)
+    # Required on the wire: a defaulted field would let a stale client
+    # silently reset a saved preference on update.
+    cadence: Cadence
+    gem_count: int = Field(ge=0, le=10)
+    # Capped like gem_count: every favorite is searched in every digest, so
+    # an unbounded list is an unbounded Tequila bill. Empty is fine — that
+    # subscriber's digest is pure discoveries.
+    favorite_countries: list[str] = Field(max_length=10)
+    excluded_countries: list[str] = []
+
+    @field_validator("departure_airports")
+    @classmethod
+    def _known_cities(cls, value: list[str]) -> list[str]:
+        return _all_known(value, refdata.city_codes(), "departure city codes")
+
+    @field_validator("currency")
+    @classmethod
+    def _known_currency(cls, value: str) -> str:
+        if value not in refdata.currency_choices():
+            raise ValueError("unknown currency")
+        return value
+
+    @field_validator("favorite_countries", "excluded_countries")
+    @classmethod
+    def _known_countries(cls, value: list[str]) -> list[str]:
+        return _all_known(value, refdata.country_names(), "countries")
+
+    @model_validator(mode="after")
+    def _ranges(self) -> "SubscriptionIn":
+        if self.max_nights <= self.min_nights:
+            raise ValueError("max_nights must be greater than min_nights")
+        if self.max_days_ahead <= self.min_days_ahead:
+            raise ValueError("max_days_ahead must be greater than min_days_ahead")
+        search_range = self.max_days_ahead - self.min_days_ahead
+        if self.max_nights > search_range:
+            raise ValueError(
+                f"max_nights ({self.max_nights}) cannot exceed the search "
+                f"range duration ({search_range} days)"
+            )
+        return self
 
 
 class Subscriber(BaseModel):
