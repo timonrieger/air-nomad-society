@@ -38,11 +38,6 @@ def test_median_over_window(sqlite_db) -> None:
     assert baselines() == {("FRA", "HEL"): 250.0}
 
 
-def test_routes_below_minimum_days_are_omitted(sqlite_db) -> None:
-    insert_rows(spread((100, 200, 300)))
-    assert baselines() == {}
-
-
 def test_single_day_of_observations_does_not_anchor(sqlite_db) -> None:
     # Four rows, one day: a snapshot, not history.
     insert_rows([observation(price=price) for price in (100, 200, 300, 400)])

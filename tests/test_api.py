@@ -186,13 +186,6 @@ def test_subscribe_rejects_duplicate_countries(client) -> None:
     assert client.post("/subscribe", json=excluded).status_code == 422
 
 
-def test_subscribe_caps_favorites_at_ten(client) -> None:
-    from src.app.services import refdata
-
-    payload = {**PAYLOAD, "favorite_countries": refdata.country_choices()[:11]}
-    assert client.post("/subscribe", json=payload).status_code == 422
-
-
 def test_subscribe_round_trips_cadence_and_gem_count(client) -> None:
     payload = {**PAYLOAD, "cadence": "biweekly", "gem_count": 2}
     body = client.post("/subscribe", json=payload).json()

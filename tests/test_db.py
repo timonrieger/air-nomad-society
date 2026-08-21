@@ -33,6 +33,7 @@ def test_round_trip_parses_subscriber(sqlite_db) -> None:
     assert len(subscribers) == 1
     subscriber = subscribers[0]
     assert subscriber.favorites == ["Finland", "Japan"]
+    assert subscriber.currency == "EUR"  # normalized on load
     assert subscriber.min_days_ahead == 1  # server_default applied
     assert subscriber.max_days_ahead == 182
 

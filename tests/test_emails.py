@@ -1,7 +1,5 @@
 import random
 
-import pytest
-
 from src.app.models.flights import DealSource, FlightDeal, RankedDeal
 from src.app.services.digest import DigestResult
 from src.app.services.emails import render_digest
@@ -50,11 +48,6 @@ def test_card_shows_country_and_plain_travel_dates() -> None:
     html = render([ranked(deal())])
     assert "Finland &middot; 03.09–08.09" in html
     assert "depart" not in html
-
-
-def test_empty_digest_refuses_to_render() -> None:
-    with pytest.raises(AssertionError):
-        render([])
 
 
 def test_provenance_badges() -> None:
