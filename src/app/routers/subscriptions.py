@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -15,6 +15,10 @@ from src.app.services.tokens import Action, verify_token
 router = APIRouter()
 
 SessionDep = Annotated[Session, Depends(get_session)]
+
+# At most one confirmation email per address per day: the endpoint is public
+# and takes any address, so unthrottled resends are an email-bombing lever.
+RESEND_COOLDOWN = timedelta(days=1)
 
 
 def _all_known(values: list[str], known: frozenset[str], label: str) -> list[str]:
@@ -114,7 +118,8 @@ def subscribe(payload: SubscriptionIn, session: SessionDep) -> Subscriber:
     """Create an unconfirmed subscription and email a confirmation link.
 
     Re-subscribing an unconfirmed email updates the pending row and resends
-    the link (so a lost email is recoverable); a confirmed email is a 409.
+    the link (so a lost email is recoverable) — but only once the pending
+    row is a day old; a confirmed email is a 409.
     """
     member = session.scalar(select(AirNomads).where(AirNomads.email == payload.email))
     if member is not None and member.confirmed_at is not None:
@@ -123,6 +128,9 @@ def subscribe(payload: SubscriptionIn, session: SessionDep) -> Subscriber:
             detail="This email is already subscribed. Use the update link from "
             "any digest email to change preferences.",
         )
+    recently_invited = (
+        member is not None and member.created_at > datetime.now() - RESEND_COOLDOWN
+    )
     if member is None:
         member = AirNomads(**_columns(payload))
         session.add(member)
@@ -130,7 +138,10 @@ def subscribe(payload: SubscriptionIn, session: SessionDep) -> Subscriber:
         _apply(member, payload)
     session.commit()
     session.refresh(member)  # populate server defaults
-    emails.send_confirmation(member.id, member.username, member.email, get_settings())
+    if not recently_invited:
+        emails.send_confirmation(
+            member.id, member.username, member.email, get_settings()
+        )
     return Subscriber.from_row(member)
 
 
