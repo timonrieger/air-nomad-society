@@ -119,10 +119,15 @@
 		</p>
 		<div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
 			{#each deals as deal (deal)}
-				<article class="overflow-hidden rounded-xl border border-line bg-raised">
-					<div class="relative">
+				<a
+					class="group block overflow-hidden rounded-xl border border-line bg-raised transition hover:-translate-y-1 hover:border-ink-muted hover:no-underline"
+					href={deal.link}
+					target="_blank"
+					rel="sponsored noopener"
+				>
+					<div class="relative overflow-hidden">
 						<img
-							class="h-40 w-full object-cover"
+							class="h-40 w-full object-cover transition-transform duration-300 group-hover:scale-105"
 							src={deal.image_url}
 							alt={deal.destination}
 							loading="lazy"
@@ -136,7 +141,7 @@
 						{/if}
 					</div>
 					<div class="p-5">
-						<h3 class="font-semibold">{deal.departure_city} – {deal.destination}</h3>
+						<h3 class="font-semibold text-ink">{deal.departure_city} – {deal.destination}</h3>
 						<p class="mt-3 text-xl font-bold text-accent-bright">
 							{deal.price}
 							{deal.currency}
@@ -148,7 +153,7 @@
 						</p>
 						<p class="mt-1 text-xs text-ink-muted">found {foundOn(deal)}</p>
 					</div>
-				</article>
+				</a>
 			{/each}
 		</div>
 		<p class="mt-8 text-center">

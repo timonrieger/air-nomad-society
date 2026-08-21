@@ -45,6 +45,7 @@ SENT_FIELDS = {
     "arrival_country",
     "price",
     "currency",
+    "link",
 }
 
 

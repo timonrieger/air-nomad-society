@@ -59,6 +59,7 @@ export type WallDeal = {
 	usual_price: number | null;
 	badge: string | null;
 	found_on: string;
+	link: string;
 	image_url: string;
 };
 

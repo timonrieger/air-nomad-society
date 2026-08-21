@@ -56,6 +56,7 @@ def read_deals(session: SessionDep, response: Response) -> list[WallDeal]:
                 else None
             ),
             found_on=row.sent_at.date(),
+            link=row.link,
             image_url=country_images(images, row.arrival_country)[0],
         )
         for row in best[:WALL_DEAL_COUNT]
