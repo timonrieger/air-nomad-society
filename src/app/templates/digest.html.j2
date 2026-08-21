@@ -28,6 +28,7 @@
               <tr>
                 <td style="vertical-align: middle;">
                   <strong style="font-family: {{ t.font }}; font-size: 22px; font-weight: 700; color: {{ t.accent }};">{{ flight.deal.price | int }} {{ flight.deal.currency }}</strong>
+                  {% if flight.anchor %}<p style="margin: 2px 0 0; font-family: {{ t.font }}; font-size: 13px; color: {{ t.gray_500 }};">{{ flight.anchor }}</p>{% endif %}
                 </td>
                 <td align="right" style="vertical-align: middle;">
                   {{ button(flight.deal.link, "Book Now") }}
