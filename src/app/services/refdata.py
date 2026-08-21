@@ -58,11 +58,6 @@ def city_codes() -> frozenset[str]:
     return frozenset(city.code for city in load().cities)
 
 
-@lru_cache
-def city_names() -> dict[str, str]:
-    return {city.code: city.city for city in load().cities}
-
-
 def country_images(images: dict[str, list[str]], country: str) -> list[str]:
     """Card-sized images for a country; the shared fallback when it has none.
 

@@ -14,9 +14,8 @@ from src.app.db import PriceObservation, SentDeal, insert_rows, session_scope
 from src.app.models.flights import FlightDeal, SearchQuery
 from src.app.models.history import SentHistory
 from src.app.services.digest import DigestResult
-from src.app.services.emails import savings_percent
 from src.app.services.providers import FlightProvider
-from src.app.services.selection import deal_score
+from src.app.services.selection import deal_score, savings_percent
 
 BASELINE_WINDOW_WEEKS = 26
 MIN_OBSERVATION_DAYS = 4

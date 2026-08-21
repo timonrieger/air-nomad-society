@@ -12,6 +12,7 @@ from src.app.models.flights import RankedDeal
 from src.app.services import mailer
 from src.app.services.digest import DigestResult
 from src.app.services.refdata import country_images
+from src.app.services.selection import savings_badge, savings_percent
 from src.app.services.tokens import issue_token
 
 TEMPLATE_DIR = Path(__file__).resolve().parent.parent / "templates"
@@ -28,29 +29,6 @@ TOKENS: dict[str, str] = json.loads(
 # Rendered values are trusted internal data (usernames, provider results);
 # autoescape stays off. Revisit when usernames become untrusted input.
 _env = Environment(loader=FileSystemLoader(TEMPLATE_DIR), autoescape=False)  # noqa: S701 # nosec B701
-
-
-# Savings tiers vs the route's typical price in whole percent, best tier
-# first; below the smallest cut the anchor line still shows but no badge is
-# earned.
-SAVINGS_TIERS: list[tuple[int, str]] = [
-    (40, "🔥 exceptional price"),
-    (25, "💸 great price"),
-]
-
-
-def savings_percent(price: float, baseline: float) -> int | None:
-    """Whole-percent savings vs typical; None when not meaningfully cheaper.
-
-    The digest email and the public deal wall both quote this number — one
-    definition, so they can never disagree about the same deal."""
-    savings = round((1 - price / baseline) * 100)
-    return savings if savings >= 1 else None
-
-
-def savings_badge(savings: int) -> str | None:
-    """The tier badge a savings percent earns, if any."""
-    return next((label for cut, label in SAVINGS_TIERS if savings >= cut), None)
 
 
 def _anchor(price: float, baseline: float, currency: str) -> tuple[str, str | None]:
