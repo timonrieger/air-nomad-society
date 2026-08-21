@@ -42,12 +42,13 @@ export type SubscriptionIn = {
 export const LIMITS = { usernameMin: 3, usernameMax: 20, maxDaysAhead: 365 } as const;
 
 export type WallDeal = {
-	departure_city: string | null;
+	departure_city: string;
 	arrival_city: string | null;
 	arrival_country: string;
 	price: number;
 	currency: string;
 	savings_percent: number | null;
+	badge: string | null;
 	found_on: string;
 };
 

@@ -13,6 +13,7 @@ from sqlalchemy import select
 from src.app.db import PriceObservation, SentDeal, insert_rows, session_scope
 from src.app.models.flights import FlightDeal, RankedDeal, SearchQuery
 from src.app.models.history import SentHistory
+from src.app.services.emails import savings_percent
 from src.app.services.providers import FlightProvider
 from src.app.services.selection import deal_score
 
@@ -38,7 +39,6 @@ OBSERVED_FIELDS = {
 }
 
 SENT_FIELDS = {
-    "departure_city",
     "departure_iata",
     "arrival_city",
     "arrival_iata",
@@ -146,7 +146,8 @@ def wall_deals(count: int) -> list[tuple[SentDeal, int | None]]:
     collapse to the newest send, and nothing subscriber-specific leaves
     this function's rows unread. Best savings first, then newest; savings
     are None while a route's baseline is still thin."""
-    since = _utcnow() - timedelta(weeks=WALL_WINDOW_WEEKS)
+    now = _utcnow()
+    since = now - timedelta(weeks=WALL_WINDOW_WEEKS)
     statement = (
         select(SentDeal)
         .where(SentDeal.sent_at >= since)
@@ -158,18 +159,21 @@ def wall_deals(count: int) -> list[tuple[SentDeal, int | None]]:
         (row.departure_iata, row.arrival_iata, row.price, row.currency): row
         for row in rows  # ascending sent_at: the newest duplicate wins
     }
+    by_currency: defaultdict[str, list[SentDeal]] = defaultdict(list)
+    for row in unique.values():
+        by_currency[row.currency].append(row)
     scored: list[tuple[SentDeal, int | None]] = []
-    for currency in {row.currency for row in unique.values()}:
-        group = [row for row in unique.values() if row.currency == currency]
+    for currency, group in by_currency.items():
         typical = route_baselines(
             {(row.departure_iata, row.arrival_iata) for row in group},
             currency,
-            before=_utcnow(),
+            before=now,
         )
         for row in group:
             baseline = typical.get((row.departure_iata, row.arrival_iata))
-            savings = round((1 - row.price / baseline) * 100) if baseline else None
-            scored.append((row, savings if savings and savings >= 1 else None))
+            scored.append(
+                (row, savings_percent(row.price, baseline) if baseline else None)
+            )
     scored.sort(
         key=lambda pair: (
             pair[1] is None,

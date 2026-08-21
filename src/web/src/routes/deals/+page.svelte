@@ -9,16 +9,12 @@
 	});
 
 	const route = (deal: WallDeal) =>
-		`${deal.departure_city ?? 'Anywhere'} → ${deal.arrival_city ?? deal.arrival_country}`;
+		`${deal.departure_city} → ${deal.arrival_city ?? deal.arrival_country}`;
 
 	const foundOn = (deal: WallDeal) => {
 		const [, month, day] = deal.found_on.split('-');
 		return `found ${day}.${month}.`;
 	};
-
-	// Mirrors the digest email's savings tiers (25% great, 40% exceptional).
-	const badge = (savings: number) =>
-		savings >= 40 ? '🔥 exceptional price' : savings >= 25 ? '💸 great price' : null;
 </script>
 
 <svelte:head>
@@ -45,12 +41,12 @@
 	</p>
 {:else}
 	<div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-		{#each deals as deal (route(deal) + deal.found_on + deal.price)}
+		{#each deals as deal}
 			<article class="rounded-xl border border-line bg-raised p-5">
 				<div class="mb-2 flex flex-wrap gap-1.5 text-xs">
-					{#if deal.savings_percent !== null && badge(deal.savings_percent)}
+					{#if deal.badge}
 						<span class="rounded-full border border-line px-2.5 py-0.5 font-semibold">
-							{badge(deal.savings_percent)}
+							{deal.badge}
 						</span>
 					{/if}
 					<span class="rounded-full border border-line px-2.5 py-0.5 text-ink-muted">
