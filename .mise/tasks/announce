@@ -1,0 +1,23 @@
+#!/usr/bin/env -S uv run --script
+#MISE description="Send a product update email to every confirmed subscriber"
+#USAGE flag "-s --subject <subject>" required=#true help="The email's subject line"
+#USAGE flag "-b --body-file <file>" required=#true help="Plain-text body; blank lines separate paragraphs"
+
+# The usage header parses the flags into usage_* env vars; the tested logic
+# lives in src/app/cli.py. No inline script metadata on purpose: without it,
+# uv runs this in the project environment (with it, uv isolates the script
+# and ignores the project entirely). mise runs tasks from the project root,
+# which the src import path needs. In dev (ENVIRONMENT=dev + MY_UUID) the
+# send is restricted to you — the test-send path.
+import logging
+import os
+import sys
+
+sys.path.insert(0, os.getcwd())
+
+from src.app.cli import run_announcement
+
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s"
+)
+sys.exit(run_announcement(os.environ["usage_subject"], os.environ["usage_body_file"]))

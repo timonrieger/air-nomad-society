@@ -2,6 +2,7 @@ import argparse
 import logging
 import sys
 from datetime import timedelta
+from pathlib import Path
 
 from src.app.services import emails, mailer, refdata
 from src.app.config import get_settings
@@ -81,6 +82,35 @@ def run_digest(provider: FlightProvider) -> int:
         except Exception:
             failures += 1
             logger.exception("digest failed for %s", subscriber.email)
+    return failures
+
+
+def run_announcement(subject: str, body_file: str) -> int:
+    """Emails a product update to every confirmed subscriber.
+
+    The body is plain text; blank lines separate paragraphs. Returns the
+    number of failed subscribers, like run_digest."""
+    settings = get_settings()
+    body = Path(body_file).read_text(encoding="utf-8")
+    paragraphs = [p.strip() for p in body.split("\n\n") if p.strip()]
+    assert paragraphs, f"{body_file} is empty"
+    subscribers = load_subscribers(settings.digest_only_id)
+    logger.info("announcing %r to %d subscribers", subject, len(subscribers))
+    failures = 0
+    for subscriber in subscribers:
+        try:
+            html = emails.render_announcement(
+                username=subscriber.username,
+                paragraphs=paragraphs,
+                update_token=issue_token(subscriber.id, "update"),
+                unsubscribe_token=issue_token(subscriber.id, "unsubscribe"),
+                base_url=settings.public_base_url,
+            )
+            mailer.send_email(html, subscriber.email, subject, settings)
+            logger.info("announced to %s", subscriber.email)
+        except Exception:
+            failures += 1
+            logger.exception("announcement failed for %s", subscriber.email)
     return failures
 
 
