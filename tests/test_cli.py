@@ -211,7 +211,7 @@ def test_announcement_reaches_every_subscriber_despite_failures(
     monkeypatch.setattr(cli.mailer, "send_email", fake_send)
     body = tmp_path / "update.txt"
     body.write_text("Monthly cadence is here.\n\nEnjoy!")
-    assert cli.run_announcement("Fresh features", str(body)) == 1
+    assert cli.main(["announce", "Fresh features", str(body)]) == 1
     assert sent_to == [("works@example.com", "Fresh features")]
 
 

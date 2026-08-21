@@ -1,0 +1,81 @@
+[settings]
+experimental = true # required for [deps]
+
+[tools]
+python = "3.14.6"
+uv = "0.11.25"
+
+[env]
+_.python.venv = { path = ".venv" }
+
+[deps.uv]
+auto = true
+run = "uv sync --all-groups ${CI:+--locked}"
+
+[tasks.install]
+run = "uv sync --all-groups ${CI:+--locked}"
+alias = "i"
+description = "Install dependencies (alias: 'i'); asserts the lockfile with --locked under CI"
+
+[tasks.install-upgrade]
+run = ["mise run install --upgrade", "uvx prek update --freeze"]
+description = "Upgrade dependencies in the allowed ranges"
+
+[tasks.install-check]
+run = ["uv tree --outdated --all-groups --depth 1", "uvx prek update --freeze --dry-run"]
+description = "Check dependencies for updates"
+
+[tasks.setup]
+run = ["mise run install", "uvx prek install"]
+description = "Setup the project"
+
+[tasks.lint]
+run = "uvx prek run --all-files"
+description = "Run pre-commit hooks"
+
+[tasks.lint-fix]
+run = "mise run lint || true"
+description = "Run pre-commit hooks, ignoring failures"
+
+[tasks.test]
+run = "uv run pytest"
+description = "Run tests"
+
+# Port 8000 on purpose: macOS AirPlay squats on 5000.
+[tasks.dev]
+run = "uv run uvicorn src.app.main:app --reload --port 8000"
+description = "Run the API dev server"
+
+[tasks.web-dev]
+run = "pnpm --dir src/web dev"
+description = "Run the SvelteKit dev server (talks to the API via VITE_API_URL, default localhost:8000)"
+
+[tasks.web-check]
+run = "pnpm --dir src/web check"
+description = "Typecheck the frontend with svelte-check"
+
+[tasks.web-build]
+run = "pnpm --dir src/web build"
+description = "Build the frontend"
+
+[tasks.db-upgrade]
+run = "uv run alembic upgrade head"
+description = "Apply database migrations"
+
+[tasks.db-revision]
+run = "uv run alembic revision --autogenerate"
+description = "Autogenerate a migration from model changes (append: -- -m 'message')"
+
+[tasks.digest]
+run = "uv run python -m src.app.cli digest"
+description = "Run the flight digest job once against the configured database"
+
+# In dev (ENVIRONMENT=dev + MY_UUID) the send is restricted to you — the
+# test-send path before a production run.
+[tasks.announce]
+usage = '''
+flag "-s --subject <subject>" required=#true help="The email's subject line"
+flag "-b --body-file <file>" required=#true help="Plain-text body; blank lines separate paragraphs"
+'''
+run = 'uv run python -m src.app.cli announce "$usage_subject" "$usage_body_file"'
+description = "Send a product update email to every confirmed subscriber"

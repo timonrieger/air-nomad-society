@@ -117,14 +117,22 @@ def run_announcement(subject: str, body_file: str) -> int:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="ans")
     parser.add_argument(
-        "command", choices=["digest"], help="search deals and email every subscriber"
+        "command",
+        choices=["digest", "announce"],
+        help="search deals and email every subscriber, or send a product update",
     )
-    parser.parse_args(argv)
+    # announce's flags are parsed by the mise task's usage spec, which
+    # forwards them here as two positionals: subject, body file.
+    parser.add_argument("args", nargs="*")
+    parsed = parser.parse_args(argv)
 
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
     )
+    if parsed.command == "announce":
+        subject, body_file = parsed.args
+        return run_announcement(subject, body_file)
     settings = get_settings()
     provider = TequilaProvider(settings.tequila_endpoint, settings.tequila_api_key)
     return run_digest(provider)
