@@ -138,7 +138,6 @@ def subscribe(payload: SubscriptionIn, session: SessionDep) -> Subscriber:
     else:
         _apply(member, payload)
     session.commit()
-    session.refresh(member)  # populate server defaults
     if not recently_invited:
         emails.send_confirmation(
             member.id, member.username, member.email, get_settings()
