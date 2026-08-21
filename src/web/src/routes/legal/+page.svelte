@@ -19,9 +19,9 @@
 		never confirmed are deleted automatically after seven days.
 	</p>
 	<p>
-		<strong class="text-ink">Money.</strong> Deal links point to kiwi.com and may carry an affiliate
-		tag. If you book through one, kiwi.com may pay a small commission at no extra cost to you —
-		that is the project's only income.
+		<strong class="text-ink">Money.</strong> Deal links point to our booking partner and may carry
+		an affiliate tag. If you book through one, the partner may pay a small commission at no extra
+		cost to you — that is the project's only income.
 	</p>
 	<p>
 		Questions or deletion requests: reach me via

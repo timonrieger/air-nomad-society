@@ -39,7 +39,7 @@
 	const faq = [
 		{
 			q: 'What is the pricing for Air Nomad Society?',
-			a: 'Air Nomad Society is completely free. If you book through a deal link, kiwi.com may pay us a small affiliate commission at no extra cost to you — that is the only way the project earns anything. Your data is never sold or used for anything but your digest.'
+			a: 'Air Nomad Society is completely free. If you book through a deal link, our booking partner may pay us a small affiliate commission at no extra cost to you — that is the only way the project earns anything. Your data is never sold or used for anything but your digest.'
 		},
 		{
 			q: 'Where can I fly from?',
@@ -47,7 +47,7 @@
 		},
 		{
 			q: 'How do I book a deal?',
-			a: 'Every deal in the email links straight to the fare on kiwi.com, where you book directly — we never sell tickets ourselves. Prices are round-trip per person as found; good fares can vanish within days, so book the ones you love quickly.'
+			a: 'Every deal in the email links straight to the fare on our booking partner’s site, where you book directly — we never sell tickets ourselves. Prices are round-trip per person as found.'
 		},
 		{
 			q: 'What is the difference to Skyscanner and Co.?',
