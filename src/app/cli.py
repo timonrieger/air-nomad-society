@@ -73,6 +73,7 @@ def run_digest(provider: FlightProvider) -> int:
                 digest=result,
                 images=data.images,
                 base_url=settings.public_base_url,
+                favorites_configured=bool(subscriber.favorites),
             )
             mailer.send_email(html, subscriber.email, emails.DIGEST_SUBJECT, settings)
             record_sent_deals(subscriber.id, result)

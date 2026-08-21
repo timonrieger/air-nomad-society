@@ -40,9 +40,7 @@
 		await tick(); // dependent min/max attributes flush before checkValidity reads them
 		nativeValid = formEl!.checkValidity();
 	}
-	const canSubmit = $derived(
-		nativeValid && departureAirports.length > 0 && currency !== '' && favorites.length > 0
-	);
+	const canSubmit = $derived(nativeValid && departureAirports.length > 0 && currency !== '');
 
 	const toItems = (values: string[]) => values.map((v) => ({ value: v, label: v }));
 	const cityItems = $derived(
@@ -184,68 +182,83 @@
 		<Field required label="Currency" hint="Prices are shown in this currency.">
 			<SelectMenu items={currencyItems} placeholder="Select a currency" bind:value={currency} />
 		</Field>
-		<Field required label="Minimum nights" hint="Shortest trip length, in nights.">
-			<input class="input" type="number" min="1" required bind:value={minNights} />
-		</Field>
-		<Field required label="Maximum nights" hint="Longest trip length, in nights.">
-			<input
-				class="input"
-				type="number"
-				min={(minNights || 0) + 1}
-				max={(maxDaysAhead || LIMITS.maxDaysAhead) - (minDaysAhead || 0)}
-				required
-				bind:value={maxNights}
-			/>
-		</Field>
-		<Field required label="Search from (days ahead)" hint="Search starts this many days from now.">
-			<input
-				class="input"
-				type="number"
-				min="1"
-				max={LIMITS.maxDaysAhead}
-				required
-				bind:value={minDaysAhead}
-			/>
-		</Field>
-		<Field required label="Search to (days ahead)" hint="Search ends this many days from now.">
-			<input
-				class="input"
-				type="number"
-				min={(minDaysAhead || 0) + 1}
-				max={LIMITS.maxDaysAhead}
-				required
-				bind:value={maxDaysAhead}
-			/>
-		</Field>
-		<Field required label="Cadence" hint="How often your deal email arrives.">
-			<SelectMenu items={cadenceItems} bind:value={cadence} />
-		</Field>
-		<Field
-			required
-			label="Discoveries per email"
-			hint="Surprise destinations mixed in alongside your favorites."
-		>
-			<input class="input" type="number" min="0" max={LIMITS.gemCountMax} required bind:value={gemCount} />
-		</Field>
-		<Field
-			required
-			label="Favorite destinations"
-			hint="Pick up to 10. You get deals for these in every digest."
-		>
-			<SelectMenu items={countryItems} placeholder="Select countries" multiple bind:value={favorites} />
-		</Field>
-		<Field
-			label="Exclude from discoveries"
-			hint="Never picked as surprise discoveries. Favorites are unaffected. Pick a region to toggle all its countries."
-		>
-			<SelectMenu
-				groups={countryGroups}
-				placeholder="Select countries or regions"
-				multiple
-				bind:value={excluded}
-			/>
-		</Field>
 	</div>
+	<details
+		class="mb-6 overflow-hidden rounded-xl border border-line"
+		open={updating || undefined}
+	>
+		<summary
+			class="cursor-pointer list-none bg-raised px-5 py-3.5 hover:bg-gray-800 [&::-webkit-details-marker]:hidden"
+		>
+			<span class="font-semibold">Advanced configuration</span>
+			<span class="block text-sm text-ink-muted">
+				Trip length, timing, cadence and destination preferences — all preset with sensible
+				defaults.
+			</span>
+		</summary>
+		<div class="grid gap-4 p-5 sm:grid-cols-2">
+			<Field required label="Minimum nights" hint="Shortest trip length, in nights.">
+				<input class="input" type="number" min="1" required bind:value={minNights} />
+			</Field>
+			<Field required label="Maximum nights" hint="Longest trip length, in nights.">
+				<input
+					class="input"
+					type="number"
+					min={(minNights || 0) + 1}
+					max={(maxDaysAhead || LIMITS.maxDaysAhead) - (minDaysAhead || 0)}
+					required
+					bind:value={maxNights}
+				/>
+			</Field>
+			<Field required label="Search from (days ahead)" hint="Search starts this many days from now.">
+				<input
+					class="input"
+					type="number"
+					min="1"
+					max={LIMITS.maxDaysAhead}
+					required
+					bind:value={minDaysAhead}
+				/>
+			</Field>
+			<Field required label="Search to (days ahead)" hint="Search ends this many days from now.">
+				<input
+					class="input"
+					type="number"
+					min={(minDaysAhead || 0) + 1}
+					max={LIMITS.maxDaysAhead}
+					required
+					bind:value={maxDaysAhead}
+				/>
+			</Field>
+			<Field required label="Cadence" hint="How often your deal email arrives.">
+				<SelectMenu items={cadenceItems} bind:value={cadence} />
+			</Field>
+			<Field
+				required
+				label="Discoveries per email"
+				hint="Surprise destinations mixed in alongside your favorites."
+			>
+				<input class="input" type="number" min="0" max={LIMITS.gemCountMax} required bind:value={gemCount} />
+			</Field>
+			<Field
+				label="Favorite destinations"
+				hint="Optional — pick up to 10. Every digest guarantees a deal for each favorite; without any, it is all discoveries."
+			>
+				<SelectMenu items={countryItems} placeholder="Select countries" multiple bind:value={favorites} />
+			</Field>
+			<Field
+				label="Exclude from discoveries"
+				hint="Never picked as surprise discoveries. Favorites are unaffected. Pick a region to toggle all its countries."
+			>
+				<SelectMenu
+					groups={countryGroups}
+					placeholder="Select countries or regions"
+					multiple
+					bind:value={excluded}
+				/>
+			</Field>
+		</div>
+	</details>
 	<button class="btn" type="submit" disabled={submitting || !canSubmit}>
 		{updating ? 'Update Preferences' : 'Join Air Nomad Society'}
 	</button>
