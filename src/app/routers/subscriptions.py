@@ -18,6 +18,9 @@ SessionDep = Annotated[Session, Depends(get_session)]
 
 
 def _all_known(values: list[str], known: frozenset[str], label: str) -> list[str]:
+    # Rejecting duplicates also bounds every list at its reference data.
+    if len(set(values)) != len(values):
+        raise ValueError(f"duplicate {label}")
     unknown = set(values) - known
     if unknown:
         raise ValueError(f"unknown {label}: {', '.join(sorted(unknown))}")
@@ -45,8 +48,6 @@ class SubscriptionIn(BaseModel):
     @field_validator("departure_airports")
     @classmethod
     def _known_cities(cls, value: list[str]) -> list[str]:
-        if len(set(value)) != len(value):
-            raise ValueError("duplicate departure city codes")
         return _all_known(value, refdata.city_codes(), "departure city codes")
 
     @field_validator("currency")

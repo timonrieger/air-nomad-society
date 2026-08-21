@@ -160,6 +160,13 @@ def test_deals_wall_is_public_display_ready_and_cached(sqlite_db) -> None:
         assert "max-age" in response.headers["Cache-Control"]
 
 
+def test_subscribe_rejects_duplicate_countries(client) -> None:
+    doubled = {**PAYLOAD, "favorite_countries": ["Finland", "Finland"]}
+    assert client.post("/subscribe", json=doubled).status_code == 422
+    excluded = {**PAYLOAD, "excluded_countries": ["Japan", "Japan"]}
+    assert client.post("/subscribe", json=excluded).status_code == 422
+
+
 def test_subscribe_caps_favorites_at_ten(client) -> None:
     from src.app.services import refdata
 
