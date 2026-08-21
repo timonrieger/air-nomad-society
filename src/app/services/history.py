@@ -21,7 +21,6 @@ from src.app.services.selection import deal_score
 BASELINE_WINDOW_WEEKS = 26
 MIN_OBSERVATION_DAYS = 4
 FRESHNESS_WINDOW_WEEKS = 8
-WALL_WINDOW_WEEKS = 4
 
 
 def _utcnow() -> datetime:
@@ -148,37 +147,6 @@ def sent_history(subscriber_id: int) -> SentHistory:
             history.recent_countries.add(country)
             history.recent_cities.add(city)
     return history
-
-
-def wall_deals(count: int) -> list[SentDeal]:
-    """Recent sent deals for the public wall.
-
-    Aggregated across subscribers: identical routes at the same price
-    collapse to the newest send, and nothing subscriber-specific leaves
-    this function's rows unread. Best savings first, then newest; the
-    savings are the ones recorded at send time, so the wall always quotes
-    exactly what the digest email quoted."""
-    since = _utcnow() - timedelta(weeks=WALL_WINDOW_WEEKS)
-    statement = (
-        select(SentDeal)
-        .where(SentDeal.sent_at >= since)
-        .order_by(SentDeal.sent_at.asc())
-    )
-    with session_scope() as session:
-        rows = list(session.scalars(statement))
-    unique = {
-        (row.departure_iata, row.arrival_iata, row.price, row.currency): row
-        for row in rows  # ascending sent_at: the newest duplicate wins
-    }
-    scored = sorted(
-        unique.values(),
-        key=lambda row: (
-            row.savings_percent is None,
-            -(row.savings_percent or 0),
-            -row.sent_at.timestamp(),
-        ),
-    )
-    return scored[:count]
 
 
 def record_sent_deals(subscriber_id: int, digest: DigestResult) -> None:

@@ -49,17 +49,6 @@ export type SubscriptionIn = {
 /** Form bounds mirroring SubscriptionIn in src/app/routers/subscriptions.py. */
 export const LIMITS = { usernameMin: 3, usernameMax: 20, maxDaysAhead: 365, gemCountMax: 10 } as const;
 
-export type WallDeal = {
-	departure_city: string;
-	arrival_city: string | null;
-	arrival_country: string;
-	price: number;
-	currency: string;
-	savings_percent: number | null;
-	badge: string | null;
-	found_on: string;
-};
-
 export function tokenFromUrl(): string | null {
 	return new URLSearchParams(location.search).get('token');
 }
@@ -83,10 +72,6 @@ async function request(path: string, init?: RequestInit): Promise<{ ok: boolean;
 
 export async function fetchRefData(): Promise<RefData> {
 	return (await request('/refdata')).body as RefData;
-}
-
-export async function fetchDeals(): Promise<WallDeal[]> {
-	return (await request('/deals')).body as WallDeal[];
 }
 
 /** Resolves to null when the token is invalid or the subscription no longer exists. */

@@ -6,7 +6,7 @@ from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.app.config import get_settings
-from src.app.routers import deals, refdata, subscriptions
+from src.app.routers import refdata, subscriptions
 
 app = FastAPI(
     title="Air Nomad Society",
@@ -14,7 +14,6 @@ app = FastAPI(
 )
 app.include_router(subscriptions.router)
 app.include_router(refdata.router)
-app.include_router(deals.router)
 
 # The frontend is a prebuilt static site calling this API from the browser;
 # PUBLIC_BASE_URL is its origin, also allow Vercel preview deployments.
