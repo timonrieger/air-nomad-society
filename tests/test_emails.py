@@ -24,6 +24,7 @@ def ranked(
 def render(
     deals: list[RankedDeal],
     baselines: dict[tuple[str, str], float] | None = None,
+    favorites_configured: bool = True,
 ) -> str:
     return render_digest(
         username="Timon",
@@ -32,6 +33,7 @@ def render(
         digest=DigestResult(deals=deals, baselines=baselines or {}),
         images=IMAGES,
         base_url="https://example.test",
+        favorites_configured=favorites_configured,
         rng=random.Random(1),
     )
 
@@ -121,6 +123,10 @@ def test_notice_when_favorites_yield_nothing() -> None:
     notice = "Your favorite countries came up empty"
     assert notice in render([ranked(deal(), "discovery")])
     assert notice not in render([ranked(deal(), "favorite")])
+    # With no favorites configured, all-discoveries is expected — no nudge.
+    assert notice not in render(
+        [ranked(deal(), "discovery")], favorites_configured=False
+    )
 
 
 def test_missing_or_empty_image_lists_fall_back() -> None:

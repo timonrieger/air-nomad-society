@@ -174,6 +174,11 @@ def test_deals_wall_is_public_display_ready_and_cached(sqlite_db) -> None:
         assert "max-age" in response.headers["Cache-Control"]
 
 
+def test_subscribe_without_favorites_is_a_pure_discovery_profile(client) -> None:
+    body = client.post("/subscribe", json={**PAYLOAD, "favorite_countries": []}).json()
+    assert body["favorites"] == []
+
+
 def test_subscribe_rejects_duplicate_countries(client) -> None:
     doubled = {**PAYLOAD, "favorite_countries": ["Finland", "Finland"]}
     assert client.post("/subscribe", json=doubled).status_code == 422

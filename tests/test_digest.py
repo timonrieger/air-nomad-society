@@ -248,6 +248,13 @@ def test_subscriber_from_row_parses_country_lists() -> None:
     assert subscriber.currency == "EUR"
 
 
+def test_no_favorites_searches_only_gems() -> None:
+    provider = FakeProvider()
+    digest(SUBSCRIBER.model_copy(update={"favorites": []}), provider)
+    # Every non-excluded destination is gem-eligible, Finland included.
+    assert {q.destination_iata for q in provider.queries} == {"FI", "ES", "DE"}
+
+
 def test_gem_count_zero_searches_only_favorites() -> None:
     provider = FakeProvider()
     digest(SUBSCRIBER.model_copy(update={"gem_count": 0}), provider)

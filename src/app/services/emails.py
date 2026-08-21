@@ -100,6 +100,7 @@ def render_digest(
     digest: DigestResult,
     images: dict[str, list[str]],
     base_url: str,
+    favorites_configured: bool,
     rng: random.Random | None = None,
 ) -> str:
     # An empty digest is never sent (the cli skips it); rendering one is a bug.
@@ -115,7 +116,10 @@ def render_digest(
             _present(ranked, images, digest.baseline_for(ranked), picker)
             for ranked in digest.deals
         ],
-        no_favorite_deals=all(ranked.source != "favorite" for ranked in digest.deals),
+        # The add-favorites nudge renders only for subscribers who expect
+        # favorite deals: with none configured, all-discoveries is the product.
+        no_favorite_deals=favorites_configured
+        and all(ranked.source != "favorite" for ranked in digest.deals),
     )
 
 
