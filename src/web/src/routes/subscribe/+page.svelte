@@ -30,7 +30,6 @@
 	let gemCount = $state(5);
 	let favorites = $state<string[]>([]);
 	let excluded = $state<string[]>([]);
-	let excludedRegions = $state<string[]>([]);
 
 	let formEl = $state<HTMLFormElement | undefined>();
 	// Native HTML constraint validation (required/min/max/minlength/type)
@@ -51,7 +50,13 @@
 	);
 	const currencyItems = $derived(toItems(refdata?.currencies ?? []));
 	const countryItems = $derived(toItems(refdata?.countries ?? []));
-	const regionItems = $derived(toItems(Object.keys(refdata?.regions ?? {})));
+	// Regions and their countries arrive alphabetized from the API.
+	const countryGroups = $derived(
+		Object.entries(refdata?.regions ?? {}).map(([region, countries]) => ({
+			label: region,
+			items: toItems(countries)
+		}))
+	);
 	const cadenceItems = [
 		{ value: 'weekly', label: 'Every week' },
 		{ value: 'biweekly', label: 'Every two weeks' }
@@ -86,14 +91,7 @@
 			cadence = current.cadence;
 			gemCount = current.gem_count;
 			favorites = current.favorites;
-			// Fully-excluded regions fold back into the region picker, so a
-			// saved region exclusion can be undone the way it was made.
-			const excludedSet = new Set(current.excluded);
-			excludedRegions = Object.keys(data.regions).filter((region) =>
-				data.regions[region].every((country) => excludedSet.has(country))
-			);
-			const inRegions = new Set(excludedRegions.flatMap((region) => data.regions[region]));
-			excluded = current.excluded.filter((country) => !inRegions.has(country));
+			excluded = current.excluded;
 		}
 		await revalidate();
 	});
@@ -115,10 +113,7 @@
 				cadence,
 				gem_count: gemCount,
 				favorite_countries: favorites,
-				// Selected regions expand into their countries on submit.
-				excluded_countries: [
-					...new Set([...excluded, ...excludedRegions.flatMap((region) => refdata!.regions[region])])
-				]
+				excluded_countries: excluded
 			},
 			token
 		);
@@ -237,19 +232,13 @@
 		</Field>
 		<Field
 			label="Exclude from discoveries"
-			hint="Never picked as surprise discoveries. Favorites are unaffected."
-		>
-			<SelectMenu items={countryItems} placeholder="Select countries" multiple bind:value={excluded} />
-		</Field>
-		<Field
-			label="Exclude whole regions"
-			hint="Every country in these regions joins the exclusions when you save."
+			hint="Never picked as surprise discoveries. Favorites are unaffected. Pick a region to toggle all its countries."
 		>
 			<SelectMenu
-				items={regionItems}
-				placeholder="Select regions"
+				groups={countryGroups}
+				placeholder="Select countries or regions"
 				multiple
-				bind:value={excludedRegions}
+				bind:value={excluded}
 			/>
 		</Field>
 	</div>
