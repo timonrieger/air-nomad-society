@@ -22,10 +22,12 @@
 	let email = $state('');
 	let departureAirports = $state<string[]>([]);
 	let currency = $state('');
+	// Nomadic defaults: slow-travel trip lengths over a wide window — the
+	// search is one request per country either way, so breadth is free.
 	let minNights = $state(3);
-	let maxNights = $state(7);
+	let maxNights = $state(14);
 	let minDaysAhead = $state(14);
-	let maxDaysAhead = $state(90);
+	let maxDaysAhead = $state(180);
 	let cadence = $state<Cadence>('weekly');
 	let gemCount = $state(5);
 	let favorites = $state<string[]>([]);
