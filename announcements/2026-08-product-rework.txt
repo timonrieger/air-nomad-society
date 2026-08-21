@@ -1,0 +1,46 @@
+Most of you signed up back when this was a hobby script that emailed a
+handful of flights once a week. Over the past months I rebuilt Air Nomad
+Society from the ground up: new site, new emails, and a much smarter way
+of deciding which deals are worth your inbox. I want to walk you through
+what changed.
+
+Your digest is genuinely yours now. Mark the countries you actually care
+about as favorites and every email is guaranteed to carry the best deal I
+found for each of them. Alongside those it mixes in surprise discoveries,
+destinations you never asked for but might fall for anyway. You choose how
+many, and you can rule out whole countries or entire regions you never
+want to see.
+
+Every deal now tells you why it made the cut. A short line under each one
+explains what it beat: a cheaper connection, a shorter flight, a fare well
+under what that route usually costs. And since each deal shows the typical
+price for its route, you can spot a real bargain at a glance instead of
+guessing. The standout ones get a badge.
+
+No more of the same three cities every week. The digest remembers what it
+already sent you, so a destination only comes back when the price is
+clearly better, and repeat countries rotate to different cities.
+
+You can fly from more than one home airport. Pick several departure cities
+and every destination gets priced from each of them, with the best one
+winning. Each deal tells you which city it flies from.
+
+The rhythm is yours too. Weekly, every two weeks or monthly, whichever
+matches how often you actually travel. Same for trip length and how far
+ahead you plan, up to a year out. There is a link at the bottom of every
+email to change all of it in under a minute, and booking is one click:
+each deal links straight to the fare.
+
+Now the part where I ask for something. You are all friends and family,
+which means you are the only people I trust to tell me the truth about
+this. If something is confusing, if the deals are not hitting, if the
+emails come too often or not often enough, just hit reply. It comes
+straight to me and I read every single one.
+
+And if you know someone who would enjoy a cheap flight turning up in their
+inbox, send them to ans.timonrieger.de. It is free, it stays free, and
+every person who signs up makes me want to keep building this.
+
+Thank you for being here from the start.
+
+— Timon
