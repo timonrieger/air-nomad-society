@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { onMount, untrack } from 'svelte';
 	import type { Snippet } from 'svelte';
-	import Loader from '$lib/components/Loader.svelte';
+	import { onMount, untrack } from 'svelte';
 	import { fetchUnsubscribeTarget, tokenAction, tokenFromUrl } from '$lib/api';
+	import Loader from '$lib/components/Loader.svelte';
 
 	let {
 		endpoint,

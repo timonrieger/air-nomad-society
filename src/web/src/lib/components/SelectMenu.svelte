@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { tick } from 'svelte';
 	import { Combobox } from 'bits-ui';
+	import { tick } from 'svelte';
 
 	type Item = { value: string; label: string };
 	type Group = { label: string; items: Item[] };
@@ -61,7 +61,7 @@
 	// writes, so detour through a zero-width space — invisible, and never
 	// equal to either the old text or what bits-ui just wrote.
 	async function assertDisplay(text: string) {
-		display = text + '\u200B';
+		display = `${text}\u200B`;
 		await tick();
 		display = text;
 	}

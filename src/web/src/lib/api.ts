@@ -47,7 +47,12 @@ export type SubscriptionIn = {
 };
 
 /** Form bounds mirroring SubscriptionIn in src/app/routers/subscriptions.py. */
-export const LIMITS = { usernameMin: 3, usernameMax: 20, maxDaysAhead: 365, gemCountMax: 10 } as const;
+export const LIMITS = {
+	usernameMin: 3,
+	usernameMax: 20,
+	maxDaysAhead: 365,
+	gemCountMax: 10
+} as const;
 
 /** One public wall card, display-ready — see WallDeal in src/app/routers/deals.py. */
 export type WallDeal = {

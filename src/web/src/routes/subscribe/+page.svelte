@@ -1,18 +1,18 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
 	import { browser } from '$app/environment';
+	import {
+		type Cadence,
+		fetchRefData,
+		fetchSubscription,
+		LIMITS,
+		type RefData,
+		saveSubscription,
+		tokenFromUrl
+	} from '$lib/api';
 	import Field from '$lib/components/Field.svelte';
 	import Loader from '$lib/components/Loader.svelte';
 	import SelectMenu from '$lib/components/SelectMenu.svelte';
-	import {
-		LIMITS,
-		fetchRefData,
-		fetchSubscription,
-		saveSubscription,
-		tokenFromUrl,
-		type Cadence,
-		type RefData
-	} from '$lib/api';
 
 	let refdata = $state<RefData | null>(null);
 	// Read the token during hydration (never at prerender time) so the

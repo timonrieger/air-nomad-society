@@ -79,7 +79,7 @@
 		},
 		{
 			q: 'How often will I receive flight deal emails?',
-			a: "Flight deal emails are sent weekly, every two weeks or monthly — your choice: the best deals found across your favorite countries and a few surprise discoveries, ranked by quality."
+			a: 'Flight deal emails are sent weekly, every two weeks or monthly — your choice: the best deals found across your favorite countries and a few surprise discoveries, ranked by quality.'
 		},
 		{
 			q: 'What does "Favorite Destinations" mean?',

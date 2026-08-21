@@ -66,5 +66,4 @@
 	.eyebrow {
 		@apply text-sm font-semibold tracking-widest text-accent-bright uppercase;
 	}
-
 }
