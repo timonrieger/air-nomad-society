@@ -36,7 +36,7 @@ class Settings(BaseSettings):
     # OpenAI-compatible chat-completions endpoint. No key → no lines.
     ai_api_key: str | None = None
     ai_base_url: str = "https://openrouter.ai/api/v1"
-    ai_model: str = "anthropic/claude-sonnet-5"
+    ai_model: str = "anthropic/claude-haiku-4.5"
 
     # "dev" restricts the digest job to the subscriber with id MY_UUID.
     environment: str = "production"
