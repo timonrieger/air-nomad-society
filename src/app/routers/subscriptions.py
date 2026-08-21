@@ -37,7 +37,9 @@ class SubscriptionIn(BaseModel):
     # silently reset a saved preference on update.
     cadence: Cadence
     gem_count: int = Field(ge=0, le=10)
-    favorite_countries: list[str] = Field(min_length=1)
+    # Capped like gem_count: every favorite is searched in every digest,
+    # so an unbounded list is an unbounded Tequila bill.
+    favorite_countries: list[str] = Field(min_length=1, max_length=10)
     excluded_countries: list[str] = []
 
     @field_validator("departure_airports")
