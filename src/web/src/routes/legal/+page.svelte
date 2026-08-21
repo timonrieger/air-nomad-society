@@ -15,7 +15,7 @@
 		<strong class="text-ink">Your data.</strong> We store exactly what the subscribe form asks for —
 		your email address and travel preferences — plus a record of the deals we sent you, used solely
 		to build and send your digests. Nothing is shared or sold; there are no ads and no tracking.
-		Unsubscribing (one click in any email) deletes your data immediately, and signups that are
+		Unsubscribing deletes your data immediately, and signups that are
 		never confirmed are deleted automatically after seven days.
 	</p>
 	<p>

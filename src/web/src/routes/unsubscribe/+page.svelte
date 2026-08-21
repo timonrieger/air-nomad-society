@@ -12,8 +12,7 @@
 	{#snippet confirm(email: string, run: () => void)}
 		<p class="mt-4 text-ink-muted">
 			This removes <strong class="font-semibold text-ink">{email}</strong> along with the
-			preferences saved with it — departure cities, favorites and cadence. Deal emails stop right
-			away, and nothing is kept to restore later.
+			preferences saved with it. Deal emails stop right way, and nothing is kept to restore later.
 		</p>
 		<button class="btn mt-6" onclick={run}>Yes, unsubscribe me</button>
 	{/snippet}

@@ -257,6 +257,6 @@
 		<a class="btn" href="/subscribe">Subscribe For Free</a>
 	</p>
 	<p class="mt-5 text-sm text-ink-muted">
-		No account · no spam · unsubscribe from every email with one click
+		No account · no spam · unsubscribe anytime
 	</p>
 </section>
