@@ -1,4 +1,4 @@
-"""Destination selection and deal scoring for the digest."""
+"""Destination selection, deal scoring, and savings tiers for the digest."""
 
 import random
 from collections.abc import Sequence
@@ -20,6 +20,28 @@ DAYTIME_HOURS = range(7, 21)
 COUNTRY_REPEAT_PENALTY = 1.25
 CITY_REPEAT_PENALTY = 1.15
 CLEARLY_BETTER_FRACTION = 0.85
+
+# Savings tiers vs the route's typical price in whole percent, best tier
+# first; below the smallest cut the anchor line still shows but no badge is
+# earned.
+SAVINGS_TIERS: list[tuple[int, str]] = [
+    (40, "🔥 exceptional price"),
+    (25, "💸 great price"),
+]
+
+
+def savings_percent(price: float, baseline: float) -> int | None:
+    """Whole-percent savings vs typical; None when not meaningfully cheaper.
+
+    The digest email and the public deal wall both quote this number — one
+    definition, so they can never disagree about the same deal."""
+    savings = round((1 - price / baseline) * 100)
+    return savings if savings >= 1 else None
+
+
+def savings_badge(savings: int) -> str | None:
+    """The tier badge a savings percent earns, if any."""
+    return next((label for cut, label in SAVINGS_TIERS if savings >= cut), None)
 
 
 def deal_score(deal: FlightDeal) -> float:

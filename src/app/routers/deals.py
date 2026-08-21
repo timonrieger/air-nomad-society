@@ -7,8 +7,8 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from src.app.db import SentDeal, get_session
-from src.app.services.emails import savings_badge
 from src.app.services.refdata import country_images, load
+from src.app.services.selection import savings_badge
 
 router = APIRouter()
 
