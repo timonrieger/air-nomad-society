@@ -24,7 +24,7 @@
 	const stats: Stat[] = [
 		{ value: '450+', label: 'departure cities' },
 		{ value: '197', label: 'destination countries' },
-		{ value: '0 €', label: 'today and always' }
+		{ value: '2 min', label: 'to set up, no account' }
 	];
 
 	const steps: Step[] = [
@@ -63,7 +63,7 @@
 	const faq: FaqItem[] = [
 		{
 			q: 'What is the pricing for Air Nomad Society?',
-			a: 'Air Nomad Society is completely free. If you book through a deal link, our booking partner may pay us a small affiliate commission at no extra cost to you — that is the only way the project earns anything. Your data is never sold or used for anything but your digest.'
+			a: 'The deal digest is free. If you book through a deal link, our booking partner may pay us a small affiliate commission at no extra cost to you. Your data is never sold or used for anything but your digest.'
 		},
 		{
 			q: 'Where can I fly from?',
