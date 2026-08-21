@@ -51,9 +51,16 @@ def test_renders_deals() -> None:
     assert "{{" not in html and "{%" not in html
 
 
-def test_date_window_framing() -> None:
+def test_departure_window_named_once_in_the_intro() -> None:
     html = render([ranked(deal())])
-    assert "depart Sep 1–30 · e.g. 03.09–08.09" in html
+    assert "picked for you &mdash; all departing Sep 1–30." in html
+    assert html.count("Sep 1–30") == 1
+
+
+def test_card_shows_country_and_plain_travel_dates() -> None:
+    html = render([ranked(deal())])
+    assert "Finland &middot; 03.09–08.09" in html
+    assert "depart" not in html.split("all departing")[1]
 
 
 def test_date_window_crossing_months_names_both() -> None:
@@ -62,7 +69,7 @@ def test_date_window_crossing_months_names_both() -> None:
         window_start=date(2026, 9, 26),
         window_end=date(2026, 10, 12),
     )
-    assert "depart Sep 26 – Oct 12" in html
+    assert "all departing Sep 26 – Oct 12" in html
 
 
 def test_date_window_crossing_years_names_both_years() -> None:
@@ -71,7 +78,7 @@ def test_date_window_crossing_years_names_both_years() -> None:
         window_start=date(2026, 12, 15),
         window_end=date(2027, 1, 20),
     )
-    assert "depart Dec 15, 2026 – Jan 20, 2027" in html
+    assert "all departing Dec 15, 2026 – Jan 20, 2027" in html
 
 
 def test_empty_digest_refuses_to_render() -> None:
