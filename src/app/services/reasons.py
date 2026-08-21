@@ -80,6 +80,10 @@ def deal_reasons(
             headers={"Authorization": f"Bearer {settings.ai_api_key}"},
             json={
                 "model": settings.ai_model,
+                # Claude Sonnet 5 reasons by default, and max_tokens caps
+                # reasoning + content together — variable reasoning length
+                # starved the content (null or truncated JSON).
+                "reasoning": {"enabled": False},
                 "max_tokens": TOKEN_HEADROOM + TOKENS_PER_REASON * len(digest.deals),
                 "messages": [
                     {"role": "system", "content": SYSTEM_PROMPT},
