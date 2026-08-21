@@ -24,5 +24,8 @@
 </main>
 
 <footer class="mt-16 border-t border-line py-6 text-center text-sm text-ink-muted">
-	<p>Copyright © <a href="https://timonrieger.de">Timon Rieger</a></p>
+	<p>
+		Copyright © <a href="https://timonrieger.de">Timon Rieger</a> ·
+		<a href="/legal">Privacy & Legal</a>
+	</p>
 </footer>
