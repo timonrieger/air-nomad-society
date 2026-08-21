@@ -1,17 +1,9 @@
 from fastapi import APIRouter
-from pydantic import BaseModel, Field
 
+from src.app.models.refdata import RefData
 from src.app.services import refdata
-from src.app.services.refdata import City
 
 router = APIRouter()
-
-
-class RefData(BaseModel):
-    cities: list[City] = Field(description="Departure cities with IATA codes")
-    currencies: list[str] = Field(description="ISO 4217 currency codes")
-    countries: list[str] = Field(description="Destination country names")
-    regions: dict[str, list[str]] = Field(description="Country names per region")
 
 
 @router.get("/refdata")
