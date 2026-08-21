@@ -69,3 +69,13 @@ description = "Autogenerate a migration from model changes (append: -- -m 'messa
 [tasks.digest]
 run = "uv run python -m src.app.cli digest"
 description = "Run the flight digest job once against the configured database"
+
+# In dev (ENVIRONMENT=dev + MY_UUID) the send is restricted to you — the
+# test-send path before a production run.
+[tasks.announce]
+usage = '''
+flag "-s --subject <subject>" required=#true help="The email's subject line"
+flag "-b --body-file <file>" required=#true help="Plain-text body; blank lines separate paragraphs"
+'''
+run = 'uv run python -m src.app.cli announce "$usage_subject" "$usage_body_file"'
+description = "Send a product update email to every confirmed subscriber"

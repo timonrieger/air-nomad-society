@@ -23,7 +23,7 @@ Air Nomad Society emails personalized flight deals to subscribers.
 - `src/app/main.py` — FastAPI JSON API (Vercel auto-detects the `app` object)
 - `src/app/routers/` — endpoints; `src/app/services/` — domain logic; `src/app/models/` — pydantic models
 - `src/app/db.py` — SQLAlchemy models + engine; migrations live in `alembic/`
-- `src/app/cli.py` — the weekly digest job
+- `src/app/cli.py` — the weekly digest job and one-off announcement sends
 - `src/app/data.json` — reference data: countries, cities, currencies, per-country image URLs
 - `src/app/templates/digest.html.j2` — the digest email; brand tokens are defined once in `src/app/brand.json`
 - `src/web/` — SvelteKit frontend (pnpm, bits-ui, Tailwind v4); fully prerendered static site, browser calls the API directly (`VITE_API_URL`, CORS on the backend)
