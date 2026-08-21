@@ -14,7 +14,8 @@
 		<img src={favicon} alt="" class="size-6" />
 		Air Nomad Society
 	</a>
-	<nav class="flex gap-5">
+	<nav class="flex items-center gap-5">
+		<a class="nav-link" href="/deals">Recent deals</a>
 		<a class="btn px-4 py-2" href="/subscribe">Subscribe</a>
 	</nav>
 </header>

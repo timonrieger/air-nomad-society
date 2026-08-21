@@ -121,3 +121,29 @@ def test_unsubscribe_deletes(client) -> None:
     token = issue_token(subscriber_id, "unsubscribe")
     assert client.get(f"/unsubscribe?token={token}").status_code == 200
     assert client.get(f"/unsubscribe?token={token}").status_code == 404
+
+
+def test_deals_wall_is_public_anonymized_and_cached(sqlite_db, monkeypatch) -> None:
+    import src.app.routers.deals as deals_module
+    from src.app.db import get_engine, insert_rows
+    from tests.conftest import sent
+
+    monkeypatch.setattr(deals_module, "_cache", None)
+    insert_rows([sent(price=129.99)])
+    # A fresh connection per thread: sqlite refuses cross-thread reuse.
+    get_engine().dispose()
+    with TestClient(app) as anonymous_client:
+        response = anonymous_client.get("/deals")
+        body = response.json()
+        assert [
+            (deal["departure_city"], deal["arrival_city"], deal["arrival_country"])
+            for deal in body
+        ] == [("Frankfurt", "Helsinki", "Finland")]  # names stored at send time
+        assert "subscriber_id" not in body[0]
+        assert body[0]["savings_percent"] is None  # no baseline seeded
+        assert body[0]["badge"] is None
+        assert "max-age" in response.headers["Cache-Control"]
+        # Cached until the TTL: a fresh row does not appear immediately.
+        insert_rows([sent(price=50, arrival_iata="TKU", arrival_city="Turku")])
+        get_engine().dispose()
+        assert len(anonymous_client.get("/deals").json()) == 1

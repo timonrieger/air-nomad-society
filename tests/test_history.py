@@ -5,9 +5,11 @@ from src.app.models.history import SentHistory
 from src.app.services.history import (
     BASELINE_WINDOW_WEEKS,
     FRESHNESS_WINDOW_WEEKS,
+    WALL_WINDOW_WEEKS,
     _utcnow,
     route_baselines,
     sent_history,
+    wall_deals,
 )
 from tests.conftest import observation, sent
 
@@ -91,6 +93,38 @@ def test_sent_history_splits_recent_from_ever(sqlite_db) -> None:
 def test_sent_history_is_scoped_to_the_subscriber(sqlite_db) -> None:
     insert_rows([sent(subscriber_id=2)])
     assert sent_history(1) == SentHistory()
+
+
+def test_wall_dedupes_and_ranks_by_recorded_savings(sqlite_db) -> None:
+    insert_rows(
+        # The same deal went to two subscribers: one wall card.
+        [
+            sent(price=129.99, savings_percent=58),
+            sent(subscriber_id=2, price=129.99, savings_percent=58),
+        ]
+        # A deal whose baseline was thin at send time still shows, after.
+        + [sent(price=80, arrival_iata="TKU", arrival_city="Turku")]
+    )
+    deals = wall_deals(count=10)
+    assert [(row.arrival_iata, row.savings_percent) for row in deals] == [
+        ("HEL", 58),
+        ("TKU", None),
+    ]
+    assert deals[0].arrival_city == "Helsinki"
+
+
+def test_wall_respects_window_and_count(sqlite_db) -> None:
+    outside = _utcnow() - timedelta(weeks=WALL_WINDOW_WEEKS + 1)
+    insert_rows(
+        [sent(price=200, sent_at=outside)]
+        + [
+            sent(price=100 + index, arrival_iata=f"X{index}", arrival_city="Anywhere")
+            for index in range(3)
+        ]
+    )
+    deals = wall_deals(count=2)
+    assert len(deals) == 2
+    assert all(row.price != 200 for row in deals)
 
 
 def test_current_run_and_stale_observations_are_excluded(sqlite_db) -> None:

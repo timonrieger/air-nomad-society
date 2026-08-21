@@ -11,14 +11,17 @@ from uuid import uuid4
 from sqlalchemy import select
 
 from src.app.db import PriceObservation, SentDeal, insert_rows, session_scope
-from src.app.models.flights import FlightDeal, RankedDeal, SearchQuery
+from src.app.models.flights import FlightDeal, SearchQuery
 from src.app.models.history import SentHistory
+from src.app.services.digest import DigestResult
+from src.app.services.emails import savings_percent
 from src.app.services.providers import FlightProvider
 from src.app.services.selection import deal_score
 
 BASELINE_WINDOW_WEEKS = 26
 MIN_OBSERVATION_DAYS = 4
 FRESHNESS_WINDOW_WEEKS = 8
+WALL_WINDOW_WEEKS = 4
 
 
 def _utcnow() -> datetime:
@@ -37,7 +40,9 @@ OBSERVED_FIELDS = {
 }
 
 SENT_FIELDS = {
+    "departure_city",
     "departure_iata",
+    "arrival_city",
     "arrival_iata",
     "arrival_country",
     "price",
@@ -136,7 +141,38 @@ def sent_history(subscriber_id: int) -> SentHistory:
     return history
 
 
-def record_sent_deals(subscriber_id: int, deals: list[RankedDeal]) -> None:
+def wall_deals(count: int) -> list[SentDeal]:
+    """Recent sent deals for the public wall.
+
+    Aggregated across subscribers: identical routes at the same price
+    collapse to the newest send, and nothing subscriber-specific leaves
+    this function's rows unread. Best savings first, then newest; the
+    savings are the ones recorded at send time, so the wall always quotes
+    exactly what the digest email quoted."""
+    since = _utcnow() - timedelta(weeks=WALL_WINDOW_WEEKS)
+    statement = (
+        select(SentDeal)
+        .where(SentDeal.sent_at >= since)
+        .order_by(SentDeal.sent_at.asc())
+    )
+    with session_scope() as session:
+        rows = list(session.scalars(statement))
+    unique = {
+        (row.departure_iata, row.arrival_iata, row.price, row.currency): row
+        for row in rows  # ascending sent_at: the newest duplicate wins
+    }
+    scored = sorted(
+        unique.values(),
+        key=lambda row: (
+            row.savings_percent is None,
+            -(row.savings_percent or 0),
+            -row.sent_at.timestamp(),
+        ),
+    )
+    return scored[:count]
+
+
+def record_sent_deals(subscriber_id: int, digest: DigestResult) -> None:
     insert_rows(
         [
             SentDeal(
@@ -146,9 +182,17 @@ def record_sent_deals(subscriber_id: int, deals: list[RankedDeal]) -> None:
                 # Recomputed rather than carried on RankedDeal: deal_score is
                 # deterministic on the deal, so the two can never drift.
                 quality_score=deal_score(ranked.deal),
+                origin_iata=ranked.origin_iata,
+                # The savings the email quoted, frozen at send time — the
+                # public wall shows exactly this number.
+                savings_percent=(
+                    savings_percent(ranked.deal.price, baseline)
+                    if (baseline := digest.baseline_for(ranked))
+                    else None
+                ),
                 reason=ranked.reason,
                 **ranked.deal.model_dump(include=SENT_FIELDS),
             )
-            for ranked in deals
+            for ranked in digest.deals
         ]
     )

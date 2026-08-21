@@ -43,17 +43,30 @@ SAVINGS_TIERS: list[tuple[int, str]] = [
 ]
 
 
+def savings_percent(price: float, baseline: float) -> int | None:
+    """Whole-percent savings vs typical; None when not meaningfully cheaper.
+
+    The digest email and the public deal wall both quote this number — one
+    definition, so they can never disagree about the same deal."""
+    savings = round((1 - price / baseline) * 100)
+    return savings if savings >= 1 else None
+
+
+def savings_badge(savings: int) -> str | None:
+    """The tier badge a savings percent earns, if any."""
+    return next((label for cut, label in SAVINGS_TIERS if savings >= cut), None)
+
+
 def _anchor(price: float, baseline: float, currency: str) -> tuple[str, str | None]:
     """The "typically ~X" line and the earned tier badge, if any.
 
     Both come from the same rounded percent, so the badge never contradicts
     the savings the card shows."""
-    savings = round((1 - price / baseline) * 100)
+    savings = savings_percent(price, baseline)
     line = f"typically ~{baseline:.0f} {currency}"
-    if savings >= 1:
-        line += f" (−{savings}%)"
-    badge = next((label for cut, label in SAVINGS_TIERS if savings >= cut), None)
-    return line, badge
+    if savings is None:
+        return line, None
+    return f"{line} (−{savings}%)", savings_badge(savings)
 
 
 def _present(

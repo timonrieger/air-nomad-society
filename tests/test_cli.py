@@ -117,6 +117,12 @@ def test_price_anchor_from_earlier_runs_reaches_the_email(
     )
     assert cli.run_digest(FakeProvider({("FRA", "FI"): [deal()]})) == 0
     assert "typically ~310 EUR (−58%)" in captured[0]
+    with Session(get_engine()) as session:
+        recorded = session.scalars(select(SentDeal)).one()
+    # The quoted savings and the searched origin are frozen at send time.
+    assert recorded.savings_percent == 58
+    assert recorded.origin_iata == "FRA"
+    assert recorded.arrival_city == "Helsinki"
 
 
 def test_reasons_reach_the_email_and_the_history(sqlite_db, monkeypatch) -> None:
