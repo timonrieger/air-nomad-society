@@ -63,4 +63,8 @@
 		@apply mt-10 text-3xl font-bold;
 	}
 
+	.eyebrow {
+		@apply text-sm font-semibold tracking-widest text-accent-bright uppercase;
+	}
+
 }
