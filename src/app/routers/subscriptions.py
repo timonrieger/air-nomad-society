@@ -109,9 +109,22 @@ def update_subscription(
     return Subscriber.from_row(member)
 
 
-@router.get("/unsubscribe")
+@router.get("/unsubscribe/target")
+def read_unsubscribe_target(token: str, session: SessionDep) -> dict[str, str]:
+    """The address a token unsubscribes, so the page can name it before acting."""
+    return {"email": _authorized_member(token, "unsubscribe", session).email}
+
+
+@router.post("/unsubscribe")
 def unsubscribe(token: str, session: SessionDep) -> dict[str, str]:
-    """GET on purpose: this is the link subscribers click in the email."""
+    """POST on purpose: the deletion is irreversible and a GET fires itself.
+
+    Link prefetchers and mail security scanners follow every URL in an email,
+    so the unsubscribe link in the digest points at the frontend, which asks
+    first and then calls this. Mail clients reach it directly too, via the
+    RFC 8058 headers mailer sets — that standard mandates POST for the same
+    reason. Any request body those clients send is ignored.
+    """
     member = _authorized_member(token, "unsubscribe", session)
     email = member.email
     session.delete(member)

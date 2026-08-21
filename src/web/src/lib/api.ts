@@ -112,11 +112,22 @@ export async function saveSubscription(
 	return ok ? [] : errorMessages(body);
 }
 
-/** Hit one of the token-actioned endpoints and flatten the response to messages. */
+/** The address an unsubscribe token belongs to; null when the link no longer resolves. */
+export async function fetchUnsubscribeTarget(token: string): Promise<string | null> {
+	const { ok, body } = await request(`/unsubscribe/target?token=${encodeURIComponent(token)}`);
+	return ok ? (body as { email: string }).email : null;
+}
+
+/** Hit one of the token-actioned endpoints and flatten the response to messages.
+
+Unsubscribing is a POST: it deletes the subscription for good, and a GET
+would let any link prefetcher in the mail path fire it. */
 export async function tokenAction(
 	path: '/confirm' | '/unsubscribe',
 	token: string
 ): Promise<{ ok: boolean; messages: string[] }> {
-	const { ok, body } = await request(`${path}?token=${encodeURIComponent(token)}`);
+	const { ok, body } = await request(`${path}?token=${encodeURIComponent(token)}`, {
+		method: path === '/unsubscribe' ? 'POST' : 'GET'
+	});
 	return { ok, messages: ok ? [(body as { detail: string }).detail] : errorMessages(body) };
 }

@@ -137,8 +137,8 @@ def test_put_rejects_email_change(client) -> None:
 def test_unsubscribe_deletes(client) -> None:
     subscriber_id = client.post("/subscribe", json=PAYLOAD).json()["id"]
     token = issue_token(subscriber_id, "unsubscribe")
-    assert client.get(f"/unsubscribe?token={token}").status_code == 200
-    assert client.get(f"/unsubscribe?token={token}").status_code == 404
+    assert client.post(f"/unsubscribe?token={token}").status_code == 200
+    assert client.post(f"/unsubscribe?token={token}").status_code == 404
 
 
 def test_deals_wall_is_public_display_ready_and_cached(sqlite_db) -> None:
