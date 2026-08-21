@@ -99,13 +99,16 @@ def route_baselines(
     }
 
 
-def record_sent_deals(subscriber_id: int, deals: list[RankedDeal]) -> None:
+def record_sent_deals(
+    subscriber_id: int, deals: list[RankedDeal], reasons: dict[str, str]
+) -> None:
     insert_rows(
         [
             SentDeal(
                 subscriber_id=subscriber_id,
                 source=ranked.source,
                 score=ranked.score,
+                reason=reasons.get(ranked.deal.arrival_iata),
                 **ranked.deal.model_dump(
                     include={
                         "departure_iata",

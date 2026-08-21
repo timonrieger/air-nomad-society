@@ -91,6 +91,7 @@ class SentDeal(Base):
     currency: Mapped[str] = mapped_column(String)
     source: Mapped[str] = mapped_column(String)
     score: Mapped[float] = mapped_column(Float)
+    reason: Mapped[str | None] = mapped_column(String, nullable=True)
     sent_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 
 

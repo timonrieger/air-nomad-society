@@ -66,6 +66,8 @@ def test_best_scoring_candidate_wins_over_cheapest() -> None:
     result = build_digest(SUBSCRIBER, provider, DESTINATIONS, rng=random.Random(1))
     finland = [r for r in result.deals if r.deal.arrival_country == "Finland"]
     assert finland[0].deal == direct
+    # The beaten candidate is kept as a runner-up for the reasoning line.
+    assert [r.deal for r in result.runner_ups["HEL"]] == [cheap_stopover]
 
 
 def test_search_window_derives_from_subscriber() -> None:

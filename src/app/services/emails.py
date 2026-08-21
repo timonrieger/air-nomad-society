@@ -35,7 +35,7 @@ FALLBACK_IMAGE = (
 _env = Environment(loader=FileSystemLoader(TEMPLATE_DIR), autoescape=False)  # noqa: S701 # nosec B701
 
 
-def _facts(deal: FlightDeal) -> str:
+def deal_facts(deal: FlightDeal) -> str:
     """The quality line on a deal card, e.g. "direct · 2h35 · dep 10:40"."""
     if deal.stopovers:
         label = "stop" if deal.stopovers == 1 else "stops"
@@ -83,6 +83,7 @@ def _present(
     window: str,
     images: dict[str, list[str]],
     baselines: dict[str, float],
+    reasons: dict[str, str],
     rng: random.Random,
 ) -> dict[str, Any]:
     deal = ranked.deal
@@ -100,10 +101,11 @@ def _present(
         # the freshness badge (#17) appends here too.
         "badges": badges,
         "anchor": anchor,
+        "reason": reasons.get(deal.arrival_iata),
         # "depart", not "travel between": the window bounds outbound departures,
         # so the example trip's return may legitimately fall after it.
         "dates": f"depart {window} · e.g. {deal.departs_at:%d.%m}–{deal.returns_at:%d.%m}",
-        "facts": _facts(deal),
+        "facts": deal_facts(deal),
         "image_url": rng.choice(country_images) if country_images else FALLBACK_IMAGE,
     }
 
@@ -115,6 +117,7 @@ def render_digest(
     digest: DigestResult,
     images: dict[str, list[str]],
     baselines: dict[str, float],
+    reasons: dict[str, str],
     base_url: str,
     rng: random.Random | None = None,
 ) -> str:
@@ -129,7 +132,7 @@ def render_digest(
         update_url=f"{base_url}/subscribe?token={update_token}",
         unsubscribe_url=f"{base_url}/unsubscribe?token={unsubscribe_token}",
         flights=[
-            _present(ranked, window, images, baselines, picker)
+            _present(ranked, window, images, baselines, reasons, picker)
             for ranked in digest.deals
         ],
         no_favorite_deals=all(ranked.source != "favorite" for ranked in digest.deals),

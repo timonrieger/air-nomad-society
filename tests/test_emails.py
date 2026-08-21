@@ -20,16 +20,21 @@ def render(
     window_start: date = date(2026, 9, 1),
     window_end: date = date(2026, 9, 30),
     baselines: dict[str, float] | None = None,
+    reasons: dict[str, str] | None = None,
 ) -> str:
     return render_digest(
         username="Timon",
         update_token="upd123",
         unsubscribe_token="unsub123",
         digest=DigestResult(
-            deals=deals, window_start=window_start, window_end=window_end
+            deals=deals,
+            runner_ups={},
+            window_start=window_start,
+            window_end=window_end,
         ),
         images=IMAGES,
         baselines=baselines or {},
+        reasons=reasons or {},
         base_url="https://example.test",
         rng=random.Random(1),
     )
@@ -107,6 +112,13 @@ def test_anchor_line_at_typical_price_shows_no_savings() -> None:
 def test_no_anchor_without_baseline() -> None:
     html = render([ranked(deal())])
     assert "typically" not in html
+
+
+def test_reason_line_renders_when_present() -> None:
+    reason = "Direct at 10:40 — beat a cheaper red-eye with a stop."
+    html = render([ranked(deal())], reasons={"HEL": reason})
+    assert reason in html
+    assert reason not in render([ranked(deal())])
 
 
 def test_quality_facts_line_for_direct_flight() -> None:

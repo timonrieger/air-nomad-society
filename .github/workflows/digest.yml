@@ -41,6 +41,8 @@ jobs:
           SMTP_PWD: ${{ secrets.SMTP_PWD }}
           SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
           SMTP_PORT: ${{ secrets.SMTP_PORT || '587' }}
+          # Optional; an unset secret leaves the AI reasoning lines off.
+          AI_API_KEY: ${{ secrets.AI_API_KEY }}
           ENVIRONMENT: ${{ inputs.environment || 'prod' }}
           MY_UUID: ${{ secrets.MY_UUID }}
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
