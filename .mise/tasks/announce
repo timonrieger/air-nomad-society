@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+#MISE description="Send a product update email to every confirmed subscriber"
+#USAGE flag "-s --subject <subject>" required=#true help="The email's subject line"
+#USAGE flag "-b --body-file <file>" required=#true help="Plain-text body; blank lines separate paragraphs"
+
+# Parsing lives here; the logic lives (tested) in src/app/cli.py. In dev
+# (ENVIRONMENT=dev + MY_UUID) this sends only to you — the test-send path.
+set -euo pipefail
+exec uv run python -m src.app.cli announce "$usage_subject" "$usage_body_file"
