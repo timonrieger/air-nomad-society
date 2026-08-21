@@ -32,7 +32,7 @@ def reasons_with_response(monkeypatch, response: ResponseStub) -> list[RankedDea
         calls.append({"url": url, **kwargs})
         return response
 
-    monkeypatch.setattr(reasons_module.requests, "post", fake_post)
+    monkeypatch.setattr(reasons_module.httpx2, "post", fake_post)
     result = digest()
     deal_reasons(SUBSCRIBER, result, configured())
     deals = result.deals
@@ -49,7 +49,7 @@ def test_no_key_skips_the_call(monkeypatch) -> None:
     # deal_reasons' by-design catch-all and the test could never fail.
     calls: list[str] = []
     monkeypatch.setattr(
-        reasons_module.requests, "post", lambda url, **k: calls.append(url)
+        reasons_module.httpx2, "post", lambda url, **k: calls.append(url)
     )
     result = digest()
     deal_reasons(SUBSCRIBER, result, get_settings())

@@ -4,7 +4,7 @@ from collections import deque
 from datetime import datetime, timezone
 from typing import Any
 
-import requests
+import httpx2
 
 from src.app.models.flights import FlightDeal, SearchQuery
 
@@ -35,9 +35,9 @@ class TequilaProvider:
 
     def __init__(self, endpoint: str, api_key: str) -> None:
         self.endpoint = endpoint
-        # One keep-alive session for the whole run: every search hits the
+        # One keep-alive client for the whole run: every search hits the
         # same host, so this saves a TLS handshake per request.
-        self._session = requests.Session()
+        self._session = httpx2.Client()
         self._session.headers["apikey"] = api_key
         self._request_times: deque[float] = deque(maxlen=RATE_LIMIT_PER_MINUTE)
 

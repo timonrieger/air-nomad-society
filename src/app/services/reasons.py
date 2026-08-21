@@ -8,7 +8,7 @@ crashes on this path."""
 import json
 import logging
 
-import requests
+import httpx2
 
 from src.app.config import Settings
 from src.app.models.flights import FlightDeal
@@ -75,7 +75,7 @@ def deal_reasons(
     if not settings.ai_api_key:
         return
     try:
-        response = requests.post(
+        response = httpx2.post(
             f"{settings.ai_base_url.rstrip('/')}/chat/completions",
             headers={"Authorization": f"Bearer {settings.ai_api_key}"},
             json={
