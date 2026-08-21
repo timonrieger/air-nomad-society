@@ -49,12 +49,7 @@ class FlightDeal(BaseModel):
     @property
     def facts(self) -> str:
         """The quality line, e.g. "direct · 2h35 · dep 10:40"."""
-        if self.stopovers:
-            label = "stop" if self.stopovers == 1 else "stops"
-            via = dict.fromkeys(self.via_cities + self.return_via_cities)
-            stops = f"{self.stopovers} {label} via {', '.join(via)}"
-        else:
-            stops = "direct"
+        stops = "with stopover" if self.stopovers else "direct"
         hours, minutes = divmod(self.duration_minutes, 60)
         return f"{stops} · {hours}h{minutes:02d} · dep {self.departs_at:%H:%M}"
 

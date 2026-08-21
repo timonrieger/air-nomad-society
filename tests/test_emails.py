@@ -113,12 +113,7 @@ def test_quality_facts_line_for_direct_flight() -> None:
 
 def test_quality_facts_line_for_stopover_flight() -> None:
     html = render([ranked(deal(via_cities=["Riga"], duration_minutes=310))])
-    assert "1 stop via Riga · 5h10 · dep 10:40" in html
-
-
-def test_quality_facts_line_counts_return_stopovers() -> None:
-    html = render([ranked(deal(via_cities=["Riga"], return_via_cities=["Oslo"]))])
-    assert "2 stops via Riga, Oslo" in html
+    assert "with stopover · 5h10 · dep 10:40" in html
 
 
 def test_notice_when_favorites_yield_nothing() -> None:
