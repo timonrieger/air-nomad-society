@@ -19,4 +19,7 @@ class WallDeal(BaseModel):
     )
     badge: str | None = Field(description="Savings-tier badge the deal earned")
     found_on: date = Field(description="Date the deal went out in a digest")
+    link: str = Field(
+        description="Booking deep link at the provider that found the fare"
+    )
     image_url: str = Field(description="Destination image for the card")

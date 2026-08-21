@@ -169,6 +169,7 @@ def test_deals_wall_is_public_display_ready_and_cached(sqlite_db) -> None:
         ]
         assert body[0]["badge"] == "🔥 exceptional price"
         assert body[0]["departure_city"] == "Frankfurt"
+        assert body[0]["link"] == "https://kiwi.com/deep"  # stored at send time
         assert "subscriber_id" not in body[0]
         assert body[0]["image_url"].startswith("https://images.unsplash.com/")
         assert "max-age" in response.headers["Cache-Control"]

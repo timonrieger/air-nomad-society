@@ -98,6 +98,9 @@ class SentDeal(Base):
     arrival_country: Mapped[str] = mapped_column(String)
     price: Mapped[float] = mapped_column(Float)
     currency: Mapped[str] = mapped_column(String)
+    # Booking deep link from whichever provider found the fare; the empty
+    # server default only satisfies SQLite's ADD COLUMN NOT NULL rule.
+    link: Mapped[str] = mapped_column(String, server_default="")
     source: Mapped[str] = mapped_column(String)
     score: Mapped[float] = mapped_column(Float)
     # server_default only satisfies SQLite's ADD COLUMN NOT NULL rule; the
