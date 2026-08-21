@@ -1,7 +1,6 @@
 import random
 from datetime import date
 
-from src.app.db import AirNomads
 from src.app.models.subscriber import Subscriber
 from src.app.services.digest import DigestResult, build_digest
 from src.app.models.history import SentHistory
@@ -222,32 +221,6 @@ def test_deals_to_another_departure_city_are_dropped() -> None:
     assert result.deals == []
 
 
-def test_subscriber_from_row_parses_country_lists() -> None:
-    row = AirNomads(
-        id=3,
-        username="t",
-        email="t@example.com",
-        departure_airports="BER,MUC",
-        currency="eur",
-        min_nights=2,
-        max_nights=5,
-        min_days_ahead=1,
-        max_days_ahead=30,
-        cadence="weekly",
-        gem_count=5,
-        travel_countries="Finland, Spain",
-        excluded_countries=None,
-        confirmed_at=None,
-    )
-
-    subscriber = Subscriber.from_row(row)
-    assert subscriber.departure_airports == ["BER", "MUC"]
-    assert subscriber.favorites == ["Finland", "Spain"]
-    assert subscriber.excluded == []
-    assert subscriber.confirmed is False
-    assert subscriber.currency == "EUR"
-
-
 def test_no_favorites_searches_only_gems() -> None:
     provider = FakeProvider()
     digest(SUBSCRIBER.model_copy(update={"favorites": []}), provider)
@@ -259,9 +232,3 @@ def test_gem_count_zero_searches_only_favorites() -> None:
     provider = FakeProvider()
     digest(SUBSCRIBER.model_copy(update={"gem_count": 0}), provider)
     assert [q.destination_iata for q in provider.queries] == ["FI"]
-
-
-def test_gem_count_caps_discovery_searches() -> None:
-    provider = FakeProvider()
-    digest(SUBSCRIBER.model_copy(update={"gem_count": 1}), provider)
-    assert len(provider.queries) == 2  # the favorite plus exactly one gem

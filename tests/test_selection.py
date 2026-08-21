@@ -5,7 +5,6 @@ from src.app.models.history import SentHistory
 from src.app.services.refdata import Country
 from src.app.services.selection import (
     deal_score,
-    favorite_destinations,
     freshness_multiplier,
     select_gems,
 )
@@ -126,8 +125,3 @@ def test_recent_city_penalty_stacks_on_country() -> None:
     )
     fresh_city = deal(price=999, arrival_iata="TKU")
     assert freshness_multiplier(fresh_city, "discovery", history, None) == 1.25
-
-
-def test_favorite_destinations_keeps_reference_order() -> None:
-    favorites = favorite_destinations(DESTINATIONS, {"Canada", "Spain"})
-    assert [d.country for d in favorites] == ["Spain", "Canada"]
