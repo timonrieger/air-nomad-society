@@ -78,6 +78,9 @@ export function tokenFromUrl(): string | null {
 	return new URLSearchParams(location.search).get('token');
 }
 
+export const UNREACHABLE =
+	'Something went wrong reaching the server. Refresh the page to try again.';
+
 type FastApiError = { detail: string | { loc: (string | number)[]; msg: string }[] };
 
 /** Flatten a FastAPI error body (422 detail list or plain detail) to messages,

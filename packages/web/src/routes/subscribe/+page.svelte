@@ -8,7 +8,8 @@
 		LIMITS,
 		type RefData,
 		saveSubscription,
-		tokenFromUrl
+		tokenFromUrl,
+		UNREACHABLE
 	} from '$lib/api';
 	import Field from '$lib/components/Field.svelte';
 	import Loader from '$lib/components/Loader.svelte';
@@ -158,19 +159,17 @@
 	/>
 </svelte:head>
 
+<h1 class="page-title">
+	{token ? 'Update your preferences' : 'Become an Air Nomad'}
+</h1>
+
 {#if resolving}
 	<Loader label="Loading your preferences…" />
 {:else if loadFailed}
 	<!-- Not the form with a banner: without refdata its city, currency and
 	     country menus are empty, so there is nothing to fill in. -->
-	<div class="banner banner-error">
-		Something went wrong reaching the server. Refresh the page to try again.
-	</div>
+	<div class="banner banner-error">{UNREACHABLE}</div>
 {:else}
-	<h1 class="page-title">
-		{updating ? 'Update your preferences' : 'Become an Air Nomad'}
-	</h1>
-
 	{#if banner}
 		<div bind:this={bannerEl} class="banner {banner.ok ? 'banner-success' : 'banner-error'}">
 			{#each banner.lines as line (line)}
