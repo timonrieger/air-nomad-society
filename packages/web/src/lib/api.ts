@@ -25,7 +25,7 @@ export type Subscription = {
 	min_days_ahead: number;
 	max_days_ahead: number;
 	cadence: Cadence;
-	gem_count: number;
+	include_discoveries: boolean;
 	favorites: string[];
 	excluded: string[];
 };
@@ -41,7 +41,7 @@ export type SubscriptionIn = {
 	min_days_ahead: number;
 	max_days_ahead: number;
 	cadence: Cadence;
-	gem_count: number;
+	include_discoveries: boolean;
 	favorite_countries: string[];
 	excluded_countries: string[];
 };

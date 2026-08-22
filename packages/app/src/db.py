@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from functools import lru_cache
 
 from sqlalchemy import (
+    Boolean,
     CursorResult,
     DateTime,
     Engine,
@@ -17,6 +18,7 @@ from sqlalchemy import (
     delete,
     func,
     select,
+    true,
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
 
@@ -44,7 +46,7 @@ class AirNomads(Base):
     min_days_ahead: Mapped[int] = mapped_column(Integer, server_default="1")
     max_days_ahead: Mapped[int] = mapped_column(Integer, server_default="182")
     cadence: Mapped[Cadence] = mapped_column(String, server_default="weekly")
-    gem_count: Mapped[int] = mapped_column(Integer, server_default="5")
+    include_discoveries: Mapped[bool] = mapped_column(Boolean, server_default=true())
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
     confirmed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
 

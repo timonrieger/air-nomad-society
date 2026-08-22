@@ -23,7 +23,7 @@ PAYLOAD = {
     "min_days_ahead": 10,
     "max_days_ahead": 40,
     "cadence": "weekly",
-    "gem_count": 5,
+    "include_discoveries": True,
     "favorite_countries": ["Finland"],
     "excluded_countries": [],
 }
@@ -187,11 +187,11 @@ def test_subscribe_rejects_duplicate_countries(client) -> None:
     assert client.post("/subscribe", json=excluded).status_code == 422
 
 
-def test_subscribe_round_trips_cadence_and_gem_count(client) -> None:
-    payload = {**PAYLOAD, "cadence": "biweekly", "gem_count": 2}
+def test_subscribe_round_trips_cadence_and_discoveries(client) -> None:
+    payload = {**PAYLOAD, "cadence": "biweekly", "include_discoveries": False}
     body = client.post("/subscribe", json=payload).json()
     assert body["cadence"] == "biweekly"
-    assert body["gem_count"] == 2
+    assert body["include_discoveries"] is False
 
 
 def test_refdata_groups_countries_by_region(client) -> None:

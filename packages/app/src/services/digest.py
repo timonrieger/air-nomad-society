@@ -1,5 +1,6 @@
 """Builds one subscriber's digest: the best-scoring deal per searched country
-(favorites plus randomly picked "secret gem" countries), ranked into one list."""
+(every favorite, plus a fixed number of randomly picked discovery countries
+when the subscriber opts into them), ranked into one list."""
 
 import logging
 import random
@@ -29,6 +30,11 @@ CANDIDATES_PER_COUNTRY = 30
 # Next-best candidates kept per searched country, so the AI reasoning line
 # can say what the winner beat.
 RUNNER_UP_COUNT = 2
+
+# Discoveries carried by a digest that opts into them. Fixed rather than
+# per-subscriber: every one is a searched country, so this is a direct
+# multiplier on the run's provider budget (#63).
+DISCOVERIES_PER_DIGEST = 3
 
 # Typical price per (origin, arrival) route — history.route_baselines bound
 # to the subscriber's currency and the run boundary by the caller.
@@ -121,13 +127,17 @@ def build_digest(
         return winner
 
     favorites = set(subscriber.favorites)
-    gems = select_gems(
-        destinations,
-        favorites,
-        set(subscriber.excluded),
-        recent=history.recent_countries,
-        count=subscriber.gem_count,
-        rng=rng,
+    gems = (
+        select_gems(
+            destinations,
+            favorites,
+            set(subscriber.excluded),
+            recent=history.recent_countries,
+            count=DISCOVERIES_PER_DIGEST,
+            rng=rng,
+        )
+        if subscriber.include_discoveries
+        else []
     )
     searches: list[tuple[DealSource, Country]] = [
         ("favorite", country)

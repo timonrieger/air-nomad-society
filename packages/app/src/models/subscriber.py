@@ -36,9 +36,12 @@ class SubscriptionIn(BaseModel):
     # Required on the wire: a defaulted field would let a stale client
     # silently reset a saved preference on update.
     cadence: Cadence
-    gem_count: int = Field(ge=0, le=5)
-    # Capped like gem_count: every favorite is searched in every digest, so
-    # an unbounded list is an unbounded Tequila bill. Empty is fine — that
+    # Required on the wire for the same reason as cadence. How many
+    # discoveries an opted-in digest carries is not a subscriber's to set:
+    # it is fixed at DISCOVERIES_PER_DIGEST.
+    include_discoveries: bool
+    # Capped because every favorite is searched in every digest, so an
+    # unbounded list is an unbounded Tequila bill. Empty is fine — that
     # subscriber's digest is pure discoveries.
     favorite_countries: list[str] = Field(max_length=10)
     excluded_countries: list[str] = []
@@ -90,11 +93,15 @@ class Subscriber(BaseModel):
     min_days_ahead: int = Field(description="Search window start, days from today")
     max_days_ahead: int = Field(description="Search window end, days from today")
     cadence: Cadence = Field(description="How often the digest is sent")
-    gem_count: int = Field(description="Surprise discoveries per digest")
+    include_discoveries: bool = Field(
+        description="Whether surprise discoveries are mixed in alongside favorites"
+    )
     favorites: list[str] = Field(
         description="Favorite country names, always searched for deals"
     )
-    excluded: list[str] = Field(description="Country names never picked as random gems")
+    excluded: list[str] = Field(
+        description="Country names never picked as surprise discoveries"
+    )
     confirmed: bool = Field(description="Whether the subscriber confirmed via email")
 
     @classmethod
@@ -110,7 +117,7 @@ class Subscriber(BaseModel):
             min_days_ahead=row.min_days_ahead,
             max_days_ahead=row.max_days_ahead,
             cadence=row.cadence,
-            gem_count=row.gem_count,
+            include_discoveries=row.include_discoveries,
             favorites=_split(row.travel_countries),
             excluded=_split(row.excluded_countries),
             confirmed=row.confirmed_at is not None,

@@ -34,7 +34,7 @@
 	let minDaysAhead = $state(14);
 	let maxDaysAhead = $state(180);
 	let cadence = $state<Cadence>('weekly');
-	let gemCount = $state(5);
+	let includeDiscoveries = $state(true);
 	let favorites = $state<string[]>([]);
 	let excluded = $state<string[]>([]);
 
@@ -85,7 +85,7 @@
 			minDaysAhead = current.min_days_ahead;
 			maxDaysAhead = current.max_days_ahead;
 			cadence = current.cadence;
-			gemCount = current.gem_count;
+			includeDiscoveries = current.include_discoveries;
 			favorites = current.favorites;
 			excluded = current.excluded;
 		}
@@ -109,7 +109,7 @@
 				min_days_ahead: minDaysAhead,
 				max_days_ahead: maxDaysAhead,
 				cadence,
-				gem_count: gemCount,
+				include_discoveries: includeDiscoveries,
 				favorite_countries: favorites,
 				excluded_countries: excluded
 			},
@@ -217,13 +217,21 @@
 				<Field required label="Cadence" hint="How often your deal email arrives.">
 					<SelectMenu items={cadenceItems} bind:value={cadence} />
 				</Field>
-				<Field
-					required
-					label="Discoveries per email"
-					hint="Surprise destinations mixed in alongside your favorites."
-				>
-					<input class="input" type="number" bind:value={gemCount} />
-				</Field>
+				<!-- Not a Field: that wraps its children in a <label>, and a
+				     checkbox inside one toggles again when the hint is clicked. -->
+				<div class="flex flex-col gap-1.5">
+					<span class="text-sm text-ink-muted">Surprise discoveries</span>
+					<label class="flex cursor-pointer items-center gap-2 py-2">
+						<input
+							type="checkbox"
+							class="size-4 shrink-0 cursor-pointer accent-accent"
+							bind:checked={includeDiscoveries}
+						/>
+						<span class="text-sm text-ink">
+							Mix a few surprise destinations in alongside my favorites
+						</span>
+					</label>
+				</div>
 				<Field
 					label="Favorite destinations"
 					hint="Optional — pick up to 10. Every digest guarantees a deal for each favorite; without any, it is all discoveries."

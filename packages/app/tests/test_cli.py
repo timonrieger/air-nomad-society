@@ -31,7 +31,7 @@ def subscriber(email: str) -> Subscriber:
         min_days_ahead=1,
         max_days_ahead=30,
         cadence="weekly",
-        gem_count=5,
+        include_discoveries=True,
         favorites=["Finland"],
         excluded=[],
         confirmed=True,
