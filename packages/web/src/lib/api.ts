@@ -60,6 +60,20 @@ export type WallDeal = {
 	image_url: string;
 };
 
+/** Backend bounds from SubscriptionIn (packages/app/src/models/subscriber.py),
+mirrored onto the form's inputs.
+
+Duplicated on purpose: the browser can point at the offending field as it is
+typed, which no round trip can match. The API validates the same rules
+independently and remains the one that decides. */
+export const LIMITS = {
+	usernameMin: 3,
+	usernameMax: 20,
+	minNights: 1,
+	minDaysAhead: 1,
+	maxDaysAhead: 365
+} as const;
+
 export function tokenFromUrl(): string | null {
 	return new URLSearchParams(location.search).get('token');
 }
