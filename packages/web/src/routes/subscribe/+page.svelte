@@ -5,6 +5,7 @@
 		type Cadence,
 		fetchRefData,
 		fetchSubscription,
+		LIMITS,
 		type RefData,
 		saveSubscription,
 		tokenFromUrl
@@ -39,6 +40,9 @@
 	let excluded = $state<string[]>([]);
 
 	let bannerEl = $state<HTMLDivElement | undefined>();
+	// Bound, not an `open` expression: re-rendering the form would otherwise
+	// re-assert that expression and shut a panel the reader opened.
+	let advancedOpen = $state(false);
 
 	const toItems = (values: string[]) => values.map((v) => ({ value: v, label: v }));
 	const cityItems = $derived(
@@ -76,6 +80,7 @@
 		}
 		if (current) {
 			updating = true;
+			advancedOpen = true;
 			username = current.username;
 			email = current.email;
 			departureAirports = current.departure_airports;
@@ -158,19 +163,25 @@
 		</div>
 	{/if}
 
-	<!-- novalidate: the API is the single source of what counts as valid, so
-	     every submission reaches it and answers with its own message. -->
-	<form novalidate onsubmit={submit}>
+	<!-- No novalidate and no gate: the browser enforces the mirrored
+	     constraints on submit, the API validates the same rules for real. -->
+	<form onsubmit={submit}>
 		<div class="my-6 grid gap-4 sm:grid-cols-2">
 			<Field required label="Username" hint="Used to personalize your emails.">
-				<input class="input" bind:value={username} />
+				<input
+					class="input"
+					required
+					minlength={LIMITS.usernameMin}
+					maxlength={LIMITS.usernameMax}
+					bind:value={username}
+				/>
 			</Field>
 			<Field
 				required
 				label={updating ? 'Email (cannot be changed)' : 'Email'}
 				hint="Where your deal emails land."
 			>
-				<input class="input" type="email" disabled={updating} bind:value={email} />
+				<input class="input" type="email" required disabled={updating} bind:value={email} />
 			</Field>
 			<Field
 				required
@@ -188,10 +199,7 @@
 				<SelectMenu items={currencyItems} placeholder="Select a currency" bind:value={currency} />
 			</Field>
 		</div>
-		<details
-			class="mb-6 overflow-hidden rounded-xl border border-line"
-			open={updating || undefined}
-		>
+		<details bind:open={advancedOpen} class="mb-6 overflow-hidden rounded-xl border border-line">
 			<summary
 				class="cursor-pointer list-none bg-raised px-5 py-3.5 hover:bg-gray-800 [&::-webkit-details-marker]:hidden"
 			>
@@ -203,16 +211,37 @@
 			</summary>
 			<div class="grid gap-4 p-5 sm:grid-cols-2">
 				<Field required label="Minimum nights" hint="Shortest trip length, in nights.">
-					<input class="input" type="number" bind:value={minNights} />
+					<input class="input" type="number" min={LIMITS.minNights} required bind:value={minNights} />
 				</Field>
 				<Field required label="Maximum nights" hint="Longest trip length, in nights.">
-					<input class="input" type="number" bind:value={maxNights} />
+					<input
+						class="input"
+						type="number"
+						min={(minNights || 0) + 1}
+						max={(maxDaysAhead || LIMITS.maxDaysAhead) - (minDaysAhead || 0)}
+						required
+						bind:value={maxNights}
+					/>
 				</Field>
 				<Field required label="Search from (days ahead)" hint="Search starts this many days from now.">
-					<input class="input" type="number" bind:value={minDaysAhead} />
+					<input
+						class="input"
+						type="number"
+						min={LIMITS.minDaysAhead}
+						max={LIMITS.maxDaysAhead}
+						required
+						bind:value={minDaysAhead}
+					/>
 				</Field>
 				<Field required label="Search to (days ahead)" hint="Search ends this many days from now.">
-					<input class="input" type="number" bind:value={maxDaysAhead} />
+					<input
+						class="input"
+						type="number"
+						min={(minDaysAhead || 0) + 1}
+						max={LIMITS.maxDaysAhead}
+						required
+						bind:value={maxDaysAhead}
+					/>
 				</Field>
 				<Field required label="Cadence" hint="How often your deal email arrives.">
 					<SelectMenu items={cadenceItems} bind:value={cadence} />
