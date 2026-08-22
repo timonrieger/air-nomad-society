@@ -134,14 +134,6 @@ def test_profile_links_use_base_url_and_action_tokens() -> None:
     assert "ans.timonrieger.de/subscribe" not in html
 
 
-def test_intro_nudges_toward_the_profile() -> None:
-    html = render([ranked(deal())])
-    assert "Want to change your preferences?" in html
-    assert "Update your profile" in html
-    # The nudge links the same update URL the footer keeps.
-    assert html.count("https://example.test/subscribe?token=upd123") == 2
-
-
 def test_renders_a_card_per_deal() -> None:
     deals = [
         ranked(deal()),

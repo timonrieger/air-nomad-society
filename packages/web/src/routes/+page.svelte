@@ -83,7 +83,7 @@
 		},
 		{
 			q: 'Can I change my preferences later?',
-			a: 'Yes, anytime. Every email links to your profile — from the intro line and from the footer — and opens the form with your current settings filled in. Change your cities, favorites, trip length or cadence and the next digest follows them. No account or password needed.'
+			a: 'Yes, anytime. Every email links to your profile.'
 		},
 		{
 			q: 'What does "Favorite Destinations" mean?',
