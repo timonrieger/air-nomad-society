@@ -22,6 +22,7 @@
 	let resolving = $state(urlToken !== null);
 	let updating = $state(false);
 	let banner = $state<{ ok: boolean; lines: string[] } | null>(null);
+	let loadFailed = $state(false);
 	let submitting = $state(false);
 
 	let username = $state('');
@@ -64,10 +65,19 @@
 	];
 
 	onMount(async () => {
-		const [data, current] = await Promise.all([
+		// A 500 answers in plain text and without CORS headers, so the request
+		// rejects rather than resolving to !ok — uncaught, it would leave the
+		// loading screen up for good.
+		const loaded = await Promise.all([
 			fetchRefData(),
 			token ? fetchSubscription(token) : null
-		]);
+		]).catch(() => null);
+		if (!loaded) {
+			loadFailed = true;
+			resolving = false;
+			return;
+		}
+		const [data, current] = loaded;
 		refdata = data;
 		if (token && !current) {
 			banner = {
@@ -150,6 +160,12 @@
 
 {#if resolving}
 	<Loader label="Loading your preferences…" />
+{:else if loadFailed}
+	<!-- Not the form with a banner: without refdata its city, currency and
+	     country menus are empty, so there is nothing to fill in. -->
+	<div class="banner banner-error">
+		Something went wrong reaching the server. Refresh the page to try again.
+	</div>
 {:else}
 	<h1 class="page-title">
 		{updating ? 'Update your preferences' : 'Become an Air Nomad'}
