@@ -25,19 +25,14 @@ class SubscriptionIn(BaseModel):
 
     username: str = Field(min_length=3, max_length=20)
     email: EmailStr
-    departure_airports: list[str] = Field(min_length=1, max_length=5)
+    departure_airports: list[str] = Field(min_length=1, max_length=3)
     currency: str
     min_nights: int = Field(ge=1)
     max_nights: int = Field(ge=1)
     min_days_ahead: int = Field(ge=1, le=365)
     max_days_ahead: int = Field(ge=1, le=365)
-    # Required on the wire: a defaulted field would let a stale client
-    # silently reset a saved preference on update.
     cadence: Cadence
-    gem_count: int = Field(ge=0, le=10)
-    # Capped like gem_count: every favorite is searched in every digest, so
-    # an unbounded list is an unbounded Tequila bill. Empty is fine — that
-    # subscriber's digest is pure discoveries.
+    include_discoveries: bool
     favorite_countries: list[str] = Field(max_length=10)
     excluded_countries: list[str] = []
 
@@ -70,6 +65,11 @@ class SubscriptionIn(BaseModel):
                 f"max_nights ({self.max_nights}) cannot exceed the search "
                 f"range duration ({search_range} days)"
             )
+        if not self.include_discoveries and not self.favorite_countries:
+            raise ValueError(
+                "with include_discoveries off, favorite_countries needs at "
+                "least one country — otherwise the digest has nothing to send"
+            )
         return self
 
 
@@ -88,11 +88,15 @@ class Subscriber(BaseModel):
     min_days_ahead: int = Field(description="Search window start, days from today")
     max_days_ahead: int = Field(description="Search window end, days from today")
     cadence: Cadence = Field(description="How often the digest is sent")
-    gem_count: int = Field(description="Surprise discoveries per digest")
+    include_discoveries: bool = Field(
+        description="Whether surprise discoveries are mixed in alongside favorites"
+    )
     favorites: list[str] = Field(
         description="Favorite country names, always searched for deals"
     )
-    excluded: list[str] = Field(description="Country names never picked as random gems")
+    excluded: list[str] = Field(
+        description="Country names never picked as surprise discoveries"
+    )
     confirmed: bool = Field(description="Whether the subscriber confirmed via email")
 
     @classmethod
@@ -108,7 +112,7 @@ class Subscriber(BaseModel):
             min_days_ahead=row.min_days_ahead,
             max_days_ahead=row.max_days_ahead,
             cadence=row.cadence,
-            gem_count=row.gem_count,
+            include_discoveries=row.include_discoveries,
             favorites=_split(row.travel_countries),
             excluded=_split(row.excluded_countries),
             confirmed=row.confirmed_at is not None,

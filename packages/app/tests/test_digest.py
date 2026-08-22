@@ -48,7 +48,7 @@ SUBSCRIBER = Subscriber(
     min_days_ahead=10,
     max_days_ahead=40,
     cadence="weekly",
-    gem_count=5,
+    include_discoveries=True,
     favorites=["Finland"],
     excluded=["Japan"],
     confirmed=True,
@@ -228,7 +228,7 @@ def test_no_favorites_searches_only_gems() -> None:
     assert {q.destination_iata for q in provider.queries} == {"FI", "ES", "DE"}
 
 
-def test_gem_count_zero_searches_only_favorites() -> None:
+def test_discoveries_off_searches_only_favorites() -> None:
     provider = FakeProvider()
-    digest(SUBSCRIBER.model_copy(update={"gem_count": 0}), provider)
+    digest(SUBSCRIBER.model_copy(update={"include_discoveries": False}), provider)
     assert [q.destination_iata for q in provider.queries] == ["FI"]
