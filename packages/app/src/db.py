@@ -52,11 +52,7 @@ class AirNomads(Base):
 
 
 class PriceObservation(Base):
-    """One candidate itinerary a weekly search returned; append-only.
-
-    Column names follow FlightDeal where the value comes from the deal;
-    origin_iata is the *search* origin (what multi-departure partitions on),
-    and search_id groups the candidates of one provider call."""
+    """One candidate itinerary a weekly search returned."""
 
     __tablename__ = "price_observation"
     __table_args__ = (
@@ -64,7 +60,9 @@ class PriceObservation(Base):
     )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    # groups candidates of one provider call
     search_id: Mapped[str] = mapped_column(String)
+    # search origin
     origin_iata: Mapped[str] = mapped_column(String)
     arrival_iata: Mapped[str] = mapped_column(String)
     arrival_country: Mapped[str] = mapped_column(String)
@@ -92,24 +90,19 @@ class SentDeal(Base):
     subscriber_id: Mapped[int] = mapped_column(Integer)
     departure_city: Mapped[str | None] = mapped_column(String, nullable=True)
     departure_iata: Mapped[str] = mapped_column(String)
-    # The searched origin (observation partition key), not the itinerary's
-    # flyFrom airport — a LON search can depart LHR.
+    # search origin
     origin_iata: Mapped[str | None] = mapped_column(String, nullable=True)
     arrival_city: Mapped[str | None] = mapped_column(String, nullable=True)
     arrival_iata: Mapped[str] = mapped_column(String)
     arrival_country: Mapped[str] = mapped_column(String)
     price: Mapped[float] = mapped_column(Float)
     currency: Mapped[str] = mapped_column(String)
-    # Booking deep link from whichever provider found the fare; the empty
-    # server default only satisfies SQLite's ADD COLUMN NOT NULL rule.
+    # Booking deep link from whichever provider found the fare
     link: Mapped[str] = mapped_column(String, server_default="")
     source: Mapped[str] = mapped_column(String)
+    # freshness-inflated quality score
     score: Mapped[float] = mapped_column(Float)
-    # server_default only satisfies SQLite's ADD COLUMN NOT NULL rule; the
-    # digest always writes the real value.
     quality_score: Mapped[float] = mapped_column(Float, server_default="0")
-    # The savings and typical price the digest email quoted; the wall shows
-    # the same numbers.
     savings_percent: Mapped[int | None] = mapped_column(Integer, nullable=True)
     usual_price: Mapped[int | None] = mapped_column(Integer, nullable=True)
     reason: Mapped[str | None] = mapped_column(String, nullable=True)

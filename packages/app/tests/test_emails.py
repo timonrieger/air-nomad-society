@@ -1,5 +1,7 @@
 import random
 
+from markupsafe import escape
+
 from src.models.flights import DealSource, FlightDeal, RankedDeal
 from src.services.digest import DigestResult
 from src.services.emails import render_digest
@@ -22,16 +24,15 @@ def ranked(
 def render(
     deals: list[RankedDeal],
     baselines: dict[tuple[str, str], float] | None = None,
-    favorites_configured: bool = True,
+    username: str = "Timon",
 ) -> str:
     return render_digest(
-        username="Timon",
+        username=username,
         update_token="upd123",
         unsubscribe_token="unsub123",
         digest=DigestResult(deals=deals, baselines=baselines or {}),
         images=IMAGES,
         base_url="https://example.test",
-        favorites_configured=favorites_configured,
         rng=random.Random(1),
     )
 
@@ -42,6 +43,12 @@ def test_renders_deals() -> None:
     assert "129 EUR" in html  # int(), no decimals
     assert "https://img.example/fi.jpg" in html
     assert "{{" not in html and "{%" not in html
+
+
+def test_username_markup_is_escaped() -> None:
+    html = render([ranked(deal())], username="<b>Nomad</b>")
+    assert "<b>Nomad</b>" not in html
+    assert "Hi &lt;b&gt;Nomad&lt;/b&gt;!" in html
 
 
 def test_card_shows_country_and_plain_travel_dates() -> None:
@@ -112,21 +119,12 @@ def test_quality_facts_line_for_stopover_flight() -> None:
     assert "with stopover · 5h10 · dep 10:40" in html
 
 
-def test_notice_when_favorites_yield_nothing() -> None:
-    notice = "Your favorite countries came up empty"
-    assert notice in render([ranked(deal(), "discovery")])
-    assert notice not in render([ranked(deal(), "favorite")])
-    # With no favorites configured, all-discoveries is expected — no nudge.
-    assert notice not in render(
-        [ranked(deal(), "discovery")], favorites_configured=False
-    )
-
-
 def test_missing_or_empty_image_lists_fall_back() -> None:
     html = render(
         [ranked(deal(arrival_city="Palma", arrival_country="Spain"), "discovery")]
     )
-    assert FALLBACK_IMAGE in html
+    # Autoescape renders the URL's & as &amp; inside the src attribute.
+    assert escape(FALLBACK_IMAGE) in html
 
 
 def test_profile_links_use_base_url_and_action_tokens() -> None:

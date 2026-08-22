@@ -20,22 +20,15 @@ TEMPLATE_DIR = Path(__file__).resolve().parent.parent / "templates"
 DIGEST_SUBJECT = "Fresh Flight Deals!"
 CONFIRM_SUBJECT = "Confirm your subscription"
 
-# The shared brand definition (one accent, one gray scale, one font stack);
-# packages/web consumes the same file via the brand-theme plugin in vite.config.ts.
-# Emails render on white with the light end of the scale, the web on the dark.
+# The shared brand definition
 TOKENS: dict[str, str] = json.loads(
     (TEMPLATE_DIR.parent / "brand.json").read_text(encoding="utf-8")
 )
-# Rendered values are trusted internal data (usernames, provider results);
-# autoescape stays off. Revisit when usernames become untrusted input.
-_env = Environment(loader=FileSystemLoader(TEMPLATE_DIR), autoescape=False)  # noqa: S701 # nosec B701
+_env = Environment(loader=FileSystemLoader(TEMPLATE_DIR), autoescape=True)
 
 
 def _anchor(price: float, baseline: float, currency: str) -> tuple[str, str | None]:
-    """The "typically ~X" line and the earned tier badge, if any.
-
-    Both come from the same rounded percent, so the badge never contradicts
-    the savings the card shows."""
+    """The "typically ~X" line and the earned tier badge, if any."""
     savings = savings_percent(price, baseline)
     line = f"typically ~{baseline:.0f} {currency}"
     if savings is None:
@@ -60,8 +53,6 @@ def _present(
         badges.append("✨ new for you")
     return {
         "deal": deal,
-        # One badge slot per card: provenance, then the earned savings tier;
-        # the freshness badge (#17) appends here too.
         "badges": badges,
         "anchor": anchor,
         "reason": ranked.reason,
@@ -78,10 +69,9 @@ def render_digest(
     digest: DigestResult,
     images: dict[str, list[str]],
     base_url: str,
-    favorites_configured: bool,
     rng: random.Random | None = None,
 ) -> str:
-    # An empty digest is never sent (the cli skips it); rendering one is a bug.
+    # An empty digest is never sent
     assert digest.deals
     picker = rng or random.Random()  # nosec B311 # picks photos, not secrets
     return _env.get_template("digest.html.j2").render(
@@ -94,10 +84,6 @@ def render_digest(
             _present(ranked, images, digest.baseline_for(ranked), picker)
             for ranked in digest.deals
         ],
-        # The add-favorites nudge renders only for subscribers who expect
-        # favorite deals: with none configured, all-discoveries is the product.
-        no_favorite_deals=favorites_configured
-        and all(ranked.source != "favorite" for ranked in digest.deals),
     )
 
 

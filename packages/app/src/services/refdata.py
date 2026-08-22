@@ -7,9 +7,6 @@ from pydantic import BaseModel
 
 DATA_PATH = Path(__file__).resolve().parent.parent / "data.json"
 
-# The library URLs in data.json are full-resolution originals; every consumer
-# (digest email, deal wall) renders them as ~600-800px cards, so one
-# card-sized crop serves them all.
 IMAGE_PARAMS = "w=800&auto=format&fit=crop&q=60"
 FALLBACK_IMAGE = (
     f"https://images.unsplash.com/photo-1500835556837-99ac94a94552?{IMAGE_PARAMS}"
@@ -59,10 +56,7 @@ def city_codes() -> frozenset[str]:
 
 
 def country_images(images: dict[str, list[str]], country: str) -> list[str]:
-    """Card-sized images for a country; the shared fallback when it has none.
-
-    Joined with a plain & — every library URL carries a query string, an
-    invariant test_refdata guards."""
+    """Card-sized images for a country; the shared fallback when it has none."""
     urls = images.get(country)
     return [f"{url}&{IMAGE_PARAMS}" for url in urls] if urls else [FALLBACK_IMAGE]
 

@@ -18,12 +18,9 @@ from src.services.digest import DigestResult
 logger = logging.getLogger(__name__)
 
 TIMEOUT_SECONDS = 120
-# Per-deal output allowance plus headroom, so a favorites-heavy digest's
-# reasons JSON never gets cut off mid-object.
 TOKENS_PER_REASON = 60
 TOKEN_HEADROOM = 200
-# The prompt asks for ≤120 chars; reasons wildly past that are dropped, not
-# rendered as a paragraph on the card.
+# The prompt asks for ≤120 chars; reasons wildly past that are dropped
 REASON_MAX_CHARS = 200
 
 SYSTEM_PROMPT = """\
@@ -80,9 +77,6 @@ def deal_reasons(
             headers={"Authorization": f"Bearer {settings.ai_api_key}"},
             json={
                 "model": settings.ai_model,
-                # Claude Sonnet 5 reasons by default, and max_tokens caps
-                # reasoning + content together — variable reasoning length
-                # starved the content (null or truncated JSON).
                 "reasoning": {"enabled": False},
                 "max_tokens": TOKEN_HEADROOM + TOKENS_PER_REASON * len(digest.deals),
                 "messages": [
@@ -109,5 +103,5 @@ def deal_reasons(
             if isinstance(reason, str) and 0 < len(reason) <= REASON_MAX_CHARS:
                 ranked.reason = reason
     except Exception:
-        # The reasoning line is a garnish: any failure just means no line.
+        # any failure means noop
         logger.warning("deal reasons failed for %s", subscriber.email, exc_info=True)

@@ -16,9 +16,6 @@ SessionDep = Annotated[Session, Depends(get_session)]
 
 WALL_DEAL_COUNT = 12
 WALL_WINDOW_WEEKS = 4
-# The wall only changes when a digest run writes sent_deal rows; the endpoint
-# is public and CORS-open, and this header lets the CDN absorb repeat hits —
-# one indexed query per edge miss is cheap enough.
 WALL_CACHE_SECONDS = 3600
 
 

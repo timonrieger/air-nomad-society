@@ -13,9 +13,6 @@ logger = logging.getLogger(__name__)
 REQUEST_TIMEOUT = 30
 RATE_LIMIT_ATTEMPTS = 2
 RATE_LIMIT_WAIT = 10
-# Tequila's quota is 30 requests per minute; multi-departure fan-out can
-# burst well past it, so requests pace themselves against a sliding window —
-# bursts under the quota run unthrottled, only genuine overflow waits.
 RATE_LIMIT_PER_MINUTE = 30
 
 
@@ -35,8 +32,6 @@ class TequilaProvider:
 
     def __init__(self, endpoint: str, api_key: str) -> None:
         self.endpoint = endpoint
-        # One keep-alive client for the whole run: every search hits the
-        # same host, so this saves a TLS handshake per request.
         self._session = httpx2.Client()
         self._session.headers["apikey"] = api_key
         self._request_times: deque[float] = deque(maxlen=RATE_LIMIT_PER_MINUTE)
@@ -76,8 +71,6 @@ class TequilaProvider:
             "limit": count,
             "curr": query.currency,
         }
-        # A response without a "data" key means we got rate limited: back off
-        # and retry before giving up on the destination.
         for attempt in range(RATE_LIMIT_ATTEMPTS):
             self._pace()
             response = self._session.get(

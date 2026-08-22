@@ -5,7 +5,6 @@
 		type Cadence,
 		fetchRefData,
 		fetchSubscription,
-		LIMITS,
 		type RefData,
 		saveSubscription,
 		tokenFromUrl,
@@ -30,8 +29,6 @@
 	let email = $state('');
 	let departureAirports = $state<string[]>([]);
 	let currency = $state('');
-	// Nomadic defaults: slow-travel trip lengths over a wide window — the
-	// search is one request per country either way, so breadth is free.
 	let minNights = $state(3);
 	let maxNights = $state(14);
 	let minDaysAhead = $state(14);
@@ -42,8 +39,6 @@
 	let excluded = $state<string[]>([]);
 
 	let bannerEl = $state<HTMLDivElement | undefined>();
-	// Bound, not an `open` expression: re-rendering the form would otherwise
-	// re-assert that expression and shut a panel the reader opened.
 	let advancedOpen = $state(false);
 
 	const toItems = (values: string[]) => values.map((v) => ({ value: v, label: v }));
@@ -52,7 +47,6 @@
 	);
 	const currencyItems = $derived(toItems(refdata?.currencies ?? []));
 	const countryItems = $derived(toItems(refdata?.countries ?? []));
-	// Regions and their countries arrive alphabetized from the API.
 	const countryGroups = $derived(
 		Object.entries(refdata?.regions ?? {}).map(([region, countries]) => ({
 			label: region,
@@ -66,9 +60,6 @@
 	];
 
 	onMount(async () => {
-		// A 500 answers in plain text and without CORS headers, so the request
-		// rejects rather than resolving to !ok — uncaught, it would leave the
-		// loading screen up for good.
 		const loaded = await Promise.all([
 			fetchRefData(),
 			token ? fetchSubscription(token) : null
@@ -144,8 +135,6 @@
 							: `Almost there! We sent a confirmation link to ${email} — click it to start receiving deals.`
 					]
 				};
-		// The button sits below a long form, so the banner it answers is
-		// usually off-screen by the time it renders.
 		await tick();
 		bannerEl?.scrollIntoView({ behavior: 'smooth', block: 'center' });
 	}
@@ -166,8 +155,6 @@
 {#if resolving}
 	<Loader label="Loading your preferences…" />
 {:else if loadFailed}
-	<!-- Not the form with a banner: without refdata its city, currency and
-	     country menus are empty, so there is nothing to fill in. -->
 	<div class="banner banner-error">{UNREACHABLE}</div>
 {:else}
 	{#if banner}
@@ -178,16 +165,14 @@
 		</div>
 	{/if}
 
-	<!-- No novalidate and no gate: the browser enforces the mirrored
-	     constraints on submit, the API validates the same rules for real. -->
 	<form onsubmit={submit}>
 		<div class="my-6 grid gap-4 sm:grid-cols-2">
 			<Field required label="Username" hint="Used to personalize your emails.">
 				<input
 					class="input"
 					required
-					minlength={LIMITS.usernameMin}
-					maxlength={LIMITS.usernameMax}
+					minlength=3
+					maxlength=20
 					bind:value={username}
 				/>
 			</Field>
@@ -225,44 +210,42 @@
 				</span>
 			</summary>
 			<div class="grid gap-4 p-5 sm:grid-cols-2">
+				<Field required label="Search from (days ahead)" hint="Search starts this many days from now.">
+					<input
+					class="input"
+					type="number"
+					min=1
+					max=365
+					required
+					bind:value={minDaysAhead}
+					/>
+				</Field>
+				<Field required label="Search to (days ahead)" hint="Search ends this many days from now.">
+					<input
+					class="input"
+					type="number"
+					min=1
+					max=365
+					required
+					bind:value={maxDaysAhead}
+					/>
+				</Field>
 				<Field required label="Minimum nights" hint="Shortest trip length, in nights.">
-					<input class="input" type="number" min={LIMITS.minNights} required bind:value={minNights} />
+					<input class="input" type="number" min=1 required bind:value={minNights} />
 				</Field>
 				<Field required label="Maximum nights" hint="Longest trip length, in nights.">
 					<input
 						class="input"
 						type="number"
-						min={(minNights || 0) + 1}
-						max={(maxDaysAhead || LIMITS.maxDaysAhead) - (minDaysAhead || 0)}
+						min={minNights}
+						max={maxDaysAhead - minDaysAhead}
 						required
 						bind:value={maxNights}
-					/>
-				</Field>
-				<Field required label="Search from (days ahead)" hint="Search starts this many days from now.">
-					<input
-						class="input"
-						type="number"
-						min={LIMITS.minDaysAhead}
-						max={LIMITS.maxDaysAhead}
-						required
-						bind:value={minDaysAhead}
-					/>
-				</Field>
-				<Field required label="Search to (days ahead)" hint="Search ends this many days from now.">
-					<input
-						class="input"
-						type="number"
-						min={(minDaysAhead || 0) + 1}
-						max={LIMITS.maxDaysAhead}
-						required
-						bind:value={maxDaysAhead}
 					/>
 				</Field>
 				<Field required label="Cadence" hint="How often your deal email arrives.">
 					<SelectMenu items={cadenceItems} bind:value={cadence} />
 				</Field>
-				<!-- Not a Field: that wraps its children in a <label>, and a
-				     checkbox inside one toggles again when the hint is clicked. -->
 				<div class="flex flex-col gap-1.5">
 					<span class="text-sm text-ink-muted">Surprise discoveries</span>
 					<label class="flex cursor-pointer items-center gap-2 py-2">

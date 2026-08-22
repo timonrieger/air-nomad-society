@@ -24,7 +24,7 @@
             <p style="margin: 0 0 4px; font-family: {{ t.font }}; font-size: 20px; font-weight: 700; color: {{ t.gray_900 }};">{{ flight.deal.departure_city }} &ndash; {{ flight.deal.arrival_city }}</p>
             <p style="margin: 0 0 4px; font-family: {{ t.font }}; font-size: 14px; color: {{ t.gray_500 }};">{{ flight.deal.arrival_country }} &middot; {{ flight.dates }}</p>
             <p style="margin: 0 0 {{ "4px" if flight.reason else "16px" }}; font-family: {{ t.font }}; font-size: 13px; color: {{ t.gray_500 }};">{{ flight.facts }}</p>
-            {% if flight.reason %}<p style="margin: 0 0 16px; font-family: {{ t.font }}; font-size: 13px; font-style: italic; color: {{ t.gray_800 }};">{{ flight.reason | e }}</p>{% endif %}
+            {% if flight.reason %}<p style="margin: 0 0 16px; font-family: {{ t.font }}; font-size: 13px; font-style: italic; color: {{ t.gray_800 }};">{{ flight.reason }}</p>{% endif %}
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
               <tr>
                 <td style="vertical-align: middle;">
@@ -60,9 +60,6 @@
           <tr>
             <td>
               <h2 style="margin: 0 0 16px; font-family: {{ t.font }}; font-size: 22px; font-weight: 700; color: {{ t.gray_900 }};">This week's best deals</h2>
-              {% if no_favorite_deals %}
-                <p style="margin: 0 0 16px; font-family: {{ t.font }}; font-size: 14px; line-height: 1.5; color: {{ t.gray_500 }};">Your favorite countries came up empty this week, so these are all discoveries. <a href="{{ update_url }}" style="color: {{ t.gray_500 }};">Add more favorites</a> to widen next week's search.</p>
-              {% endif %}
               {% for flight in flights %}{{ deal_card(flight) }}{% endfor %}
             </td>
           </tr>

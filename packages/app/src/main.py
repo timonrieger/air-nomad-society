@@ -16,8 +16,7 @@ app.include_router(subscriptions.router)
 app.include_router(refdata.router)
 app.include_router(deals.router)
 
-# The frontend is a prebuilt static site calling this API from the browser;
-# PUBLIC_BASE_URL is its origin, also allow Vercel preview deployments.
+# The frontend is a prebuilt static site calling this API from the browser
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[get_settings().public_base_url],

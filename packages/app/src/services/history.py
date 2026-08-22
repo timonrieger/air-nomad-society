@@ -152,17 +152,13 @@ def sent_history(subscriber_id: int) -> SentHistory:
 def record_sent_deals(subscriber_id: int, digest: DigestResult) -> None:
     rows = []
     for ranked in digest.deals:
-        # The savings and typical price the email quoted, frozen at send
-        # time as quoted — round(baseline) is the integer the anchor line
-        # prints — so the public wall shows exactly these numbers.
         baseline = digest.baseline_for(ranked)
         rows.append(
             SentDeal(
                 subscriber_id=subscriber_id,
                 source=ranked.source,
                 score=ranked.score,
-                # Recomputed rather than carried on RankedDeal: deal_score is
-                # deterministic on the deal, so the two can never drift.
+                # Deterministically recomputed since ranked.score is freshness-inflated
                 quality_score=deal_score(ranked.deal),
                 origin_iata=ranked.origin_iata,
                 savings_percent=(

@@ -23,18 +23,14 @@ from src.services.tokens import issue_token
 
 logger = logging.getLogger(__name__)
 
-# Minimum days since the last delivered digest before the weekly run sends
-# again, per cadence — each between its nominal interval's neighboring runs
-# (biweekly: 7 and 14 days, monthly: 21 and 28), so subscribers skip exactly
-# the right number of runs with no dispatch rework.
+# Minimum days since the last delivered digest before the weekly run sends again
 CADENCE_GAP_DAYS: dict[Cadence, int] = {"weekly": 0, "biweekly": 10, "monthly": 24}
 
 
 def run_digest(provider: FlightProvider) -> int:
     """Sends the digest to every subscriber; one failure never blocks the rest.
 
-    Returns the number of failed subscribers (also the exit code, so a
-    partial failure still turns the scheduled run red).
+    Returns the number of failed subscribers.
     """
     settings = get_settings()
     data = refdata.load()
@@ -57,8 +53,6 @@ def run_digest(provider: FlightProvider) -> int:
                 recording,
                 data.countries,
                 history=sent_history(subscriber.id),
-                # before=started_at: the run's own candidates never anchor
-                # themselves.
                 baselines_for=lambda routes: route_baselines(
                     routes, subscriber.currency, before=recording.started_at
                 ),
@@ -74,7 +68,6 @@ def run_digest(provider: FlightProvider) -> int:
                 digest=result,
                 images=data.images,
                 base_url=settings.public_base_url,
-                favorites_configured=bool(subscriber.favorites),
             )
             mailer.send_email(html, subscriber.email, emails.DIGEST_SUBJECT, settings)
             record_sent_deals(subscriber.id, result)
@@ -86,10 +79,7 @@ def run_digest(provider: FlightProvider) -> int:
 
 
 def run_announcement(subject: str, body_file: str) -> int:
-    """Emails a product update to every confirmed subscriber.
-
-    The body is plain text; blank lines separate paragraphs. Returns the
-    number of failed subscribers, like run_digest."""
+    """Emails a product update to every confirmed subscriber."""
     settings = get_settings()
     body = Path(body_file).read_text(encoding="utf-8")
     paragraphs = [p.strip() for p in body.split("\n\n") if p.strip()]
@@ -121,8 +111,6 @@ def main(argv: list[str] | None = None) -> int:
         choices=["digest", "announce"],
         help="search deals and email every subscriber, or send a product update",
     )
-    # announce's flags are parsed by the mise task's usage spec, which
-    # forwards them here as two positionals: subject, body file.
     parser.add_argument("args", nargs="*")
     parsed = parser.parse_args(argv)
 

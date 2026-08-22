@@ -15,8 +15,7 @@ router = APIRouter()
 
 SessionDep = Annotated[Session, Depends(get_session)]
 
-# At most one confirmation email per address per day: the endpoint is public
-# and takes any address, so unthrottled resends are an email-bombing lever.
+# At most one confirmation email per address per day
 RESEND_COOLDOWN = timedelta(days=1)
 
 
@@ -52,8 +51,7 @@ def subscribe(payload: SubscriptionIn, session: SessionDep) -> Subscriber:
     """Create an unconfirmed subscription and email a confirmation link.
 
     Re-subscribing an unconfirmed email updates the pending row and resends
-    the link (so a lost email is recoverable) — but only once the pending
-    row is a day old; a confirmed email is a 409.
+    the link. A confirmed email is a 409.
     """
     member = session.scalar(select(AirNomads).where(AirNomads.email == payload.email))
     if member is not None and member.confirmed_at is not None:
