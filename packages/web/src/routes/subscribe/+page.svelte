@@ -25,7 +25,7 @@
 	let loadFailed = $state(false);
 	let submitting = $state(false);
 
-	let username = $state('');
+	let name = $state('');
 	let email = $state('');
 	let departureAirports = $state<string[]>([]);
 	let currency = $state('');
@@ -83,7 +83,7 @@
 		if (current) {
 			updating = true;
 			advancedOpen = true;
-			username = current.username;
+			name = current.username;
 			email = current.email;
 			departureAirports = current.departure_airports;
 			currency = current.currency;
@@ -107,7 +107,7 @@
 		// failure the reader can neither see nor retry past.
 		const errors = await saveSubscription(
 			{
-				username,
+				username: name,
 				email,
 				departure_airports: departureAirports,
 				currency,
@@ -167,13 +167,13 @@
 
 	<form onsubmit={submit}>
 		<div class="my-6 grid gap-4 sm:grid-cols-2">
-			<Field required label="Username" hint="Used to personalize your emails.">
+			<Field required label="Name" hint="Used to personalize your emails.">
 				<input
 					class="input"
 					required
 					minlength=3
 					maxlength=20
-					bind:value={username}
+					bind:value={name}
 				/>
 			</Field>
 			<Field
