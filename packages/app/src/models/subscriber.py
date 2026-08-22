@@ -25,7 +25,9 @@ class SubscriptionIn(BaseModel):
 
     username: str = Field(min_length=3, max_length=20)
     email: EmailStr
-    departure_airports: list[str] = Field(min_length=1, max_length=5)
+    # Each city multiplies the searched countries into provider requests, so
+    # this cap is a direct lever on how long a digest run takes (#63).
+    departure_airports: list[str] = Field(min_length=1, max_length=3)
     currency: str
     min_nights: int = Field(ge=1)
     max_nights: int = Field(ge=1)
@@ -34,7 +36,7 @@ class SubscriptionIn(BaseModel):
     # Required on the wire: a defaulted field would let a stale client
     # silently reset a saved preference on update.
     cadence: Cadence
-    gem_count: int = Field(ge=0, le=10)
+    gem_count: int = Field(ge=0, le=5)
     # Capped like gem_count: every favorite is searched in every digest, so
     # an unbounded list is an unbounded Tequila bill. Empty is fine — that
     # subscriber's digest is pure discoveries.

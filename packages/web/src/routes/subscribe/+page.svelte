@@ -175,7 +175,7 @@
 			<Field
 				required
 				label="Departure cities"
-				hint="Pick up to 5. Every deal flies from one of these; the best deal across them wins."
+				hint="Pick up to 3. Every deal flies from one of these; the best deal across them wins."
 			>
 				<SelectMenu
 					items={cityItems}
