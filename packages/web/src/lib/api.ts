@@ -46,14 +46,6 @@ export type SubscriptionIn = {
 	excluded_countries: string[];
 };
 
-/** Form bounds mirroring SubscriptionIn in packages/app/src/routers/subscriptions.py. */
-export const LIMITS = {
-	usernameMin: 3,
-	usernameMax: 20,
-	maxDaysAhead: 365,
-	gemCountMax: 10
-} as const;
-
 /** One public wall card, display-ready — see WallDeal in packages/app/src/routers/deals.py. */
 export type WallDeal = {
 	destination: string;
@@ -74,13 +66,73 @@ export function tokenFromUrl(): string | null {
 
 type FastApiError = { detail: string | { loc: (string | number)[]; msg: string }[] };
 
-/** Flatten a FastAPI error body (422 detail list or plain detail) to messages. */
+/** The form control each API field belongs to, so an error names what the
+reader is looking at rather than the wire format. */
+const FIELD_LABELS: Record<string, string> = {
+	username: 'Username',
+	email: 'Email',
+	departure_airports: 'Departure cities',
+	currency: 'Currency',
+	min_nights: 'Minimum nights',
+	max_nights: 'Maximum nights',
+	min_days_ahead: 'Search from (days ahead)',
+	max_days_ahead: 'Search to (days ahead)',
+	cadence: 'Cadence',
+	gem_count: 'Discoveries per email',
+	favorite_countries: 'Favorite destinations',
+	excluded_countries: 'Excluded countries'
+};
+
+/** Pydantic's phrasing rewritten for readers.
+
+Every bound is carried over from the message itself, never restated here —
+the backend stays the only place a limit is written down. Entries for
+field errors read as fragments, completed by the field's label; entries for
+whole-form errors, which carry no field, read as sentences. */
+const REWRITES: [RegExp, string][] = [
+	[/^Field required$/, 'is required.'],
+	[/^Input should be greater than or equal to (\d+)$/, 'must be $1 or more.'],
+	[/^Input should be less than or equal to (\d+)$/, 'must be $1 or less.'],
+	[/^Input should be a valid integer.*/, 'must be a whole number.'],
+	[/^List should have at least (\d+) item.*/, 'needs at least $1.'],
+	[/^List should have at most (\d+) item.*/, 'takes at most $1.'],
+	[/^String should have at least (\d+) character.*/, 'must be at least $1 characters.'],
+	[/^String should have at most (\d+) character.*/, 'must be at most $1 characters.'],
+	[/^value is not a valid email address.*/, 'must be a valid email address.'],
+	[/^unknown currency$/, 'needs to be picked from the list.'],
+	[/^unknown [^:]+: (.+)$/, 'has an entry that is not on the list: $1.'],
+	[/^duplicate .+$/, 'has the same entry twice.'],
+	[
+		/^max_nights must be greater than min_nights$/,
+		'Maximum nights must be more than minimum nights.'
+	],
+	[
+		/^max_days_ahead must be greater than min_days_ahead$/,
+		'Your search window has to end after it starts.'
+	],
+	[
+		/^max_nights \((\d+)\) cannot exceed the search range duration \((\d+) days\)$/,
+		'A trip of up to $1 nights does not fit in a $2-day search window. Widen the window or shorten the trip.'
+	]
+];
+
+/** One API message, in plain English. Unrecognized messages pass through:
+the backend's own `detail` strings already read as sentences. */
+function readable(message: string): string {
+	const text = message.replace(/^Value error, /, '');
+	const rewrite = REWRITES.find(([pattern]) => pattern.test(text));
+	return rewrite ? text.replace(rewrite[0], rewrite[1]) : text;
+}
+
+/** Flatten a FastAPI error body (422 detail list or plain detail) to messages
+the reader can act on. */
 export function errorMessages(body: unknown): string[] {
 	const { detail } = body as FastApiError;
-	if (typeof detail === 'string') return [detail];
+	if (typeof detail === 'string') return [readable(detail)];
 	return detail.map((e) => {
-		const field = e.loc.filter((part) => part !== 'body').join('.');
-		return field ? `${field}: ${e.msg}` : e.msg;
+		const label = FIELD_LABELS[e.loc.filter((part) => part !== 'body').join('.')];
+		const message = readable(e.msg);
+		return label ? `${label} ${message}` : message;
 	});
 }
 
