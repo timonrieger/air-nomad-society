@@ -60,24 +60,28 @@ class RecordingProvider:
     def __init__(self, inner: FlightProvider) -> None:
         self.inner = inner
         self.started_at = _utcnow()
+        self._pending: list[PriceObservation] = []
 
     def search_top(self, query: SearchQuery, count: int) -> list[FlightDeal]:
         deals = self.inner.search_top(query, count)
         search_id = str(uuid4())
         observed_at = _utcnow()
-        insert_rows(
-            [
-                PriceObservation(
-                    search_id=search_id,
-                    origin_iata=query.origin_iata,
-                    stopovers=deal.stopovers,
-                    observed_at=observed_at,
-                    **deal.model_dump(include=OBSERVED_FIELDS),
-                )
-                for deal in deals
-            ]
-        )
+        self._pending += [
+            PriceObservation(
+                search_id=search_id,
+                origin_iata=query.origin_iata,
+                stopovers=deal.stopovers,
+                observed_at=observed_at,
+                **deal.model_dump(include=OBSERVED_FIELDS),
+            )
+            for deal in deals
+        ]
         return deals
+
+    def flush(self) -> None:
+        """Flush in-memory observations"""
+        insert_rows(self._pending)
+        self._pending = []
 
 
 def route_baselines(

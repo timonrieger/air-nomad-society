@@ -57,6 +57,7 @@ def run_digest(provider: FlightProvider) -> int:
                     routes, subscriber.currency, before=recording.started_at
                 ),
             )
+            recording.flush()
             if not result.deals:
                 logger.info("no deals for %s, skipping digest", subscriber.email)
                 continue
@@ -75,6 +76,7 @@ def run_digest(provider: FlightProvider) -> int:
         except Exception:
             failures += 1
             logger.exception("digest failed for %s", subscriber.email)
+    recording.flush()
     return failures
 
 
