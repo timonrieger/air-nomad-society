@@ -82,6 +82,10 @@
 			a: 'Flight deal emails are sent weekly, every two weeks or monthly — your choice: the best deals found across your favorite countries and a few surprise discoveries, ranked by quality.'
 		},
 		{
+			q: 'Can I change my preferences later?',
+			a: 'Yes, anytime. Every email links to your profile.'
+		},
+		{
 			q: 'What does "Favorite Destinations" mean?',
 			a: 'Mark certain countries as favorites and every email includes the best deal we found for each of them. They are optional — without any, your digest is all surprise discoveries.'
 		},

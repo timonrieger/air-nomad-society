@@ -167,7 +167,7 @@
 
 	<form onsubmit={submit}>
 		<div class="my-6 grid gap-4 sm:grid-cols-2">
-			<Field required label="Username" hint="Used to personalize your emails.">
+			<Field required label="Name" hint="Used to personalize your emails.">
 				<input
 					class="input"
 					required
