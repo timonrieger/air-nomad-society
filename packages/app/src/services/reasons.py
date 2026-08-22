@@ -17,7 +17,7 @@ from src.services.digest import DigestResult
 
 logger = logging.getLogger(__name__)
 
-TIMEOUT_SECONDS = 120
+TIMEOUT_SECONDS = 15
 TOKENS_PER_REASON = 60
 TOKEN_HEADROOM = 200
 # The prompt asks for ≤120 chars; reasons wildly past that are dropped
