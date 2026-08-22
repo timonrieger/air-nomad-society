@@ -46,14 +46,6 @@ export type SubscriptionIn = {
 	excluded_countries: string[];
 };
 
-/** Form bounds mirroring SubscriptionIn in packages/app/src/routers/subscriptions.py. */
-export const LIMITS = {
-	usernameMin: 3,
-	usernameMax: 20,
-	maxDaysAhead: 365,
-	gemCountMax: 10
-} as const;
-
 /** One public wall card, display-ready — see WallDeal in packages/app/src/routers/deals.py. */
 export type WallDeal = {
 	destination: string;
@@ -74,14 +66,12 @@ export function tokenFromUrl(): string | null {
 
 type FastApiError = { detail: string | { loc: (string | number)[]; msg: string }[] };
 
-/** Flatten a FastAPI error body (422 detail list or plain detail) to messages. */
+/** Flatten a FastAPI error body (422 detail list or plain detail) to messages,
+verbatim — the API's own error path and wording, not a paraphrase of it. */
 export function errorMessages(body: unknown): string[] {
 	const { detail } = body as FastApiError;
 	if (typeof detail === 'string') return [detail];
-	return detail.map((e) => {
-		const field = e.loc.filter((part) => part !== 'body').join('.');
-		return field ? `${field}: ${e.msg}` : e.msg;
-	});
+	return detail.map((e) => `${e.loc.join('.')}: ${e.msg}`);
 }
 
 async function request(path: string, init?: RequestInit): Promise<{ ok: boolean; body: unknown }> {

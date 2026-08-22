@@ -5,7 +5,6 @@
 		type Cadence,
 		fetchRefData,
 		fetchSubscription,
-		LIMITS,
 		type RefData,
 		saveSubscription,
 		tokenFromUrl
@@ -39,16 +38,7 @@
 	let favorites = $state<string[]>([]);
 	let excluded = $state<string[]>([]);
 
-	let formEl = $state<HTMLFormElement | undefined>();
-	// Native HTML constraint validation (required/min/max/minlength/type)
-	// covers all plain inputs; bits-ui selects render no native inputs, so
-	// they are checked by hand in canSubmit.
-	let nativeValid = $state(false);
-	async function revalidate() {
-		await tick(); // dependent min/max attributes flush before checkValidity reads them
-		nativeValid = formEl!.checkValidity();
-	}
-	const canSubmit = $derived(nativeValid && departureAirports.length > 0 && currency !== '');
+	let bannerEl = $state<HTMLDivElement | undefined>();
 
 	const toItems = (values: string[]) => values.map((v) => ({ value: v, label: v }));
 	const cityItems = $derived(
@@ -100,13 +90,14 @@
 			excluded = current.excluded;
 		}
 		resolving = false;
-		await revalidate(); // the tick inside also mounts the form after the loader
 	});
 
 	async function submit(event: SubmitEvent) {
 		event.preventDefault();
 		submitting = true;
 		banner = null;
+		// Now that the API decides what is valid, an unreachable API is the one
+		// failure the reader can neither see nor retry past.
 		const errors = await saveSubscription(
 			{
 				username,
@@ -123,7 +114,9 @@
 				excluded_countries: excluded
 			},
 			token
-		);
+		).catch(() => [
+			'Something went wrong reaching the server. Check your connection and try again.'
+		]);
 		submitting = false;
 		banner = errors.length
 			? { ok: false, lines: errors }
@@ -135,6 +128,10 @@
 							: `Almost there! We sent a confirmation link to ${email} — click it to start receiving deals.`
 					]
 				};
+		// The button sits below a long form, so the banner it answers is
+		// usually off-screen by the time it renders.
+		await tick();
+		bannerEl?.scrollIntoView({ behavior: 'smooth', block: 'center' });
 	}
 </script>
 
@@ -154,30 +151,26 @@
 	</h1>
 
 	{#if banner}
-		<div class="banner {banner.ok ? 'banner-success' : 'banner-error'}">
+		<div bind:this={bannerEl} class="banner {banner.ok ? 'banner-success' : 'banner-error'}">
 			{#each banner.lines as line (line)}
 				<div>{line}</div>
 			{/each}
 		</div>
 	{/if}
 
-	<form bind:this={formEl} oninput={revalidate} onsubmit={submit}>
+	<!-- novalidate: the API is the single source of what counts as valid, so
+	     every submission reaches it and answers with its own message. -->
+	<form novalidate onsubmit={submit}>
 		<div class="my-6 grid gap-4 sm:grid-cols-2">
 			<Field required label="Username" hint="Used to personalize your emails.">
-				<input
-					class="input"
-					required
-					minlength={LIMITS.usernameMin}
-					maxlength={LIMITS.usernameMax}
-					bind:value={username}
-				/>
+				<input class="input" bind:value={username} />
 			</Field>
 			<Field
 				required
 				label={updating ? 'Email (cannot be changed)' : 'Email'}
 				hint="Where your deal emails land."
 			>
-				<input class="input" type="email" required disabled={updating} bind:value={email} />
+				<input class="input" type="email" disabled={updating} bind:value={email} />
 			</Field>
 			<Field
 				required
@@ -210,37 +203,16 @@
 			</summary>
 			<div class="grid gap-4 p-5 sm:grid-cols-2">
 				<Field required label="Minimum nights" hint="Shortest trip length, in nights.">
-					<input class="input" type="number" min="1" required bind:value={minNights} />
+					<input class="input" type="number" bind:value={minNights} />
 				</Field>
 				<Field required label="Maximum nights" hint="Longest trip length, in nights.">
-					<input
-						class="input"
-						type="number"
-						min={(minNights || 0) + 1}
-						max={(maxDaysAhead || LIMITS.maxDaysAhead) - (minDaysAhead || 0)}
-						required
-						bind:value={maxNights}
-					/>
+					<input class="input" type="number" bind:value={maxNights} />
 				</Field>
 				<Field required label="Search from (days ahead)" hint="Search starts this many days from now.">
-					<input
-						class="input"
-						type="number"
-						min="1"
-						max={LIMITS.maxDaysAhead}
-						required
-						bind:value={minDaysAhead}
-					/>
+					<input class="input" type="number" bind:value={minDaysAhead} />
 				</Field>
 				<Field required label="Search to (days ahead)" hint="Search ends this many days from now.">
-					<input
-						class="input"
-						type="number"
-						min={(minDaysAhead || 0) + 1}
-						max={LIMITS.maxDaysAhead}
-						required
-						bind:value={maxDaysAhead}
-					/>
+					<input class="input" type="number" bind:value={maxDaysAhead} />
 				</Field>
 				<Field required label="Cadence" hint="How often your deal email arrives.">
 					<SelectMenu items={cadenceItems} bind:value={cadence} />
@@ -250,7 +222,7 @@
 					label="Discoveries per email"
 					hint="Surprise destinations mixed in alongside your favorites."
 				>
-					<input class="input" type="number" min="0" max={LIMITS.gemCountMax} required bind:value={gemCount} />
+					<input class="input" type="number" bind:value={gemCount} />
 				</Field>
 				<Field
 					label="Favorite destinations"
@@ -271,7 +243,7 @@
 				</Field>
 			</div>
 		</details>
-		<button class="btn" type="submit" disabled={submitting || !canSubmit}>
+		<button class="btn" type="submit" disabled={submitting}>
 			{updating ? 'Update Preferences' : 'Join Air Nomad Society'}
 		</button>
 	</form>
