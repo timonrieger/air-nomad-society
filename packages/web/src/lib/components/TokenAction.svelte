@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import { onMount, untrack } from 'svelte';
-	import { fetchUnsubscribeTarget, tokenAction, tokenFromUrl } from '$lib/api';
+	import { fetchUnsubscribeTarget, tokenAction, tokenFromUrl, UNREACHABLE } from '$lib/api';
 	import Loader from '$lib/components/Loader.svelte';
 
 	let {
@@ -21,7 +21,7 @@
 		confirm?: Snippet<[string, () => void]>;
 	} = $props();
 
-	type Status = 'looking-up' | 'idle' | 'pending' | 'ok' | 'failed';
+	type Status = 'looking-up' | 'idle' | 'pending' | 'ok' | 'failed' | 'errored';
 
 	// untrack: which snippets a page passes is fixed, so the initial value
 	// is the whole story — reading it reactively would mean nothing.
@@ -32,7 +32,11 @@
 
 	async function run() {
 		status = 'pending';
-		const result = await tokenAction(endpoint, token);
+		const result = await tokenAction(endpoint, token).catch(() => null);
+		if (!result) {
+			status = 'errored';
+			return;
+		}
 		status = result.ok ? 'ok' : 'failed';
 		messages = result.messages;
 	}
@@ -48,7 +52,11 @@
 		if (!confirm) return run();
 		// Resolving the address first both names it in the prompt and rules
 		// out a dead link before anyone is asked to confirm anything.
-		const target = await fetchUnsubscribeTarget(token);
+		const target = await fetchUnsubscribeTarget(token).catch(() => undefined);
+		if (target === undefined) {
+			status = 'errored';
+			return;
+		}
 		if (target === null) {
 			status = 'failed';
 			messages = ['This link is invalid or the subscription no longer exists.'];
@@ -65,6 +73,8 @@
 	{@render confirm!(email, run)}
 {:else if status === 'pending'}
 	<Loader label={pending} />
+{:else if status === 'errored'}
+	<div class="banner banner-error">{UNREACHABLE}</div>
 {:else}
 	{#each messages as message (message)}
 		<div class="banner {status === 'ok' ? 'banner-success' : 'banner-error'}">{message}</div>
