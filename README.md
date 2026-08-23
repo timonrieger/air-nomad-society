@@ -1,6 +1,6 @@
 # Air Nomad Society
 
-Air Nomad Society is a platform that allows you to get the best flight deals directly in your inbox, fully automated, just one email per week.
+Air Nomad Society is a platform that allows you to get the best flight deals in your inbox, ranked by quality, explained by AI.
 
 ## Development
 
