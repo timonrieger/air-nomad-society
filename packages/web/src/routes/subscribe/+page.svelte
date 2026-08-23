@@ -151,6 +151,11 @@
 <h1 class="page-title">
 	{token ? 'Update your preferences' : 'Become an Air Nomad'}
 </h1>
+<p class="mt-2 max-w-2xl text-ink-muted">
+	{token
+		? 'Adjust anything below and save. Your next digest follows the new preferences.'
+		: 'Fill in the form below to get personalized flight deals in your inbox. A greeting name, your email, where you fly from and how prices are shown is all we need, everything else can be changed later.'}
+</p>
 
 {#if resolving}
 	<Loader label="Loading your preferences…" />
