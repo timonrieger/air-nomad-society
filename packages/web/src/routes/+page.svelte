@@ -126,7 +126,7 @@
 	></div>
 	<h1 class="mb-3 text-5xl font-bold">Air Nomad Society</h1>
 	<p class="mx-auto mb-8 max-w-xl text-lg text-ink-muted">
-		Flight deals picked for you, each with a line on why it won.
+		Get the best flight deals in your inbox, ranked by quality, explained by AI.
 	</p>
 	<div class="flex items-center justify-center gap-6">
 		<a class="btn" href="/subscribe">Subscribe For Free</a>
