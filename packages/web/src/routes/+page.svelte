@@ -22,9 +22,9 @@
 
 	// Counts mirror packages/app/src/data.json — the reference data the search runs on.
 	const stats: Stat[] = [
-		{ value: '450+', label: 'departure cities' },
+		{ value: '500+', label: 'departure cities' },
 		{ value: '197', label: 'destination countries' },
-		{ value: '2 min', label: 'to set up, no account' }
+		{ value: '2 min', label: 'to set up' }
 	];
 
 	const steps: Step[] = [
@@ -67,7 +67,7 @@
 		},
 		{
 			q: 'Where can I fly from?',
-			a: 'Deals depart from the cities you pick — more than 450 departure cities worldwide are supported. Start typing yours in the subscribe form to check.'
+			a: 'Deals depart from the cities you pick — more than 500 departure cities worldwide are supported. Start typing yours in the subscribe form to check.'
 		},
 		{
 			q: 'How do I book a deal?',
@@ -126,7 +126,7 @@
 	></div>
 	<h1 class="mb-3 text-5xl font-bold">Air Nomad Society</h1>
 	<p class="mx-auto mb-8 max-w-xl text-lg text-ink-muted">
-		Get the best flight deals directly in your inbox, fully automated, at the pace you choose.
+		Get the best flight deals in your inbox, ranked by quality, explained by AI.
 	</p>
 	<div class="flex items-center justify-center gap-6">
 		<a class="btn" href="/subscribe">Subscribe For Free</a>
@@ -137,7 +137,7 @@
 		>
 	</div>
 	<p class="mt-5 text-sm text-ink-muted">
-		Free · 450+ departure cities worldwide · unsubscribe anytime
+		Free · no account · unsubscribe anytime
 	</p>
 	<dl class="mx-auto mt-14 grid max-w-lg grid-cols-3 gap-6">
 		{#each stats as stat (stat.label)}
@@ -261,6 +261,6 @@
 		<a class="btn" href="/subscribe">Subscribe For Free</a>
 	</p>
 	<p class="mt-5 text-sm text-ink-muted">
-		No account · no spam · unsubscribe anytime
+		Every fare checked against its usual price
 	</p>
 </section>
