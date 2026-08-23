@@ -83,7 +83,7 @@ def confirm(token: str, session: SessionDep) -> dict[str, str]:
     if member.confirmed_at is None:
         member.confirmed_at = datetime.now()
         session.commit()
-    return {"detail": f"Subscription confirmed for {member.email}. Happy travels!"}
+    return {"detail": f"Subscription confirmed for {member.email}."}
 
 
 @router.get("/subscription")
