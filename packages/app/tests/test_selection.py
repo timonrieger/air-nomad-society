@@ -107,6 +107,14 @@ def test_waiver_clears_the_city_penalty_too() -> None:
     assert freshness_multiplier(deal(price=127), "discovery", history, 150.0) == 1.0
 
 
+def test_waiver_compares_in_euros_for_non_eur_subscribers() -> None:
+    # 1400 SEK is meaningless against the 150-EUR baseline; its EUR
+    # conversion (127, ≥15% under) is what earns the waiver.
+    history = SentHistory(recent_countries={"Finland"})
+    cheap_in_sek = deal(price=1400, currency="SEK", price_eur=127)
+    assert freshness_multiplier(cheap_in_sek, "discovery", history, 150.0) == 1.0
+
+
 def test_waiver_holds_at_exactly_15_percent_despite_float_rounding() -> None:
     history = SentHistory(recent_countries={"Finland"})
     # 0.85 × 18.00 is 15.299999… in doubles; 15.30 must still be waived.

@@ -65,6 +65,8 @@ def deal(**overrides) -> FlightDeal:
         "link": "https://kiwi.com/deep",
     }
     fields.update(overrides)
+    # EUR-centric default: the rate stays 1 unless a test sets price_eur.
+    fields.setdefault("price_eur", fields["price"])
     return FlightDeal(**fields)
 
 

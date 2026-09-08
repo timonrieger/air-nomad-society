@@ -97,6 +97,7 @@ class TequilaProvider:
         return FlightDeal(
             price=data["price"],
             currency=currency,
+            price_eur=data["conversion"]["EUR"],
             departure_city=data["cityFrom"],
             departure_iata=data["flyFrom"],
             arrival_city=data["cityTo"],

@@ -51,17 +51,17 @@ def freshness_multiplier(
     deal: FlightDeal,
     source: DealSource,
     history: SentHistory,
-    typical_price: float | None,
+    typical_eur: float | None,
 ) -> float:
     """Score inflation for repetition.
 
     A fare clearly below the route's typical price (≥15% under the
-    baseline) repeats with no penalty at all — a genuine deal is worth
-    resending."""
+    EUR-denominated baseline) repeats with no penalty at all — a genuine
+    deal is worth resending."""
     if deal.arrival_country not in history.recent_countries:
         return 1.0
-    if typical_price is not None and deal.price <= round(
-        CLEARLY_BETTER_FRACTION * typical_price, 2
+    if typical_eur is not None and deal.price_eur <= round(
+        CLEARLY_BETTER_FRACTION * typical_eur, 2
     ):
         return 1.0
     # excempt favorites to avoid permanent handicap

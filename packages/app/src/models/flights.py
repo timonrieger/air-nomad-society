@@ -1,7 +1,8 @@
 from datetime import datetime, date
+from functools import cached_property
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, computed_field
 
 DealSource = Literal["favorite", "discovery"]
 
@@ -23,6 +24,10 @@ class FlightDeal(BaseModel):
 
     price: float = Field(description="Total round-trip price in `currency`")
     currency: str = Field(description="ISO 4217 currency code of the price")
+    price_eur: float = Field(
+        description="Total round-trip price converted to EUR, as reported "
+        "by the provider"
+    )
     departure_city: str = Field(description="Name of the departure city")
     departure_iata: str = Field(description="IATA code of the departure city")
     arrival_city: str = Field(description="Name of the destination city")
@@ -40,6 +45,12 @@ class FlightDeal(BaseModel):
         description="Stopover cities on the return leg; empty means direct",
     )
     link: str = Field(description="Deep link to book this itinerary")
+
+    @computed_field  # type: ignore[prop-decorator]
+    @cached_property
+    def exchange_rate(self) -> float:
+        """Native units per euro, from the provider's own conversion."""
+        return self.price / self.price_eur
 
     @property
     def stopovers(self) -> int:

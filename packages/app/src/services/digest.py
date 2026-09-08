@@ -35,8 +35,8 @@ RUNNER_UP_COUNT = 2
 # multiplier on the run's provider budget (#63).
 DISCOVERIES_PER_DIGEST = 3
 
-# Typical price per (origin, arrival) route — history.route_baselines bound
-# to the subscriber's currency and the run boundary by the caller.
+# Typical EUR price per (origin, arrival) route — history.route_baselines
+# bound to the run boundary by the caller.
 BaselineLookup = Callable[[set[tuple[str, str]]], dict[tuple[str, str], float]]
 
 
@@ -44,13 +44,14 @@ class DigestResult(BaseModel):
     """Deals across all searched countries, best score first."""
 
     deals: list[RankedDeal]
-    # Typical price per searched route: selection consulted these for the
-    # repeat waiver, and rendering reuses them for the anchor line.
+    # EUR-denominated typical price per searched route: selection consulted
+    # these for the repeat waiver, and rendering reuses them for the anchor.
     baselines: dict[tuple[str, str], float]
 
     def baseline_for(self, ranked: RankedDeal) -> float | None:
-        """The typical price of the route this pick was searched on."""
-        return self.baselines.get((ranked.origin_iata, ranked.deal.arrival_iata))
+        """The typical price of this pick's route, in the deal's own currency."""
+        eur = self.baselines.get((ranked.origin_iata, ranked.deal.arrival_iata))
+        return eur * ranked.deal.exchange_rate if eur is not None else None
 
 
 def build_digest(

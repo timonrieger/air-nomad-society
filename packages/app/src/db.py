@@ -68,6 +68,7 @@ class PriceObservation(Base):
     arrival_country: Mapped[str] = mapped_column(String)
     price: Mapped[float] = mapped_column(Float)
     currency: Mapped[str] = mapped_column(String)
+    price_eur: Mapped[float] = mapped_column(Float)
     departs_at: Mapped[datetime] = mapped_column(DateTime)
     returns_at: Mapped[datetime] = mapped_column(DateTime)
     duration_minutes: Mapped[int] = mapped_column(Integer)
@@ -97,6 +98,7 @@ class SentDeal(Base):
     arrival_country: Mapped[str] = mapped_column(String)
     price: Mapped[float] = mapped_column(Float)
     currency: Mapped[str] = mapped_column(String)
+    price_eur: Mapped[float] = mapped_column(Float)
     # Booking deep link from whichever provider found the fare
     link: Mapped[str] = mapped_column(String, server_default="")
     source: Mapped[str] = mapped_column(String)

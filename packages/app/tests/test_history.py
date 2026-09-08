@@ -30,7 +30,7 @@ def spread(prices: tuple[float, ...], **overrides) -> list[PriceObservation]:
 def baselines(
     routes: set[tuple[str, str]] | None = None,
 ) -> dict[tuple[str, str], float]:
-    return route_baselines(routes or {("FRA", "HEL")}, "EUR", before=RUN_STARTED)
+    return route_baselines(routes or {("FRA", "HEL")}, before=RUN_STARTED)
 
 
 def test_median_over_window(sqlite_db) -> None:
@@ -58,13 +58,33 @@ def test_multi_origin_routes_do_not_cross_pollinate(sqlite_db) -> None:
     }
 
 
-def test_only_matching_route_and_currency_count(sqlite_db) -> None:
+def test_only_matching_routes_count(sqlite_db) -> None:
     insert_rows(
         spread((100, 200, 300, 400))
-        + spread((999, 999, 999, 999), currency="USD")
         + spread((999, 999, 999, 999), origin_iata="BER")
         + spread((999, 999, 999, 999), arrival_iata="TKU")
     )
+    assert baselines() == {("FRA", "HEL"): 250.0}
+
+
+def test_baselines_pool_eur_values_across_currencies(sqlite_db) -> None:
+    # Two days observed in EUR, two in USD: the shared pool anchors on the
+    # provider's EUR conversions, so all four days count toward the median.
+    usd_days = [
+        observation(
+            price=330,
+            currency="USD",
+            price_eur=300,
+            observed_at=datetime(2026, 8, 10, 6, 0),
+        ),
+        observation(
+            price=440,
+            currency="USD",
+            price_eur=400,
+            observed_at=datetime(2026, 8, 11, 6, 0),
+        ),
+    ]
+    insert_rows(spread((100, 200)) + usd_days)
     assert baselines() == {("FRA", "HEL"): 250.0}
 
 

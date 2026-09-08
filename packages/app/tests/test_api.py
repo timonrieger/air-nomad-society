@@ -147,11 +147,21 @@ def test_deals_wall_is_public_display_ready_and_cached(sqlite_db) -> None:
             sent(price=129.99, savings_percent=58, usual_price=310),
             # The same deal to a second subscriber collapses into one card.
             sent(subscriber_id=2, price=129.99, savings_percent=58, usual_price=310),
-            # No baseline at send time: a card without savings or usual price.
+            # No proven savings: cheap alone sells nothing, never shown.
             sent(price=80.5, arrival_iata="TKU", arrival_city="Turku"),
+            # Savings below the badge tier: not a wall-worthy discount.
+            sent(
+                price=90,
+                savings_percent=10,
+                usual_price=100,
+                arrival_iata="VAA",
+                arrival_city="Vaasa",
+            ),
             # Outside the four-week window: never shown.
             sent(
                 price=50,
+                savings_percent=58,
+                usual_price=120,
                 arrival_iata="OLD",
                 sent_at=datetime.now() - timedelta(weeks=5),
             ),
@@ -162,10 +172,8 @@ def test_deals_wall_is_public_display_ready_and_cached(sqlite_db) -> None:
     with TestClient(app) as anonymous_client:
         response = anonymous_client.get("/deals")
         body = response.json()
-        # Best savings first; the prices are the integers the email printed.
         assert [(d["destination"], d["price"], d["usual_price"]) for d in body] == [
             ("Helsinki", 129, 310),
-            ("Turku", 80, None),
         ]
         assert body[0]["badge"] == "🔥 exceptional price"
         assert body[0]["departure_city"] == "Frankfurt"
@@ -173,6 +181,59 @@ def test_deals_wall_is_public_display_ready_and_cached(sqlite_db) -> None:
         assert "subscriber_id" not in body[0]
         assert body[0]["image_url"].startswith("https://images.unsplash.com/")
         assert "max-age" in response.headers["Cache-Control"]
+
+
+def test_deals_wall_shows_one_card_per_destination(sqlite_db) -> None:
+    # Two routes reach Helsinki; only the better EUR-quality fare gets a
+    # card, even though the beaten one boasts the deeper discount.
+    insert_rows(
+        [
+            sent(price=180, savings_percent=42, usual_price=310),
+            sent(
+                price=120,
+                savings_percent=25,
+                usual_price=160,
+                departure_iata="MUC",
+                departure_city="Munich",
+            ),
+        ]
+    )
+    get_engine().dispose()
+    with TestClient(app) as anonymous_client:
+        body = anonymous_client.get("/deals").json()
+        assert [(d["departure_city"], d["price"]) for d in body] == [("Munich", 120)]
+
+
+def test_deals_wall_normalizes_to_euros(sqlite_db) -> None:
+    # A USD send renders in euros, its usual price converted at its own rate,
+    # and collapses with the same itinerary emailed in euros.
+    insert_rows(
+        [
+            sent(
+                price=165,
+                currency="USD",
+                price_eur=150,
+                savings_percent=40,
+                usual_price=275,
+                arrival_iata="TMP",
+                arrival_city="Tampere",
+            ),
+            sent(
+                price=150.4,
+                savings_percent=40,
+                usual_price=250,
+                arrival_iata="TMP",
+                arrival_city="Tampere",
+            ),
+        ]
+    )
+    get_engine().dispose()
+    with TestClient(app) as anonymous_client:
+        body = anonymous_client.get("/deals").json()
+        assert [
+            (d["destination"], d["price"], d["currency"], d["usual_price"])
+            for d in body
+        ] == [("Tampere", 150, "EUR", 250)]
 
 
 def test_subscribe_without_favorites_is_a_pure_discovery_profile(client) -> None:

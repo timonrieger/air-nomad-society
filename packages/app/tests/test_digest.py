@@ -125,6 +125,18 @@ def test_clearly_below_typical_repeats_without_penalty() -> None:
     assert result.baselines == typical
 
 
+def test_baseline_for_converts_to_the_deal_currency() -> None:
+    # Baselines are stored in EUR; baseline_for hands consumers (email
+    # anchor, AI reasons, sent-deal history) the native equivalent.
+    in_sek = deal(price=1430, currency="SEK", price_eur=130)
+    provider = FakeProvider({("FRA", "FI"): [in_sek]})
+    typical = {("FRA", "HEL"): 150.0}
+    result = digest(SUBSCRIBER, provider, baselines=typical)
+    finland = [r for r in result.deals if r.deal.arrival_country == "Finland"]
+    assert result.baselines == typical
+    assert result.baseline_for(finland[0]) == 1650.0  # 150 EUR × rate 11
+
+
 def test_baselines_fetched_for_waiver_candidates() -> None:
     # Finland is recently sent, so every Finland candidate route is
     # waiver-eligible; they already cover the winner — exactly one fetch.

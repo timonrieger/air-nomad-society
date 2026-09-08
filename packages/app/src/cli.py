@@ -54,7 +54,7 @@ def run_digest(provider: FlightProvider) -> int:
                 data.countries,
                 history=sent_history(subscriber.id),
                 baselines_for=lambda routes: route_baselines(
-                    routes, subscriber.currency, before=recording.started_at
+                    routes, before=recording.started_at
                 ),
             )
             recording.flush()

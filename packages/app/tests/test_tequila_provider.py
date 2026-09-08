@@ -18,11 +18,16 @@ QUERY = SearchQuery(
 
 
 def itinerary(
-    itinerary_id: str, route: list[dict[str, Any]], price: float = 129.99
+    itinerary_id: str,
+    route: list[dict[str, Any]],
+    price: float = 129.99,
+    price_eur: float | None = None,
 ) -> dict[str, Any]:
     return {
         "id": itinerary_id,
         "price": price,
+        # Tequila always converts to EUR, Kiwi's base currency.
+        "conversion": {"EUR": price_eur if price_eur is not None else price},
         "cityFrom": "Frankfurt",
         "flyFrom": "FRA",
         "cityTo": "Helsinki",
@@ -76,6 +81,7 @@ def test_direct_flight_maps_fields_timezone_fixed(monkeypatch) -> None:
     assert len(deals) == 1
     deal = deals[0]
     assert deal.price == 149.99
+    assert deal.price_eur == 149.99
     assert deal.arrival_country == "Finland"
     # Wall times survive regardless of the host timezone.
     assert deal.departs_at == datetime(2026, 9, 3, 10, 0)
