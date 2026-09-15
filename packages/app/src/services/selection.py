@@ -41,13 +41,18 @@ def price_low_since(
     the send time, so a claim never anchors on its own run). A fare merely
     matching an old price breaks the streak there — a flat fare never claims
     a low. A fare under everything claims the full data span, so a claim can
-    never overstate the history backing it."""
+    never overstate the history backing it. Streaks shorter than the lowest
+    badge tier, or backed by fewer than MIN_OBSERVATION_DAYS distinct days,
+    are no claim at all."""
     past = [(at, price) for at, price in observations if at < before]
     if len({at.date() for at, _ in past}) < MIN_OBSERVATION_DAYS:
         return None
-    as_cheap = [at for at, price in past if price <= fare_eur]
-    since = max(as_cheap) if as_cheap else min(at for at, _ in past)
-    return LowClaim(since=since, weeks=(before - since).days // 7)
+    since = max(
+        (at for at, price in past if price <= fare_eur),
+        default=min(at for at, _ in past),
+    )
+    weeks = (before - since).days // 7
+    return LowClaim(since=since, weeks=weeks) if weeks >= LOW_TIERS[-1][0] else None
 
 
 def low_badge(weeks: int) -> str | None:

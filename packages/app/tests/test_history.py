@@ -9,7 +9,8 @@ from src.services.history import (
     route_observations,
     sent_history,
 )
-from tests.conftest import observation, sent
+from src.services.selection import Observation
+from tests.conftest import observation, observation_series, price_series, sent
 
 RUN_STARTED = datetime(2026, 9, 1, 6, 0)
 FIRST_DAY = datetime(2026, 8, 1, 6, 0)
@@ -18,27 +19,18 @@ NOW = _utcnow()
 
 def spread(prices: tuple[float, ...], **overrides) -> list[PriceObservation]:
     """One observation per price, each on its own day inside the window."""
-    return [
-        observation(
-            price=price,
-            observed_at=FIRST_DAY + timedelta(days=index),
-            **overrides,
-        )
-        for index, price in enumerate(prices)
-    ]
+    return observation_series(*prices, start=FIRST_DAY, **overrides)
 
 
 def observed(
     routes: set[tuple[str, str]] | None = None,
-) -> dict[tuple[str, str], list[tuple[datetime, float]]]:
+) -> dict[tuple[str, str], list[Observation]]:
     return route_observations(routes or {("FRA", "HEL")}, before=RUN_STARTED)
 
 
-def pairs(prices: tuple[float, ...]) -> list[tuple[datetime, float]]:
-    """The (observed_at, price_eur) pairs spread() produces."""
-    return [
-        (FIRST_DAY + timedelta(days=index), price) for index, price in enumerate(prices)
-    ]
+def pairs(prices: tuple[float, ...]) -> list[Observation]:
+    """The (observed_at, price_eur) pairs spread() inserts."""
+    return price_series(*prices, start=FIRST_DAY)
 
 
 def test_window_observations_returned_per_route(sqlite_db) -> None:

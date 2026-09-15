@@ -1,18 +1,17 @@
 """Append-only deal history: every candidate seen and every deal emailed.
 
-Written silently from the digest job; read back for the price anchor and
+Written silently from the digest job; read back for lowest-price claims and
 freshness features. No aggregation at write time."""
 
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 from uuid import uuid4
 
-from sqlalchemy import func, select
+from sqlalchemy import func, select, tuple_
 
 from src.db import PriceObservation, SentDeal, insert_rows, session_scope
-from src.models.flights import FlightDeal, SearchQuery
+from src.models.flights import FlightDeal, RankedDeal, SearchQuery
 from src.models.history import SentHistory
-from src.services.digest import DigestResult
 from src.services.providers import FlightProvider
 from src.services.selection import Observation, deal_score
 
@@ -54,7 +53,7 @@ class RecordingProvider:
 
     started_at marks the run boundary: every observation this instance writes
     is stamped at or after it by the same clock (not the DB server default,
-    whose clock can sit behind), so route_baselines(before=started_at) sees
+    whose clock can sit behind), so route_observations(before=started_at) sees
     exactly the earlier runs."""
 
     def __init__(self, inner: FlightProvider) -> None:
@@ -101,8 +100,7 @@ def route_observations(
         PriceObservation.observed_at,
         PriceObservation.price_eur,
     ).where(
-        PriceObservation.origin_iata.in_({origin for origin, _ in routes}),
-        PriceObservation.arrival_iata.in_({arrival for _, arrival in routes}),
+        tuple_(PriceObservation.origin_iata, PriceObservation.arrival_iata).in_(routes),
         PriceObservation.observed_at
         >= before - timedelta(weeks=OBSERVATION_WINDOW_WEEKS),
         PriceObservation.observed_at < before,
@@ -112,10 +110,7 @@ def route_observations(
         for origin_iata, arrival_iata, observed_at, price_eur in session.execute(
             statement
         ):
-            route = (origin_iata, arrival_iata)
-            # The two IN filters over-select pair combinations; keep exact routes.
-            if route in routes:
-                observations[route].append((observed_at, price_eur))
+            observations[(origin_iata, arrival_iata)].append((observed_at, price_eur))
     return dict(observations)
 
 
@@ -148,7 +143,7 @@ def sent_history(subscriber_id: int) -> SentHistory:
     return history
 
 
-def record_sent_deals(subscriber_id: int, digest: DigestResult) -> None:
+def record_sent_deals(subscriber_id: int, deals: list[RankedDeal]) -> None:
     rows = [
         SentDeal(
             subscriber_id=subscriber_id,
@@ -160,6 +155,6 @@ def record_sent_deals(subscriber_id: int, digest: DigestResult) -> None:
             reason=ranked.reason,
             **ranked.deal.model_dump(include=SENT_FIELDS),
         )
-        for ranked in digest.deals
+        for ranked in deals
     ]
     insert_rows(rows)

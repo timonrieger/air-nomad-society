@@ -1,5 +1,5 @@
 import random
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from src.models.flights import LowClaim
 from src.models.history import SentHistory
@@ -11,7 +11,7 @@ from src.services.selection import (
     price_low_since,
     select_gems,
 )
-from tests.conftest import deal
+from tests.conftest import deal, price_series
 
 DESTINATIONS = [
     Country(country="Finland", code="FI", region="Europe"),
@@ -128,42 +128,44 @@ def test_recent_city_penalty_stacks_on_country() -> None:
 
 
 BEFORE = datetime(2026, 9, 1)
-
-
-def spread_obs(*prices: float, start: datetime = datetime(2026, 6, 1)):
-    """One observation per price, on consecutive days."""
-    return [
-        (start + timedelta(days=index), price) for index, price in enumerate(prices)
-    ]
+JUNE = datetime(2026, 6, 1)
 
 
 def test_low_since_needs_enough_distinct_days() -> None:
-    assert price_low_since(spread_obs(200, 300, 400), 100, BEFORE) is None
+    assert price_low_since(price_series(200, 300, 400, start=JUNE), 100, BEFORE) is None
     # Four prices on one day are a snapshot, not history.
     same_day = [(datetime(2026, 6, 1, hour), 200.0) for hour in (6, 9, 12, 15)]
     assert price_low_since(same_day, 100, BEFORE) is None
 
 
 def test_matching_an_old_price_breaks_the_streak() -> None:
-    observations = spread_obs(200, 150, 130, 180)
+    observations = price_series(200, 150, 130, 180, start=JUNE)
     claim = price_low_since(observations, 130, BEFORE)
     # The equal fare on Jun 3 ends the streak there: flat fares claim little.
     assert claim == LowClaim(since=datetime(2026, 6, 3), weeks=12)
 
 
 def test_undercutting_everything_claims_the_full_data_span() -> None:
-    claim = price_low_since(spread_obs(200, 150, 130, 180), 129.99, BEFORE)
-    assert claim == LowClaim(since=datetime(2026, 6, 1), weeks=13)
+    claim = price_low_since(
+        price_series(200, 150, 130, 180, start=JUNE), 129.99, BEFORE
+    )
+    assert claim == LowClaim(since=JUNE, weeks=13)
+
+
+def test_streaks_below_the_lowest_tier_are_no_claim() -> None:
+    # An equal price nine days ago caps the streak at one week: not a claim.
+    recent = price_series(200, 150, 130, 100, start=datetime(2026, 8, 20))
+    assert price_low_since(recent, 100, BEFORE) is None
 
 
 def test_observations_at_or_after_before_are_ignored() -> None:
     # The run's own morning and anything later never anchor a claim.
-    observations = spread_obs(200, 210, 220, 230) + [
+    observations = price_series(200, 210, 220, 230, start=JUNE) + [
         (BEFORE, 50.0),
         (datetime(2026, 9, 2), 50.0),
     ]
     claim = price_low_since(observations, 100, BEFORE)
-    assert claim == LowClaim(since=datetime(2026, 6, 1), weeks=13)
+    assert claim == LowClaim(since=JUNE, weeks=13)
 
 
 def test_low_badges_by_streak_length() -> None:

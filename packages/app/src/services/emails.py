@@ -10,7 +10,6 @@ from jinja2 import Environment, FileSystemLoader
 from src.config import Settings
 from src.models.flights import RankedDeal
 from src.services import mailer
-from src.services.digest import DigestResult
 from src.services.refdata import country_images
 from src.services.selection import low_badge
 from src.services.tokens import issue_token
@@ -57,13 +56,13 @@ def render_digest(
     username: str,
     update_token: str,
     unsubscribe_token: str,
-    digest: DigestResult,
+    deals: list[RankedDeal],
     images: dict[str, list[str]],
     base_url: str,
     rng: random.Random | None = None,
 ) -> str:
     # An empty digest is never sent
-    assert digest.deals
+    assert deals
     picker = rng or random.Random()  # nosec B311 # picks photos, not secrets
     return _env.get_template("digest.html.j2").render(
         t=TOKENS,
@@ -71,7 +70,7 @@ def render_digest(
         site_url=base_url,
         update_url=f"{base_url}/subscribe?token={update_token}",
         unsubscribe_url=f"{base_url}/unsubscribe?token={unsubscribe_token}",
-        flights=[_present(ranked, images, picker) for ranked in digest.deals],
+        flights=[_present(ranked, images, picker) for ranked in deals],
     )
 
 

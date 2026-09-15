@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pytest
 
@@ -107,3 +107,23 @@ def observation(
         observed_at=observed_at,
         **deal(**deal_overrides).model_dump(include=OBSERVED_FIELDS),
     )
+
+
+def price_series(
+    *prices: float, start: datetime, step: timedelta = timedelta(days=1)
+) -> list[tuple[datetime, float]]:
+    """(observed_at, price_eur) pairs, one per price, `step` apart."""
+    return [(start + step * index, price) for index, price in enumerate(prices)]
+
+
+def observation_series(
+    *prices: float,
+    start: datetime,
+    step: timedelta = timedelta(days=1),
+    **overrides,
+) -> list[PriceObservation]:
+    """PriceObservation rows matching price_series(...)."""
+    return [
+        observation(price=price, observed_at=at, **overrides)
+        for at, price in price_series(*prices, start=start, step=step)
+    ]

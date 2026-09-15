@@ -108,6 +108,12 @@ class SentDeal(Base):
     reason: Mapped[str | None] = mapped_column(String, nullable=True)
     sent_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 
+    @property
+    def route(self) -> tuple[str, str]:
+        """The searched (origin, arrival) pair; origin_iata is NULL on rows
+        from before the column existed."""
+        return (self.origin_iata or self.departure_iata, self.arrival_iata)
+
 
 @lru_cache
 def get_engine() -> Engine:

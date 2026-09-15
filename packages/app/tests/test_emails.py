@@ -4,7 +4,6 @@ from datetime import datetime
 from markupsafe import escape
 
 from src.models.flights import DealSource, FlightDeal, LowClaim, RankedDeal
-from src.services.digest import DigestResult
 from src.services.emails import render_digest
 from src.services.refdata import FALLBACK_IMAGE
 from tests.conftest import deal
@@ -37,7 +36,7 @@ def render(deals: list[RankedDeal], username: str = "Timon") -> str:
         username=username,
         update_token="upd123",
         unsubscribe_token="unsub123",
-        digest=DigestResult(deals=deals),
+        deals=deals,
         images=IMAGES,
         base_url="https://example.test",
         rng=random.Random(1),

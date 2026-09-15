@@ -11,7 +11,7 @@ from src.db import AirNomads, Base, get_engine, get_session, insert_rows
 from src.main import app
 from src.services import mailer
 from src.services.tokens import issue_token
-from tests.conftest import observation, sent
+from tests.conftest import observation, observation_series, sent
 
 PAYLOAD = {
     "username": "Timon",
@@ -141,25 +141,20 @@ def test_unsubscribe_deletes(client) -> None:
     assert client.post(f"/unsubscribe?token={token}").status_code == 404
 
 
-def weekly_observations(prices, start, **overrides):
-    """One observation per price, a week apart from `start`."""
-    return [
-        observation(
-            price=price, observed_at=start + timedelta(weeks=index), **overrides
-        )
-        for index, price in enumerate(prices)
-    ]
-
-
 def test_deals_wall_is_public_display_ready_and_cached(sqlite_db) -> None:
     ten_weeks_ago = datetime.now() - timedelta(weeks=10)
     insert_rows(
         # Pricier history makes 129.99 the route's low since ten weeks back.
-        weekly_observations((300, 305, 315, 320), start=ten_weeks_ago)
+        observation_series(
+            300, 305, 315, 320, start=ten_weeks_ago, step=timedelta(weeks=1)
+        )
         # Vaasa dipped lower two weeks ago: a streak too short to sell.
-        + weekly_observations(
-            (100, 120, 85),
+        + observation_series(
+            100,
+            120,
+            85,
             start=datetime.now() - timedelta(weeks=9),
+            step=timedelta(weeks=1),
             arrival_iata="VAA",
         )
         + [
@@ -204,9 +199,13 @@ def test_deals_wall_is_public_display_ready_and_cached(sqlite_db) -> None:
 def test_deals_wall_shows_one_card_per_destination(sqlite_db) -> None:
     # Two routes reach Helsinki; only the better EUR-quality fare gets a card.
     insert_rows(
-        weekly_observations(
-            (200, 210, 220, 230),
+        observation_series(
+            200,
+            210,
+            220,
+            230,
             start=datetime.now() - timedelta(weeks=10),
+            step=timedelta(weeks=1),
             origin_iata="MUC",
         )
         + [
@@ -224,9 +223,13 @@ def test_deals_wall_normalizes_to_euros(sqlite_db) -> None:
     # A USD send renders in euros, claims against the shared EUR history,
     # and collapses with the same itinerary emailed in euros.
     insert_rows(
-        weekly_observations(
-            (300, 310, 320, 330),
+        observation_series(
+            300,
+            310,
+            320,
+            330,
             start=datetime.now() - timedelta(weeks=10),
+            step=timedelta(weeks=1),
             arrival_iata="TMP",
         )
         + [

@@ -7,10 +7,8 @@ import random
 from collections.abc import Callable
 from datetime import date, datetime, time, timedelta
 
-from pydantic import BaseModel
-
 from src.models.subscriber import Subscriber
-from src.models.flights import DealSource, FlightDeal, RankedDeal, SearchQuery
+from src.models.flights import DealSource, FlightDeal, LowClaim, RankedDeal, SearchQuery
 from src.models.history import SentHistory
 from src.services.providers import FlightProvider
 from src.services.refdata import Country
@@ -44,12 +42,6 @@ ObservationLookup = Callable[
 ]
 
 
-class DigestResult(BaseModel):
-    """Deals across all searched countries, best score first."""
-
-    deals: list[RankedDeal]
-
-
 def build_digest(
     subscriber: Subscriber,
     provider: FlightProvider,
@@ -58,7 +50,8 @@ def build_digest(
     observations_for: ObservationLookup,
     rng: random.Random | None = None,
     today: date | None = None,
-) -> DigestResult:
+) -> list[RankedDeal]:
+    """Deals across all searched countries, best score first."""
     start = today or date.today()
     run_start = datetime.combine(start, time.min)
     window_start = start + timedelta(days=subscriber.min_days_ahead)
@@ -81,33 +74,30 @@ def build_digest(
             and deal.arrival_iata not in subscriber.departure_airports
         ]
 
+    def claim(origin_iata: str, deal: FlightDeal) -> LowClaim | None:
+        return price_low_since(
+            observations.get((origin_iata, deal.arrival_iata), []),
+            deal.price_eur,
+            before=run_start,
+        )
+
+    def rank(source: DealSource, origin_iata: str, deal: FlightDeal) -> RankedDeal:
+        low = claim(origin_iata, deal)
+        return RankedDeal(
+            deal=deal,
+            source=source,
+            low=low,
+            score=deal_score(deal) * freshness_multiplier(deal, source, history, low),
+            origin_iata=origin_iata,
+        )
+
     def best_pick(
-        source: DealSource,
-        candidates: list[tuple[str, FlightDeal]],
-        observations: dict[tuple[str, str], list[Observation]],
+        source: DealSource, candidates: list[tuple[str, FlightDeal]]
     ) -> RankedDeal | None:
         """One country's best-scoring candidate across every departure
         airport, carrying its beaten runner-ups."""
         ranked = sorted(
-            (
-                RankedDeal(
-                    deal=deal,
-                    source=source,
-                    score=deal_score(deal)
-                    * freshness_multiplier(
-                        deal,
-                        source,
-                        history,
-                        price_low_since(
-                            observations.get((origin_iata, deal.arrival_iata), []),
-                            deal.price_eur,
-                            before=run_start,
-                        ),
-                    ),
-                    origin_iata=origin_iata,
-                )
-                for origin_iata, deal in candidates
-            ),
+            (rank(source, origin_iata, deal) for origin_iata, deal in candidates),
             key=lambda pick: pick.score,
         )
         if not ranked:
@@ -161,19 +151,14 @@ def build_digest(
     }
     observations = observations_for(eligible) if eligible else {}
     deals = [
-        pick
-        for source, candidates in found
-        if (pick := best_pick(source, candidates, observations))
+        pick for source, candidates in found if (pick := best_pick(source, candidates))
     ]
     deals.sort(key=lambda pick: pick.score)
     winner_routes = {(pick.origin_iata, pick.deal.arrival_iata) for pick in deals}
     if missing := winner_routes - eligible:
         observations |= observations_for(missing)
-    for pick in deals:
-        pick.low = price_low_since(
-            observations.get((pick.origin_iata, pick.deal.arrival_iata), []),
-            pick.deal.price_eur,
-            before=run_start,
-        )
+        for pick in deals:
+            if (pick.origin_iata, pick.deal.arrival_iata) in missing:
+                pick.low = claim(pick.origin_iata, pick.deal)
     logger.info("digest for %s: %d deals", subscriber.email, len(deals))
-    return DigestResult(deals=deals)
+    return deals

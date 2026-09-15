@@ -48,7 +48,7 @@ def run_digest(provider: FlightProvider) -> int:
             if last and last > recording.started_at - timedelta(days=gap):
                 logger.info("not due yet for %s, skipping", subscriber.email)
                 continue
-            result = build_digest(
+            deals = build_digest(
                 subscriber,
                 recording,
                 data.countries,
@@ -58,20 +58,20 @@ def run_digest(provider: FlightProvider) -> int:
                 ),
             )
             recording.flush()
-            if not result.deals:
+            if not deals:
                 logger.info("no deals for %s, skipping digest", subscriber.email)
                 continue
-            deal_reasons(subscriber, result, settings)
+            deal_reasons(subscriber, deals, settings)
             html = emails.render_digest(
                 username=subscriber.username,
                 update_token=issue_token(subscriber.id, "update"),
                 unsubscribe_token=issue_token(subscriber.id, "unsubscribe"),
-                digest=result,
+                deals=deals,
                 images=data.images,
                 base_url=settings.public_base_url,
             )
             mailer.send_email(html, subscriber.email, emails.DIGEST_SUBJECT, settings)
-            record_sent_deals(subscriber.id, result)
+            record_sent_deals(subscriber.id, deals)
             logger.info("sent digest to %s", subscriber.email)
         except Exception:
             failures += 1
