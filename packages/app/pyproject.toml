@@ -2,8 +2,7 @@
 name = "air-nomad-society"
 description = "Personalized flight deals delivered to your inbox."
 readme = "README.md"
-license = "MIT"
-license-files = ["LICENSE"]
+license = "FSL-1.1-MIT"
 requires-python = ">=3.14"
 authors = [{name = "Timon Rieger", email = "contact@timonrieger.de"}]
 version = "0.1.0"
