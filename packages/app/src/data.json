@@ -496,11 +496,6 @@
 			"region": "Africa"
 		},
 		{
-			"country": "Liechtenstein",
-			"code": "LI",
-			"region": "Europe"
-		},
-		{
 			"country": "Lithuania",
 			"code": "LT",
 			"region": "Europe"
@@ -749,11 +744,6 @@
 			"country": "Samoa",
 			"code": "WS",
 			"region": "Oceania"
-		},
-		{
-			"country": "San Marino",
-			"code": "SM",
-			"region": "Europe"
 		},
 		{
 			"country": "Sao Tome and Principe",
@@ -3728,11 +3718,6 @@
 			"https://images.unsplash.com/photo-1564517165906-7309a4d809e5?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxMaWJ5YXxlbnwwfDB8fHwxNzE0NjYxMDM0fDA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1589234809391-a22ea6a91239?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxMaWJ5YXxlbnwwfDB8fHwxNzE0NjYxMDM0fDA&ixlib=rb-4.0.3"
 		],
-		"Liechtenstein": [
-			"https://images.unsplash.com/photo-1512424113276-fa9f6a112384?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxMaWVjaHRlbnN0ZWlufGVufDB8MHx8fDE3MTQ2NjEwMzd8MA&ixlib=rb-4.0.3",
-			"https://images.unsplash.com/photo-1605453288713-e215a57e30ac?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxMaWVjaHRlbnN0ZWlufGVufDB8MHx8fDE3MTQ2NjEwMzd8MA&ixlib=rb-4.0.3",
-			"https://images.unsplash.com/photo-1587470397803-d6fa235014c5?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxMaWVjaHRlbnN0ZWlufGVufDB8MHx8fDE3MTQ2NjEwMzd8MA&ixlib=rb-4.0.3"
-		],
 		"Lithuania": [
 			"https://images.unsplash.com/photo-1561024828-e8a916e83d21?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxMaXRodWFuaWF8ZW58MHwwfHx8MTcxNDY2MTAzOXww&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1567023249914-7c83f04de30c?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxMaXRodWFuaWF8ZW58MHwwfHx8MTcxNDY2MTAzOXww&ixlib=rb-4.0.3",
@@ -3980,11 +3965,6 @@
 			"https://images.unsplash.com/photo-1533105045747-b9d71a0955f9?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxTYW1vYXxlbnwwfDB8fHwxNzE0NjY0ODQxfDA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1625224588813-cc8d5055493f?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxTYW1vYXxlbnwwfDB8fHwxNzE0NjY0ODQxfDA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1529977213785-feeaa9cda921?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxTYW1vYXxlbnwwfDB8fHwxNzE0NjY0ODQxfDA&ixlib=rb-4.0.3"
-		],
-		"San Marino": [
-			"https://images.unsplash.com/photo-1510513260777-51d462dbaec9?ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0",
-			"https://images.unsplash.com/photo-1633792006252-0247f57e94a9?ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0",
-			"https://images.unsplash.com/photo-1679112600374-0ac944dabba0?ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0"
 		],
 		"Sao Tome and Principe": [
 			"https://images.unsplash.com/photo-1540821432409-1736d504f2f6?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxTYW8lMjBUb21lJTIwYW5kJTIwUHJpbmNpcGV8ZW58MHwwfHx8MTcxNDY2NDg0Mnww&ixlib=rb-4.0.3",
