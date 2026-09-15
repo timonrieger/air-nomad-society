@@ -1,24 +1,21 @@
 """Append-only deal history: every candidate seen and every deal emailed.
 
-Written silently from the digest job; read back for the price anchor and
+Written silently from the digest job; read back for lowest-price claims and
 freshness features. No aggregation at write time."""
 
 from collections import defaultdict
-from datetime import date, datetime, timedelta, timezone
-from statistics import median
+from datetime import datetime, timedelta, timezone
 from uuid import uuid4
 
-from sqlalchemy import func, select
+from sqlalchemy import func, select, tuple_
 
 from src.db import PriceObservation, SentDeal, insert_rows, session_scope
-from src.models.flights import FlightDeal, SearchQuery
+from src.models.flights import FlightDeal, RankedDeal, SearchQuery
 from src.models.history import SentHistory
-from src.services.digest import DigestResult
 from src.services.providers import FlightProvider
-from src.services.selection import deal_score, savings_percent
+from src.services.selection import Observation, deal_score
 
-BASELINE_WINDOW_WEEKS = 26
-MIN_OBSERVATION_DAYS = 4
+OBSERVATION_WINDOW_WEEKS = 26
 FRESHNESS_WINDOW_WEEKS = 8
 
 
@@ -56,7 +53,7 @@ class RecordingProvider:
 
     started_at marks the run boundary: every observation this instance writes
     is stamped at or after it by the same clock (not the DB server default,
-    whose clock can sit behind), so route_baselines(before=started_at) sees
+    whose clock can sit behind), so route_observations(before=started_at) sees
     exactly the earlier runs."""
 
     def __init__(self, inner: FlightProvider) -> None:
@@ -86,46 +83,35 @@ class RecordingProvider:
         self._pending = []
 
 
-def route_baselines(
+def route_observations(
     routes: set[tuple[str, str]], before: datetime
-) -> dict[tuple[str, str], float]:
-    """Median observed EUR price per (origin, arrival) route over the rolling window.
+) -> dict[tuple[str, str], list[Observation]]:
+    """EUR price observations per (origin, arrival) route over the rolling
+    window, for selection.price_low_since to interpret.
 
     Keyed per departure airport — the same arrival can price very differently
     from different origins. The pool is shared across subscribers and
-    currencies: every observation carries the provider's EUR conversion, so
-    medians are EUR-denominated. Only observations strictly before `before`
-    count (pass the run start, so a run's own candidates never anchor
-    themselves). Routes observed on fewer than MIN_OBSERVATION_DAYS distinct
-    days are omitted — a single day's snapshot is not history, and no anchor
-    beats a shaky one."""
+    currencies: every observation carries the provider's EUR conversion.
+    Only observations strictly before `before` are returned (pass the run
+    start, so a run's own candidates never anchor themselves)."""
     statement = select(
         PriceObservation.origin_iata,
         PriceObservation.arrival_iata,
-        PriceObservation.price_eur,
         PriceObservation.observed_at,
+        PriceObservation.price_eur,
     ).where(
-        PriceObservation.origin_iata.in_({origin for origin, _ in routes}),
-        PriceObservation.arrival_iata.in_({arrival for _, arrival in routes}),
-        PriceObservation.observed_at >= before - timedelta(weeks=BASELINE_WINDOW_WEEKS),
+        tuple_(PriceObservation.origin_iata, PriceObservation.arrival_iata).in_(routes),
+        PriceObservation.observed_at
+        >= before - timedelta(weeks=OBSERVATION_WINDOW_WEEKS),
         PriceObservation.observed_at < before,
     )
-    prices: dict[tuple[str, str], list[float]] = defaultdict(list)
-    days: dict[tuple[str, str], set[date]] = defaultdict(set)
+    observations: dict[tuple[str, str], list[Observation]] = defaultdict(list)
     with session_scope() as session:
-        for origin_iata, arrival_iata, price_eur, observed_at in session.execute(
+        for origin_iata, arrival_iata, observed_at, price_eur in session.execute(
             statement
         ):
-            route = (origin_iata, arrival_iata)
-            # The two IN filters over-select pair combinations; keep exact routes.
-            if route in routes:
-                prices[route].append(price_eur)
-                days[route].add(observed_at.date())
-    return {
-        route: median(values)
-        for route, values in prices.items()
-        if len(days[route]) >= MIN_OBSERVATION_DAYS
-    }
+            observations[(origin_iata, arrival_iata)].append((observed_at, price_eur))
+    return dict(observations)
 
 
 def last_sent_at(subscriber_id: int) -> datetime | None:
@@ -157,24 +143,18 @@ def sent_history(subscriber_id: int) -> SentHistory:
     return history
 
 
-def record_sent_deals(subscriber_id: int, digest: DigestResult) -> None:
-    rows = []
-    for ranked in digest.deals:
-        baseline = digest.baseline_for(ranked)
-        rows.append(
-            SentDeal(
-                subscriber_id=subscriber_id,
-                source=ranked.source,
-                score=ranked.score,
-                # Deterministically recomputed since ranked.score is freshness-inflated
-                quality_score=deal_score(ranked.deal),
-                origin_iata=ranked.origin_iata,
-                savings_percent=(
-                    savings_percent(ranked.deal.price, baseline) if baseline else None
-                ),
-                usual_price=round(baseline) if baseline else None,
-                reason=ranked.reason,
-                **ranked.deal.model_dump(include=SENT_FIELDS),
-            )
+def record_sent_deals(subscriber_id: int, deals: list[RankedDeal]) -> None:
+    rows = [
+        SentDeal(
+            subscriber_id=subscriber_id,
+            source=ranked.source,
+            score=ranked.score,
+            # Deterministically recomputed since ranked.score is freshness-inflated
+            quality_score=deal_score(ranked.deal),
+            origin_iata=ranked.origin_iata,
+            reason=ranked.reason,
+            **ranked.deal.model_dump(include=SENT_FIELDS),
         )
+        for ranked in deals
+    ]
     insert_rows(rows)

@@ -5,18 +5,18 @@ when the subscriber opts into them), ranked into one list."""
 import logging
 import random
 from collections.abc import Callable
-from datetime import date, timedelta
-
-from pydantic import BaseModel
+from datetime import date, datetime, time, timedelta
 
 from src.models.subscriber import Subscriber
-from src.models.flights import DealSource, FlightDeal, RankedDeal, SearchQuery
+from src.models.flights import DealSource, FlightDeal, LowClaim, RankedDeal, SearchQuery
 from src.models.history import SentHistory
 from src.services.providers import FlightProvider
 from src.services.refdata import Country
 from src.services.selection import (
+    Observation,
     deal_score,
     freshness_multiplier,
+    price_low_since,
     select_gems,
 )
 
@@ -35,23 +35,11 @@ RUNNER_UP_COUNT = 2
 # multiplier on the run's provider budget (#63).
 DISCOVERIES_PER_DIGEST = 3
 
-# Typical EUR price per (origin, arrival) route — history.route_baselines
+# EUR observations per (origin, arrival) route — history.route_observations
 # bound to the run boundary by the caller.
-BaselineLookup = Callable[[set[tuple[str, str]]], dict[tuple[str, str], float]]
-
-
-class DigestResult(BaseModel):
-    """Deals across all searched countries, best score first."""
-
-    deals: list[RankedDeal]
-    # EUR-denominated typical price per searched route: selection consulted
-    # these for the repeat waiver, and rendering reuses them for the anchor.
-    baselines: dict[tuple[str, str], float]
-
-    def baseline_for(self, ranked: RankedDeal) -> float | None:
-        """The typical price of this pick's route, in the deal's own currency."""
-        eur = self.baselines.get((ranked.origin_iata, ranked.deal.arrival_iata))
-        return eur * ranked.deal.exchange_rate if eur is not None else None
+ObservationLookup = Callable[
+    [set[tuple[str, str]]], dict[tuple[str, str], list[Observation]]
+]
 
 
 def build_digest(
@@ -59,11 +47,13 @@ def build_digest(
     provider: FlightProvider,
     destinations: list[Country],
     history: SentHistory,
-    baselines_for: BaselineLookup,
+    observations_for: ObservationLookup,
     rng: random.Random | None = None,
     today: date | None = None,
-) -> DigestResult:
+) -> list[RankedDeal]:
+    """Deals across all searched countries, best score first."""
     start = today or date.today()
+    run_start = datetime.combine(start, time.min)
     window_start = start + timedelta(days=subscriber.min_days_ahead)
     window_end = start + timedelta(days=subscriber.max_days_ahead)
 
@@ -84,29 +74,30 @@ def build_digest(
             and deal.arrival_iata not in subscriber.departure_airports
         ]
 
+    def claim(origin_iata: str, deal: FlightDeal) -> LowClaim | None:
+        return price_low_since(
+            observations.get((origin_iata, deal.arrival_iata), []),
+            deal.price_eur,
+            before=run_start,
+        )
+
+    def rank(source: DealSource, origin_iata: str, deal: FlightDeal) -> RankedDeal:
+        low = claim(origin_iata, deal)
+        return RankedDeal(
+            deal=deal,
+            source=source,
+            low=low,
+            score=deal_score(deal) * freshness_multiplier(deal, source, history, low),
+            origin_iata=origin_iata,
+        )
+
     def best_pick(
-        source: DealSource,
-        candidates: list[tuple[str, FlightDeal]],
-        baselines: dict[tuple[str, str], float],
+        source: DealSource, candidates: list[tuple[str, FlightDeal]]
     ) -> RankedDeal | None:
         """One country's best-scoring candidate across every departure
         airport, carrying its beaten runner-ups."""
         ranked = sorted(
-            (
-                RankedDeal(
-                    deal=deal,
-                    source=source,
-                    score=deal_score(deal)
-                    * freshness_multiplier(
-                        deal,
-                        source,
-                        history,
-                        baselines.get((origin_iata, deal.arrival_iata)),
-                    ),
-                    origin_iata=origin_iata,
-                )
-                for origin_iata, deal in candidates
-            ),
+            (rank(source, origin_iata, deal) for origin_iata, deal in candidates),
             key=lambda pick: pick.score,
         )
         if not ranked:
@@ -147,26 +138,27 @@ def build_digest(
         )
         for source, country in searches
     ]
-    # Baselines feed two things: the repeat waiver — which only candidates in
-    # recently-sent countries can consult — and the winners' anchor lines.
-    # Fetch the waiver-eligible routes, rank, then top up whatever winning
-    # routes that fetch didn't cover, so history growth never drags the whole
-    # candidate cross-product into every run.
+    # Observations feed two things: the repeat waiver — which only candidates
+    # in recently-sent countries can consult — and the winners' lowest-price
+    # claims. Fetch the waiver-eligible routes, rank, then top up whatever
+    # winning routes that fetch didn't cover, so history growth never drags
+    # the whole candidate cross-product into every run.
     eligible = {
         (origin_iata, deal.arrival_iata)
         for _, candidates in found
         for origin_iata, deal in candidates
         if deal.arrival_country in history.recent_countries
     }
-    baselines = baselines_for(eligible) if eligible else {}
+    observations = observations_for(eligible) if eligible else {}
     deals = [
-        pick
-        for source, candidates in found
-        if (pick := best_pick(source, candidates, baselines))
+        pick for source, candidates in found if (pick := best_pick(source, candidates))
     ]
     deals.sort(key=lambda pick: pick.score)
     winner_routes = {(pick.origin_iata, pick.deal.arrival_iata) for pick in deals}
     if missing := winner_routes - eligible:
-        baselines |= baselines_for(missing)
+        observations |= observations_for(missing)
+        for pick in deals:
+            if (pick.origin_iata, pick.deal.arrival_iata) in missing:
+                pick.low = claim(pick.origin_iata, pick.deal)
     logger.info("digest for %s: %d deals", subscriber.email, len(deals))
-    return DigestResult(deals=deals, baselines=baselines)
+    return deals

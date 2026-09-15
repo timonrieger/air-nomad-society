@@ -1,8 +1,7 @@
 from datetime import datetime, date
-from functools import cached_property
 from typing import Literal
 
-from pydantic import BaseModel, Field, computed_field
+from pydantic import BaseModel, Field
 
 DealSource = Literal["favorite", "discovery"]
 
@@ -46,12 +45,6 @@ class FlightDeal(BaseModel):
     )
     link: str = Field(description="Deep link to book this itinerary")
 
-    @computed_field  # type: ignore[prop-decorator]
-    @cached_property
-    def exchange_rate(self) -> float:
-        """Native units per euro, from the provider's own conversion."""
-        return self.price / self.price_eur
-
     @property
     def stopovers(self) -> int:
         """Total stopovers across both legs; 0 means direct both ways."""
@@ -70,11 +63,23 @@ class FlightDeal(BaseModel):
         return f"{self.departs_at:%d.%m}–{self.returns_at:%d.%m}"
 
 
+class LowClaim(BaseModel):
+    """A "lowest price since" claim: the fare beats every price observed on
+    its route between `since` and the moment it was found."""
+
+    since: datetime = Field(description="Start of the streak this fare beats")
+    weeks: int = Field(description="Whole weeks the streak spans")
+
+
 class RankedDeal(BaseModel):
     """A digest pick: the deal, where it came from, and how good it is."""
 
     deal: FlightDeal
     source: DealSource = Field(description="Favorite-country pick or random discovery")
+    low: LowClaim | None = Field(
+        default=None,
+        description="The lowest-price claim this fare earned on its route, if any",
+    )
     score: float = Field(
         description="Ranking score: quality inflated by freshness penalties; "
         "lower is better"

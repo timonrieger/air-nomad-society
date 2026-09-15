@@ -3,18 +3,17 @@ import json
 import src.services.reasons as reasons_module
 from src.config import Settings, get_settings
 from src.models.flights import RankedDeal
-from src.services.digest import DigestResult
 from src.services.reasons import deal_reasons
 from tests.conftest import deal
 from tests.fakes import ResponseStub
 from tests.test_digest import SUBSCRIBER
-from tests.test_emails import ranked
+from tests.test_emails import low, ranked
 
 
-def digest() -> DigestResult:
-    winner = ranked(deal())
+def digest() -> list[RankedDeal]:
+    winner = ranked(deal(), low=low(weeks=9))
     winner.runner_ups = [ranked(deal(price=115, via_cities=["Riga"]))]
-    return DigestResult(deals=[winner], baselines={("FRA", "HEL"): 310.0})
+    return [winner]
 
 
 def configured() -> Settings:
@@ -35,11 +34,11 @@ def reasons_with_response(monkeypatch, response: ResponseStub) -> list[RankedDea
     monkeypatch.setattr(reasons_module.httpx2, "post", fake_post)
     result = digest()
     deal_reasons(SUBSCRIBER, result, configured())
-    deals = result.deals
+    deals = result
     body = calls[0]["json"]
     payload = json.loads(body["messages"][1]["content"])
     assert payload["deals"][0]["id"] == 0
-    assert payload["deals"][0]["typical_price"] == 310.0
+    assert payload["deals"][0]["lowest_since"] == "2026-06-12"
     assert payload["deals"][0]["beat_these_runner_ups"]
     return deals
 
@@ -54,7 +53,7 @@ def test_no_key_skips_the_call(monkeypatch) -> None:
     result = digest()
     deal_reasons(SUBSCRIBER, result, get_settings())
     assert calls == []
-    assert result.deals[0].reason is None
+    assert result[0].reason is None
 
 
 def test_reasons_attached_from_response(monkeypatch) -> None:

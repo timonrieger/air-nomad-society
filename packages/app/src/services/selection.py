@@ -1,9 +1,10 @@
-"""Destination selection, deal scoring, and savings tiers for the digest."""
+"""Destination selection, deal scoring, and lowest-price claims for the digest."""
 
 import random
 from collections.abc import Sequence
+from datetime import datetime
 
-from src.models.flights import DealSource, FlightDeal
+from src.models.flights import DealSource, FlightDeal, LowClaim
 from src.models.history import SentHistory
 from src.services.refdata import Country
 
@@ -16,23 +17,47 @@ DAYTIME_HOURS = range(7, 21)
 # Repetition penalties to steer towards varying results
 COUNTRY_REPEAT_PENALTY = 1.25
 CITY_REPEAT_PENALTY = 1.15
-CLEARLY_BETTER_FRACTION = 0.85
 
-SAVINGS_TIERS: list[tuple[int, str]] = [
-    (40, "🔥 exceptional price"),
-    (25, "💸 great price"),
+MIN_OBSERVATION_DAYS = 4
+
+# The last tier is the claim floor for both the wall and the email anchor.
+LOW_TIERS: list[tuple[int, str]] = [
+    (26, "🔥 lowest in 6 months"),
+    (8, "💸 lowest in 2 months"),
+    (4, "📉 lowest in a month"),
 ]
 
+WAIVER_MIN_WEEKS = 8
 
-def savings_percent(price: float, baseline: float) -> int | None:
-    """Whole-percent savings vs typical; None when not meaningfully cheaper."""
-    savings = round((1 - price / baseline) * 100)
-    return savings if savings >= 1 else None
+Observation = tuple[datetime, float]
 
 
-def savings_badge(savings: int) -> str | None:
-    """The tier badge a savings percent earns, if any."""
-    return next((label for cut, label in SAVINGS_TIERS if savings >= cut), None)
+def price_low_since(
+    observations: list[Observation], fare_eur: float, before: datetime
+) -> LowClaim | None:
+    """The lowest-price claim a fare earns on its route.
+
+    Only observations strictly before `before` count (pass the run start or
+    the send time, so a claim never anchors on its own run). A fare merely
+    matching an old price breaks the streak there — a flat fare never claims
+    a low. A fare under everything claims the full data span, so a claim can
+    never overstate the history backing it. Streaks shorter than the lowest
+    badge tier, or backed by fewer than MIN_OBSERVATION_DAYS distinct days,
+    are no claim at all."""
+    past = [(at, price) for at, price in observations if at < before]
+    if len({at.date() for at, _ in past}) < MIN_OBSERVATION_DAYS:
+        return None
+    since = max(
+        (at for at, price in past if price <= fare_eur),
+        default=min(at for at, _ in past),
+    )
+    weeks = (before - since).days // 7
+    return LowClaim(since=since, weeks=weeks) if weeks >= LOW_TIERS[-1][0] else None
+
+
+def low_badge(weeks: int) -> str | None:
+    """The tier badge a streak length earns, if any."""
+    return next((label for cut, label in LOW_TIERS if weeks >= cut), None)
 
 
 def deal_score(deal: FlightDeal) -> float:
@@ -51,18 +76,15 @@ def freshness_multiplier(
     deal: FlightDeal,
     source: DealSource,
     history: SentHistory,
-    typical_eur: float | None,
+    low: LowClaim | None,
 ) -> float:
     """Score inflation for repetition.
 
-    A fare clearly below the route's typical price (≥15% under the
-    EUR-denominated baseline) repeats with no penalty at all — a genuine
-    deal is worth resending."""
+    A fare that has been its route's low for WAIVER_MIN_WEEKS repeats with
+    no penalty at all — a genuine deal is worth resending."""
     if deal.arrival_country not in history.recent_countries:
         return 1.0
-    if typical_eur is not None and deal.price_eur <= round(
-        CLEARLY_BETTER_FRACTION * typical_eur, 2
-    ):
+    if low is not None and low.weeks >= WAIVER_MIN_WEEKS:
         return 1.0
     # excempt favorites to avoid permanent handicap
     multiplier = 1.0 if source == "favorite" else COUNTRY_REPEAT_PENALTY

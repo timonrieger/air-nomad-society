@@ -1,33 +1,43 @@
 import random
-from datetime import date
+from datetime import date, datetime, timedelta
 
+from src.models.flights import LowClaim, RankedDeal
 from src.models.subscriber import Subscriber
-from src.services.digest import DigestResult, build_digest
+from src.services.digest import build_digest
 from src.models.history import SentHistory
-from src.services.selection import deal_score
+from src.services.selection import Observation, deal_score
 from src.services.refdata import Country
-from tests.conftest import deal
+from tests.conftest import deal, price_series
 from tests.fakes import FakeProvider
+
+RUN_DAY = date(2026, 9, 1)
+JUNE = datetime(2026, 6, 1)
+Observations = dict[tuple[str, str], list[Observation]]
 
 
 def digest(
     subscriber: Subscriber,
     provider: FakeProvider,
     history: SentHistory | None = None,
-    baselines: dict[tuple[str, str], float] | None = None,
+    observations: Observations | None = None,
     rng: random.Random | None = None,
     today: date | None = None,
-) -> DigestResult:
+) -> list[RankedDeal]:
     """build_digest with the test defaults spelled once."""
     return build_digest(
         subscriber,
         provider,
         DESTINATIONS,
         history or SentHistory(),
-        baselines_for=lambda routes: baselines or {},
+        observations_for=lambda routes: observations or {},
         rng=rng or random.Random(1),
         today=today,
     )
+
+
+def weekly_lows(*prices: float) -> list[Observation]:
+    """One observation per price, a week apart from June — enough days."""
+    return price_series(*prices, start=JUNE, step=timedelta(weeks=1))
 
 
 DESTINATIONS = [
@@ -70,7 +80,7 @@ def test_favorites_and_discoveries_ranked_into_one_list() -> None:
         }
     )
     result = digest(SUBSCRIBER, provider, rng=random.Random(7))
-    by_country = {r.deal.arrival_country: r.source for r in result.deals}
+    by_country = {r.deal.arrival_country: r.source for r in result}
     assert by_country["Finland"] == "favorite"
     # Gems drawn from {Spain, Germany}: Finland is a favorite, Japan excluded.
     assert set(by_country) - {"Finland"} <= {"Spain", "Germany"}
@@ -78,8 +88,8 @@ def test_favorites_and_discoveries_ranked_into_one_list() -> None:
     assert gem_queries <= {"ES", "DE"}
     # Both gems fit in the pool, so Spain is always searched; ranked by
     # score, the cheap Spain discovery outranks the Finland favorite.
-    assert result.deals[0].deal.arrival_country == "Spain"
-    assert result.deals[0].source == "discovery"
+    assert result[0].deal.arrival_country == "Spain"
+    assert result[0].source == "discovery"
 
 
 def test_best_scoring_candidate_wins_over_cheapest() -> None:
@@ -87,7 +97,7 @@ def test_best_scoring_candidate_wins_over_cheapest() -> None:
     direct = deal(price=110)
     provider = FakeProvider({("FRA", "FI"): [cheap_stopover, direct]})
     result = digest(SUBSCRIBER, provider)
-    finland = [r for r in result.deals if r.deal.arrival_country == "Finland"]
+    finland = [r for r in result if r.deal.arrival_country == "Finland"]
     assert finland[0].deal == direct
     # The beaten candidate rides along as a runner-up for the reasoning line.
     assert [r.deal for r in finland[0].runner_ups] == [cheap_stopover]
@@ -103,41 +113,43 @@ def test_repeating_favorite_prefers_a_fresh_city() -> None:
         all_countries={"Finland"},
     )
     result = digest(SUBSCRIBER, provider, history=history)
-    finland = [r for r in result.deals if r.deal.arrival_country == "Finland"]
+    finland = [r for r in result if r.deal.arrival_country == "Finland"]
     # Helsinki is slightly cheaper but was just sent; Turku is fresh.
     assert finland[0].deal == turku
     assert finland[0].first_time is False
 
 
-def test_clearly_below_typical_repeats_without_penalty() -> None:
-    # HEL was just sent, but 129.99 is ≥15% under its 310 typical price —
-    # the repeat escapes both penalties and the baseline reaches the result.
+def test_long_standing_low_repeats_without_penalty() -> None:
+    # HEL was just sent, but 129.99 has been the route's low since June —
+    # the repeat escapes both penalties and the claim reaches the result.
     provider = FakeProvider({("FRA", "FI"): [deal()]})
     history = SentHistory(
         recent_countries={"Finland"},
         recent_cities={"HEL"},
         all_countries={"Finland"},
     )
-    typical = {("FRA", "HEL"): 310.0}
-    result = digest(SUBSCRIBER, provider, history=history, baselines=typical)
-    finland = [r for r in result.deals if r.deal.arrival_country == "Finland"]
+    observations = {("FRA", "HEL"): weekly_lows(200, 210, 220, 230)}
+    result = digest(
+        SUBSCRIBER, provider, history=history, observations=observations, today=RUN_DAY
+    )
+    finland = [r for r in result if r.deal.arrival_country == "Finland"]
     assert finland[0].score == deal_score(finland[0].deal)
-    assert result.baselines == typical
+    assert finland[0].low == LowClaim(since=datetime(2026, 6, 1), weeks=13)
 
 
-def test_baseline_for_converts_to_the_deal_currency() -> None:
-    # Baselines are stored in EUR; baseline_for hands consumers (email
-    # anchor, AI reasons, sent-deal history) the native equivalent.
+def test_claims_are_measured_in_euros_for_non_eur_subscribers() -> None:
+    # A 1430 SEK fare claims against the route's EUR observations via its
+    # own EUR conversion.
     in_sek = deal(price=1430, currency="SEK", price_eur=130)
     provider = FakeProvider({("FRA", "FI"): [in_sek]})
-    typical = {("FRA", "HEL"): 150.0}
-    result = digest(SUBSCRIBER, provider, baselines=typical)
-    finland = [r for r in result.deals if r.deal.arrival_country == "Finland"]
-    assert result.baselines == typical
-    assert result.baseline_for(finland[0]) == 1650.0  # 150 EUR × rate 11
+    observations = {("FRA", "HEL"): weekly_lows(150, 160, 170, 125)}
+    result = digest(SUBSCRIBER, provider, observations=observations, today=RUN_DAY)
+    finland = [r for r in result if r.deal.arrival_country == "Finland"]
+    # The 125 EUR observation on Jun 22 undercuts it: the streak starts there.
+    assert finland[0].low == LowClaim(since=datetime(2026, 6, 22), weeks=10)
 
 
-def test_baselines_fetched_for_waiver_candidates() -> None:
+def test_observations_fetched_for_waiver_candidates() -> None:
     # Finland is recently sent, so every Finland candidate route is
     # waiver-eligible; they already cover the winner — exactly one fetch.
     subscriber = SUBSCRIBER.model_copy(update={"departure_airports": ["FRA", "BER"]})
@@ -146,7 +158,7 @@ def test_baselines_fetched_for_waiver_candidates() -> None:
     history = SentHistory(recent_countries={"Finland"}, all_countries={"Finland"})
     fetched: list[set[tuple[str, str]]] = []
 
-    def lookup(routes: set[tuple[str, str]]) -> dict[tuple[str, str], float]:
+    def lookup(routes: set[tuple[str, str]]) -> Observations:
         fetched.append(routes)
         return {}
 
@@ -156,13 +168,13 @@ def test_baselines_fetched_for_waiver_candidates() -> None:
     assert fetched == [{("FRA", "HEL"), ("BER", "HEL")}]
 
 
-def test_baselines_topped_up_for_winners_outside_the_waiver() -> None:
+def test_observations_topped_up_for_winners_outside_the_waiver() -> None:
     # Nothing recently sent → no waiver fetch; the winning route is still
-    # fetched so the anchor line can render.
+    # fetched so the winner's lowest-price claim can be computed.
     provider = FakeProvider({("FRA", "FI"): [deal()]})
     fetched: list[set[tuple[str, str]]] = []
 
-    def lookup(routes: set[tuple[str, str]]) -> dict[tuple[str, str], float]:
+    def lookup(routes: set[tuple[str, str]]) -> Observations:
         fetched.append(routes)
         return {}
 
@@ -176,7 +188,7 @@ def test_first_time_country_is_flagged_once_history_exists() -> None:
     provider = FakeProvider({("FRA", "FI"): [deal()]})
     seen_spain = SentHistory(all_countries={"Spain"})
     result = digest(SUBSCRIBER, provider, history=seen_spain)
-    finland = [r for r in result.deals if r.deal.arrival_country == "Finland"]
+    finland = [r for r in result if r.deal.arrival_country == "Finland"]
     assert finland[0].first_time is True
 
 
@@ -184,7 +196,7 @@ def test_brand_new_subscribers_get_no_first_time_flags() -> None:
     # With no history at all, badging every card would say nothing.
     provider = FakeProvider({("FRA", "FI"): [deal()]})
     result = digest(SUBSCRIBER, provider)
-    finland = [r for r in result.deals if r.deal.arrival_country == "Finland"]
+    finland = [r for r in result if r.deal.arrival_country == "Finland"]
     assert finland[0].first_time is False
 
 
@@ -202,7 +214,7 @@ def test_best_deal_across_airports_wins_and_keeps_its_origin() -> None:
     berlin = deal(price=120, departure_city="Berlin", departure_iata="BER")
     provider = FakeProvider({("FRA", "FI"): [frankfurt], ("BER", "FI"): [berlin]})
     result = digest(subscriber, provider)
-    finland = [r for r in result.deals if r.deal.arrival_country == "Finland"]
+    finland = [r for r in result if r.deal.arrival_country == "Finland"]
     assert finland[0].deal == berlin
     assert finland[0].origin_iata == "BER"
     assert [r.deal for r in finland[0].runner_ups] == [frankfurt]
@@ -221,7 +233,7 @@ def test_search_window_derives_from_subscriber() -> None:
 def test_same_city_deals_are_dropped() -> None:
     provider = FakeProvider({("FRA", "FI"): [deal(arrival_city="Frankfurt")]})
     result = digest(SUBSCRIBER, provider)
-    assert result.deals == []
+    assert result == []
 
 
 def test_deals_to_another_departure_city_are_dropped() -> None:
@@ -230,7 +242,7 @@ def test_deals_to_another_departure_city_are_dropped() -> None:
     to_berlin = deal(arrival_iata="BER", arrival_city="Berlin")
     provider = FakeProvider({("FRA", "FI"): [to_berlin]})
     result = digest(subscriber, provider)
-    assert result.deals == []
+    assert result == []
 
 
 def test_no_favorites_searches_only_gems() -> None:

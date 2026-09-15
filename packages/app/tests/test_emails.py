@@ -1,9 +1,9 @@
 import random
+from datetime import datetime
 
 from markupsafe import escape
 
-from src.models.flights import DealSource, FlightDeal, RankedDeal
-from src.services.digest import DigestResult
+from src.models.flights import DealSource, FlightDeal, LowClaim, RankedDeal
 from src.services.emails import render_digest
 from src.services.refdata import FALLBACK_IMAGE
 from tests.conftest import deal
@@ -15,22 +15,28 @@ def ranked(
     flight_deal: FlightDeal,
     source: DealSource = "favorite",
     reason: str | None = None,
+    low: LowClaim | None = None,
 ) -> RankedDeal:
     return RankedDeal(
-        deal=flight_deal, source=source, score=0.0, reason=reason, origin_iata="FRA"
+        deal=flight_deal,
+        source=source,
+        score=0.0,
+        reason=reason,
+        low=low,
+        origin_iata="FRA",
     )
 
 
-def render(
-    deals: list[RankedDeal],
-    baselines: dict[tuple[str, str], float] | None = None,
-    username: str = "Timon",
-) -> str:
+def low(weeks: int) -> LowClaim:
+    return LowClaim(since=datetime(2026, 6, 12), weeks=weeks)
+
+
+def render(deals: list[RankedDeal], username: str = "Timon") -> str:
     return render_digest(
         username=username,
         update_token="upd123",
         unsubscribe_token="unsub123",
-        digest=DigestResult(deals=deals, baselines=baselines or {}),
+        deals=deals,
         images=IMAGES,
         base_url="https://example.test",
         rng=random.Random(1),
@@ -62,37 +68,34 @@ def test_provenance_badges() -> None:
     assert "✨ discovery" in render([ranked(deal(), "discovery")])
 
 
-def test_anchor_line_with_savings_and_exceptional_badge() -> None:
-    # 129 vs a 310 median: −58%, comfortably past the 40% tier.
-    html = render([ranked(deal())], baselines={("FRA", "HEL"): 310.0})
-    assert "typically ~310 EUR (−58%)" in html
-    assert "🔥 exceptional price" in html
+def test_anchor_line_and_badge_for_a_six_month_low() -> None:
+    html = render([ranked(deal(), low=low(weeks=27))])
+    assert "lowest price since Jun 12" in html
+    assert "🔥 lowest in 6 months" in html
 
 
-def test_anchor_line_with_great_badge() -> None:
-    # 129 vs 180: −28%, past the 25% tier but short of 40%.
-    html = render([ranked(deal())], baselines={("FRA", "HEL"): 180.0})
-    assert "typically ~180 EUR (−28%)" in html
-    assert "💸 great price" in html
+def test_two_month_low_badge() -> None:
+    html = render([ranked(deal(), low=low(weeks=9))])
+    assert "lowest price since Jun 12" in html
+    assert "💸 lowest in 2 months" in html
     assert "🔥" not in html
 
 
-def test_anchor_line_below_tiers_has_no_badge() -> None:
-    html = render([ranked(deal())], baselines={("FRA", "HEL"): 140.0})
-    assert "typically ~140 EUR (−7%)" in html
-    assert "🔥" not in html and "💸" not in html
+def test_one_month_low_badge() -> None:
+    html = render([ranked(deal(), low=low(weeks=4))])
+    assert "📉 lowest in a month" in html
 
 
-def test_anchor_line_at_typical_price_shows_no_savings() -> None:
-    # 129 vs a 120 median: pricier than typical, no percent bragging.
-    html = render([ranked(deal())], baselines={("FRA", "HEL"): 120.0})
-    assert "typically ~120 EUR" in html
-    assert "(−" not in html
+def test_short_streaks_get_no_anchor_and_no_badge() -> None:
+    # Below the lowest tier the claim is not worth a line either.
+    html = render([ranked(deal(), low=low(weeks=3))])
+    assert "lowest price" not in html
+    assert "🔥" not in html and "💸" not in html and "📉" not in html
 
 
-def test_no_anchor_without_baseline() -> None:
+def test_no_anchor_without_a_claim() -> None:
     html = render([ranked(deal())])
-    assert "typically" not in html
+    assert "lowest price" not in html
 
 
 def test_new_for_you_badge_for_first_time_countries() -> None:

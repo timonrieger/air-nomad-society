@@ -11,9 +11,8 @@ import logging
 import httpx2
 
 from src.config import Settings
-from src.models.flights import FlightDeal
+from src.models.flights import FlightDeal, RankedDeal
 from src.models.subscriber import Subscriber
-from src.services.digest import DigestResult
 
 logger = logging.getLogger(__name__)
 
@@ -26,11 +25,11 @@ REASON_MAX_CHARS = 200
 SYSTEM_PROMPT = """\
 You write one short reason per flight deal for a personalized deal
 digest. Each reason tells this subscriber why their deal was picked: what it
-beat (runner-ups on the same route search), how it compares to the route's
-typical price, comfort (direct, duration, departure time), or that it's one
-of their favorite countries or a fresh discovery. Be concrete and specific,
-warm but not salesy, at most 120 characters per reason. Never invent facts
-not present in the data.
+beat (runner-ups on the same route search), that it's the route's lowest
+price since a given date, comfort (direct, duration, departure time), or
+that it's one of their favorite countries or a fresh discovery. Be concrete
+and specific, warm but not salesy, at most 120 characters per reason. Never
+invent facts not present in the data.
 
 Reply with ONLY a JSON object mapping each deal's "id" to its reason string."""
 
@@ -44,7 +43,7 @@ def _card(deal: FlightDeal) -> dict[str, object]:
     }
 
 
-def _payload(subscriber: Subscriber, digest: DigestResult) -> dict[str, object]:
+def _payload(subscriber: Subscriber, deals: list[RankedDeal]) -> dict[str, object]:
     return {
         "subscriber": {
             "favorite_countries": subscriber.favorites,
@@ -55,18 +54,20 @@ def _payload(subscriber: Subscriber, digest: DigestResult) -> dict[str, object]:
                 "id": index,
                 "picked_as": ranked.source,
                 **_card(ranked.deal),
-                "typical_price": digest.baseline_for(ranked),
+                "lowest_since": (
+                    ranked.low.since.date().isoformat() if ranked.low else None
+                ),
                 "beat_these_runner_ups": [
                     _card(runner_up.deal) for runner_up in ranked.runner_ups
                 ],
             }
-            for index, ranked in enumerate(digest.deals)
+            for index, ranked in enumerate(deals)
         ],
     }
 
 
 def deal_reasons(
-    subscriber: Subscriber, digest: DigestResult, settings: Settings
+    subscriber: Subscriber, deals: list[RankedDeal], settings: Settings
 ) -> None:
     """Attach one reason per pick in place; a no-op when unconfigured or failed."""
     if not settings.ai_api_key:
@@ -78,13 +79,13 @@ def deal_reasons(
             json={
                 "model": settings.ai_model,
                 "reasoning": {"enabled": False},
-                "max_tokens": TOKEN_HEADROOM + TOKENS_PER_REASON * len(digest.deals),
+                "max_tokens": TOKEN_HEADROOM + TOKENS_PER_REASON * len(deals),
                 "messages": [
                     {"role": "system", "content": SYSTEM_PROMPT},
                     {
                         "role": "user",
                         "content": json.dumps(
-                            _payload(subscriber, digest),
+                            _payload(subscriber, deals),
                             ensure_ascii=False,
                             separators=(",", ":"),
                         ),
@@ -98,7 +99,7 @@ def deal_reasons(
         content = content.removeprefix("```json").removeprefix("```")
         content = content.removesuffix("```")
         reasons = json.loads(content)
-        for index, ranked in enumerate(digest.deals):
+        for index, ranked in enumerate(deals):
             reason = reasons.get(str(index))
             if isinstance(reason, str) and 0 < len(reason) <= REASON_MAX_CHARS:
                 ranked.reason = reason

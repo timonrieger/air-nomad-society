@@ -7,8 +7,10 @@ from sqlalchemy.orm import Session
 
 from src.db import SentDeal, get_session
 from src.models.deals import WallDeal
+from src.models.flights import LowClaim
+from src.services.history import route_observations
 from src.services.refdata import country_images, load
-from src.services.selection import SAVINGS_TIERS, savings_badge
+from src.services.selection import low_badge, price_low_since
 
 router = APIRouter()
 
@@ -17,9 +19,6 @@ SessionDep = Annotated[Session, Depends(get_session)]
 WALL_DEAL_COUNT = 12
 WALL_WINDOW_WEEKS = 4
 WALL_CACHE_SECONDS = 3600
-# Every wall card must earn at least the lowest savings badge: the wall
-# sells subscriptions, and a card without a proven discount sells nothing.
-WALL_MIN_SAVINGS = SAVINGS_TIERS[-1][0]
 
 
 def _eur_quality(row: SentDeal) -> float:
@@ -34,10 +33,11 @@ def read_deals(session: SessionDep, response: Response) -> list[WallDeal]:
     response.headers["Cache-Control"] = (
         f"public, max-age={WALL_CACHE_SECONDS}, s-maxage={WALL_CACHE_SECONDS}"
     )
-    since = datetime.now() - timedelta(weeks=WALL_WINDOW_WEEKS)
+    now = datetime.now()
+    since = now - timedelta(weeks=WALL_WINDOW_WEEKS)
     rows = session.scalars(
         select(SentDeal)
-        .where(SentDeal.sent_at >= since, SentDeal.savings_percent >= WALL_MIN_SAVINGS)
+        .where(SentDeal.sent_at >= since)
         .order_by(SentDeal.sent_at.desc())
     )
     # One card per destination — breadth sells better than three fares to
@@ -47,27 +47,35 @@ def read_deals(session: SessionDep, response: Response) -> list[WallDeal]:
         city = row.arrival_city or row.arrival_country
         if city not in unique or _eur_quality(row) < _eur_quality(unique[city]):
             unique[city] = row
-    # The cheapest, most comfortable dozen make the wall; within it the
-    # deepest discounts lead.
-    best = sorted(unique.values(), key=_eur_quality)
-    best = sorted(best[:WALL_DEAL_COUNT], key=lambda row: -(row.savings_percent or 0))
-    images = load().images
-    wall: list[WallDeal] = []
-    for row in best:
-        # The savings filter guarantees an anchored row.
-        assert row.savings_percent is not None and row.usual_price is not None
-        wall.append(
-            WallDeal(
-                destination=row.arrival_city or row.arrival_country,
-                departure_city=row.departure_city or row.departure_iata,
-                price=int(row.price_eur),  # int(): whole units, like the email
-                currency="EUR",
-                savings_percent=row.savings_percent,
-                usual_price=round(row.usual_price * row.price_eur / row.price),
-                badge=savings_badge(row.savings_percent),
-                found_on=row.sent_at.date(),
-                link=row.link,
-                image_url=country_images(images, row.arrival_country)[0],
-            )
+    # Never store claims: each card replays against observations before its
+    # own sent_at, reproducing the send-time claim under the current algorithm.
+    observations = route_observations(
+        {row.route for row in unique.values()}, before=now
+    )
+    # The cheapest, most comfortable dozen with a claim make the wall;
+    # within it the longest-standing lows lead.
+    best: list[tuple[SentDeal, LowClaim]] = []
+    for row in sorted(unique.values(), key=_eur_quality):
+        claim = price_low_since(
+            observations.get(row.route, []), row.price_eur, before=row.sent_at
         )
-    return wall
+        if claim is not None:
+            best.append((row, claim))
+            if len(best) == WALL_DEAL_COUNT:
+                break
+    best.sort(key=lambda pair: -pair[1].weeks)
+    images = load().images
+    return [
+        WallDeal(
+            destination=row.arrival_city or row.arrival_country,
+            departure_city=row.departure_city or row.departure_iata,
+            price=int(row.price_eur),  # int(): whole units, like the email
+            currency="EUR",
+            low_since=claim.since.date(),
+            badge=low_badge(claim.weeks),
+            found_on=row.sent_at.date(),
+            link=row.link,
+            image_url=country_images(images, row.arrival_country)[0],
+        )
+        for row, claim in best
+    ]
