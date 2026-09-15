@@ -52,8 +52,7 @@ export type WallDeal = {
 	departure_city: string;
 	price: number;
 	currency: string;
-	savings_percent: number | null;
-	usual_price: number | null;
+	low_since: string;
 	badge: string | null;
 	found_on: string;
 	link: string;

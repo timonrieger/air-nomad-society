@@ -8,13 +8,13 @@ from src.services.reasons import deal_reasons
 from tests.conftest import deal
 from tests.fakes import ResponseStub
 from tests.test_digest import SUBSCRIBER
-from tests.test_emails import ranked
+from tests.test_emails import low, ranked
 
 
 def digest() -> DigestResult:
-    winner = ranked(deal())
+    winner = ranked(deal(), low=low(weeks=9))
     winner.runner_ups = [ranked(deal(price=115, via_cities=["Riga"]))]
-    return DigestResult(deals=[winner], baselines={("FRA", "HEL"): 310.0})
+    return DigestResult(deals=[winner])
 
 
 def configured() -> Settings:
@@ -39,7 +39,7 @@ def reasons_with_response(monkeypatch, response: ResponseStub) -> list[RankedDea
     body = calls[0]["json"]
     payload = json.loads(body["messages"][1]["content"])
     assert payload["deals"][0]["id"] == 0
-    assert payload["deals"][0]["typical_price"] == 310.0
+    assert payload["deals"][0]["lowest_since"] == "2026-06-12"
     assert payload["deals"][0]["beat_these_runner_ups"]
     return deals
 

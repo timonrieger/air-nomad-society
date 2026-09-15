@@ -11,14 +11,11 @@ class WallDeal(BaseModel):
     departure_city: str = Field(description="Name of the departure city")
     price: int = Field(description="Round-trip price in euros")
     currency: str = Field(description='Display currency — always "EUR"')
-    savings_percent: int | None = Field(
-        description="Whole-percent savings vs the route's typical price"
+    low_since: date = Field(
+        description="The fare beat every price observed on its route since "
+        "this date, as of the day it was found"
     )
-    usual_price: int | None = Field(
-        description="The route's typical price in euros, converted at the "
-        "deal's own rate"
-    )
-    badge: str | None = Field(description="Savings-tier badge the deal earned")
+    badge: str | None = Field(description="Streak-tier badge the deal earned")
     found_on: date = Field(description="Date the deal went out in a digest")
     link: str = Field(
         description="Booking deep link at the provider that found the fare"

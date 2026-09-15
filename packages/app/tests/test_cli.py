@@ -70,17 +70,18 @@ def test_empty_digest_is_not_sent(sqlite_db, monkeypatch) -> None:
     assert sent == []
 
 
-def test_price_anchor_from_earlier_runs_reaches_the_email(
+def test_lowest_price_claim_from_earlier_runs_reaches_the_email(
     sqlite_db, monkeypatch
 ) -> None:
-    # Observations from four earlier runs anchor FRA→HEL at a 310 median.
-    month_ago = datetime.now() - timedelta(weeks=4)
+    # Observations from four earlier runs, all pricier: 129.99 has been the
+    # route's low since the first of them, ten weeks back.
+    first_seen = datetime.now() - timedelta(weeks=10)
     insert_rows(
         [
             observation(
                 search_id="old",
                 price=price,
-                observed_at=month_ago + timedelta(weeks=index),
+                observed_at=first_seen + timedelta(weeks=index),
             )
             for index, price in enumerate((300, 305, 315, 320))
         ]
@@ -93,13 +94,11 @@ def test_price_anchor_from_earlier_runs_reaches_the_email(
         cli.mailer, "send_email", lambda html, *a, **k: captured.append(html)
     )
     assert cli.run_digest(FakeProvider({("FRA", "FI"): [deal()]})) == 0
-    assert "typically ~310 EUR (−58%)" in captured[0]
+    assert f"lowest price since {first_seen:%b %d}" in captured[0]
+    assert "💸 lowest in 2 months" in captured[0]
     with Session(get_engine()) as session:
         recorded = session.scalars(select(SentDeal)).one()
-    # The quoted savings, typical price and searched origin are frozen at
-    # send time.
-    assert recorded.savings_percent == 58
-    assert recorded.usual_price == 310
+    # The searched origin is frozen at send time; claims are derived later.
     assert recorded.origin_iata == "FRA"
     assert recorded.arrival_city == "Helsinki"
 

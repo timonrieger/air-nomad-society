@@ -12,7 +12,7 @@ from src.models.flights import RankedDeal
 from src.services import mailer
 from src.services.digest import DigestResult
 from src.services.refdata import country_images
-from src.services.selection import savings_badge, savings_percent
+from src.services.selection import low_badge
 from src.services.tokens import issue_token
 
 TEMPLATE_DIR = Path(__file__).resolve().parent.parent / "templates"
@@ -27,24 +27,15 @@ TOKENS: dict[str, str] = json.loads(
 _env = Environment(loader=FileSystemLoader(TEMPLATE_DIR), autoescape=True)
 
 
-def _anchor(price: float, baseline: float, currency: str) -> tuple[str, str | None]:
-    """The "typically ~X" line and the earned tier badge, if any."""
-    savings = savings_percent(price, baseline)
-    line = f"typically ~{baseline:.0f} {currency}"
-    if savings is None:
-        return line, None
-    return f"{line} (−{savings}%)", savings_badge(savings)
-
-
 def _present(
     ranked: RankedDeal,
     images: dict[str, list[str]],
-    baseline: float | None,
     rng: random.Random,
 ) -> dict[str, Any]:
     deal = ranked.deal
-    anchor, tier = (
-        _anchor(deal.price, baseline, deal.currency) if baseline else (None, None)
+    tier = low_badge(ranked.low.weeks) if ranked.low else None
+    anchor = (
+        f"lowest price since {ranked.low.since:%b %d}" if ranked.low and tier else None
     )
     badges = ["⭐ favorite" if ranked.source == "favorite" else "✨ discovery"]
     if tier:
@@ -80,10 +71,7 @@ def render_digest(
         site_url=base_url,
         update_url=f"{base_url}/subscribe?token={update_token}",
         unsubscribe_url=f"{base_url}/unsubscribe?token={unsubscribe_token}",
-        flights=[
-            _present(ranked, images, digest.baseline_for(ranked), picker)
-            for ranked in digest.deals
-        ],
+        flights=[_present(ranked, images, picker) for ranked in digest.deals],
     )
 
 

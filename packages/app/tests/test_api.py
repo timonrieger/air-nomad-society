@@ -11,7 +11,7 @@ from src.db import AirNomads, Base, get_engine, get_session, insert_rows
 from src.main import app
 from src.services import mailer
 from src.services.tokens import issue_token
-from tests.conftest import sent
+from tests.conftest import observation, sent
 
 PAYLOAD = {
     "username": "Timon",
@@ -141,27 +141,44 @@ def test_unsubscribe_deletes(client) -> None:
     assert client.post(f"/unsubscribe?token={token}").status_code == 404
 
 
+def weekly_observations(prices, start, **overrides):
+    """One observation per price, a week apart from `start`."""
+    return [
+        observation(
+            price=price, observed_at=start + timedelta(weeks=index), **overrides
+        )
+        for index, price in enumerate(prices)
+    ]
+
+
 def test_deals_wall_is_public_display_ready_and_cached(sqlite_db) -> None:
+    ten_weeks_ago = datetime.now() - timedelta(weeks=10)
     insert_rows(
-        [
-            sent(price=129.99, savings_percent=58, usual_price=310),
-            # The same deal to a second subscriber collapses into one card.
-            sent(subscriber_id=2, price=129.99, savings_percent=58, usual_price=310),
-            # No proven savings: cheap alone sells nothing, never shown.
-            sent(price=80.5, arrival_iata="TKU", arrival_city="Turku"),
-            # Savings below the badge tier: not a wall-worthy discount.
-            sent(
-                price=90,
-                savings_percent=10,
-                usual_price=100,
+        # Pricier history makes 129.99 the route's low since ten weeks back.
+        weekly_observations((300, 305, 315, 320), start=ten_weeks_ago)
+        # Vaasa dipped lower two weeks ago: a streak too short to sell.
+        + weekly_observations(
+            (100, 120, 85),
+            start=datetime.now() - timedelta(weeks=9),
+            arrival_iata="VAA",
+        )
+        + [
+            observation(
+                price=85,
                 arrival_iata="VAA",
-                arrival_city="Vaasa",
-            ),
+                observed_at=datetime.now() - timedelta(weeks=2),
+            )
+        ]
+        + [
+            sent(price=129.99),
+            # The same deal to a second subscriber collapses into one card.
+            sent(subscriber_id=2, price=129.99),
+            # No observed history: no claim to make, never shown.
+            sent(price=80.5, arrival_iata="TKU", arrival_city="Turku"),
+            sent(price=90, arrival_iata="VAA", arrival_city="Vaasa"),
             # Outside the four-week window: never shown.
             sent(
                 price=50,
-                savings_percent=58,
-                usual_price=120,
                 arrival_iata="OLD",
                 sent_at=datetime.now() - timedelta(weeks=5),
             ),
@@ -172,10 +189,11 @@ def test_deals_wall_is_public_display_ready_and_cached(sqlite_db) -> None:
     with TestClient(app) as anonymous_client:
         response = anonymous_client.get("/deals")
         body = response.json()
-        assert [(d["destination"], d["price"], d["usual_price"]) for d in body] == [
-            ("Helsinki", 129, 310),
+        assert [(d["destination"], d["price"], d["low_since"]) for d in body] == [
+            ("Helsinki", 129, ten_weeks_ago.date().isoformat()),
         ]
-        assert body[0]["badge"] == "🔥 exceptional price"
+        assert body[0]["badge"] == "💸 lowest in 2 months"
+        assert body[0]["currency"] == "EUR"
         assert body[0]["departure_city"] == "Frankfurt"
         assert body[0]["link"] == "https://kiwi.com/deep"  # stored at send time
         assert "subscriber_id" not in body[0]
@@ -184,18 +202,16 @@ def test_deals_wall_is_public_display_ready_and_cached(sqlite_db) -> None:
 
 
 def test_deals_wall_shows_one_card_per_destination(sqlite_db) -> None:
-    # Two routes reach Helsinki; only the better EUR-quality fare gets a
-    # card, even though the beaten one boasts the deeper discount.
+    # Two routes reach Helsinki; only the better EUR-quality fare gets a card.
     insert_rows(
-        [
-            sent(price=180, savings_percent=42, usual_price=310),
-            sent(
-                price=120,
-                savings_percent=25,
-                usual_price=160,
-                departure_iata="MUC",
-                departure_city="Munich",
-            ),
+        weekly_observations(
+            (200, 210, 220, 230),
+            start=datetime.now() - timedelta(weeks=10),
+            origin_iata="MUC",
+        )
+        + [
+            sent(price=180),
+            sent(price=120, departure_iata="MUC", departure_city="Munich"),
         ]
     )
     get_engine().dispose()
@@ -205,35 +221,32 @@ def test_deals_wall_shows_one_card_per_destination(sqlite_db) -> None:
 
 
 def test_deals_wall_normalizes_to_euros(sqlite_db) -> None:
-    # A USD send renders in euros, its usual price converted at its own rate,
+    # A USD send renders in euros, claims against the shared EUR history,
     # and collapses with the same itinerary emailed in euros.
     insert_rows(
-        [
+        weekly_observations(
+            (300, 310, 320, 330),
+            start=datetime.now() - timedelta(weeks=10),
+            arrival_iata="TMP",
+        )
+        + [
             sent(
                 price=165,
                 currency="USD",
                 price_eur=150,
-                savings_percent=40,
-                usual_price=275,
                 arrival_iata="TMP",
                 arrival_city="Tampere",
             ),
-            sent(
-                price=150.4,
-                savings_percent=40,
-                usual_price=250,
-                arrival_iata="TMP",
-                arrival_city="Tampere",
-            ),
+            sent(price=150.4, arrival_iata="TMP", arrival_city="Tampere"),
         ]
     )
     get_engine().dispose()
     with TestClient(app) as anonymous_client:
         body = anonymous_client.get("/deals").json()
-        assert [
-            (d["destination"], d["price"], d["currency"], d["usual_price"])
-            for d in body
-        ] == [("Tampere", 150, "EUR", 250)]
+        assert [(d["destination"], d["price"], d["currency"]) for d in body] == [
+            ("Tampere", 150, "EUR")
+        ]
+        assert body[0]["badge"] == "💸 lowest in 2 months"
 
 
 def test_subscribe_without_favorites_is_a_pure_discovery_profile(client) -> None:

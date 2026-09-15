@@ -1,6 +1,7 @@
 import random
-from datetime import date
+from datetime import date, datetime, timedelta
 
+from src.models.flights import LowClaim
 from src.models.subscriber import Subscriber
 from src.services.digest import DigestResult, build_digest
 from src.models.history import SentHistory
@@ -9,12 +10,15 @@ from src.services.refdata import Country
 from tests.conftest import deal
 from tests.fakes import FakeProvider
 
+RUN_DAY = date(2026, 9, 1)
+Observations = dict[tuple[str, str], list[tuple[datetime, float]]]
+
 
 def digest(
     subscriber: Subscriber,
     provider: FakeProvider,
     history: SentHistory | None = None,
-    baselines: dict[tuple[str, str], float] | None = None,
+    observations: Observations | None = None,
     rng: random.Random | None = None,
     today: date | None = None,
 ) -> DigestResult:
@@ -24,10 +28,17 @@ def digest(
         provider,
         DESTINATIONS,
         history or SentHistory(),
-        baselines_for=lambda routes: baselines or {},
+        observations_for=lambda routes: observations or {},
         rng=rng or random.Random(1),
         today=today,
     )
+
+
+def weekly_lows(*prices: float, start: datetime = datetime(2026, 6, 1)):
+    """One observation per price, a week apart — enough distinct days."""
+    return [
+        (start + timedelta(weeks=index), price) for index, price in enumerate(prices)
+    ]
 
 
 DESTINATIONS = [
@@ -109,35 +120,37 @@ def test_repeating_favorite_prefers_a_fresh_city() -> None:
     assert finland[0].first_time is False
 
 
-def test_clearly_below_typical_repeats_without_penalty() -> None:
-    # HEL was just sent, but 129.99 is ≥15% under its 310 typical price —
-    # the repeat escapes both penalties and the baseline reaches the result.
+def test_long_standing_low_repeats_without_penalty() -> None:
+    # HEL was just sent, but 129.99 has been the route's low since June —
+    # the repeat escapes both penalties and the claim reaches the result.
     provider = FakeProvider({("FRA", "FI"): [deal()]})
     history = SentHistory(
         recent_countries={"Finland"},
         recent_cities={"HEL"},
         all_countries={"Finland"},
     )
-    typical = {("FRA", "HEL"): 310.0}
-    result = digest(SUBSCRIBER, provider, history=history, baselines=typical)
+    observations = {("FRA", "HEL"): weekly_lows(200, 210, 220, 230)}
+    result = digest(
+        SUBSCRIBER, provider, history=history, observations=observations, today=RUN_DAY
+    )
     finland = [r for r in result.deals if r.deal.arrival_country == "Finland"]
     assert finland[0].score == deal_score(finland[0].deal)
-    assert result.baselines == typical
+    assert finland[0].low == LowClaim(since=datetime(2026, 6, 1), weeks=13)
 
 
-def test_baseline_for_converts_to_the_deal_currency() -> None:
-    # Baselines are stored in EUR; baseline_for hands consumers (email
-    # anchor, AI reasons, sent-deal history) the native equivalent.
+def test_claims_are_measured_in_euros_for_non_eur_subscribers() -> None:
+    # A 1430 SEK fare claims against the route's EUR observations via its
+    # own EUR conversion.
     in_sek = deal(price=1430, currency="SEK", price_eur=130)
     provider = FakeProvider({("FRA", "FI"): [in_sek]})
-    typical = {("FRA", "HEL"): 150.0}
-    result = digest(SUBSCRIBER, provider, baselines=typical)
+    observations = {("FRA", "HEL"): weekly_lows(150, 160, 170, 125)}
+    result = digest(SUBSCRIBER, provider, observations=observations, today=RUN_DAY)
     finland = [r for r in result.deals if r.deal.arrival_country == "Finland"]
-    assert result.baselines == typical
-    assert result.baseline_for(finland[0]) == 1650.0  # 150 EUR × rate 11
+    # The 125 EUR observation on Jun 22 undercuts it: the streak starts there.
+    assert finland[0].low == LowClaim(since=datetime(2026, 6, 22), weeks=10)
 
 
-def test_baselines_fetched_for_waiver_candidates() -> None:
+def test_observations_fetched_for_waiver_candidates() -> None:
     # Finland is recently sent, so every Finland candidate route is
     # waiver-eligible; they already cover the winner — exactly one fetch.
     subscriber = SUBSCRIBER.model_copy(update={"departure_airports": ["FRA", "BER"]})
@@ -146,7 +159,7 @@ def test_baselines_fetched_for_waiver_candidates() -> None:
     history = SentHistory(recent_countries={"Finland"}, all_countries={"Finland"})
     fetched: list[set[tuple[str, str]]] = []
 
-    def lookup(routes: set[tuple[str, str]]) -> dict[tuple[str, str], float]:
+    def lookup(routes: set[tuple[str, str]]) -> Observations:
         fetched.append(routes)
         return {}
 
@@ -156,13 +169,13 @@ def test_baselines_fetched_for_waiver_candidates() -> None:
     assert fetched == [{("FRA", "HEL"), ("BER", "HEL")}]
 
 
-def test_baselines_topped_up_for_winners_outside_the_waiver() -> None:
+def test_observations_topped_up_for_winners_outside_the_waiver() -> None:
     # Nothing recently sent → no waiver fetch; the winning route is still
-    # fetched so the anchor line can render.
+    # fetched so the winner's lowest-price claim can be computed.
     provider = FakeProvider({("FRA", "FI"): [deal()]})
     fetched: list[set[tuple[str, str]]] = []
 
-    def lookup(routes: set[tuple[str, str]]) -> dict[tuple[str, str], float]:
+    def lookup(routes: set[tuple[str, str]]) -> Observations:
         fetched.append(routes)
         return {}
 

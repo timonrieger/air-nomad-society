@@ -13,7 +13,7 @@ from src.services.history import (
     RecordingProvider,
     last_sent_at,
     record_sent_deals,
-    route_baselines,
+    route_observations,
     sent_history,
 )
 from src.services.reasons import deal_reasons
@@ -53,7 +53,7 @@ def run_digest(provider: FlightProvider) -> int:
                 recording,
                 data.countries,
                 history=sent_history(subscriber.id),
-                baselines_for=lambda routes: route_baselines(
+                observations_for=lambda routes: route_observations(
                     routes, before=recording.started_at
                 ),
             )

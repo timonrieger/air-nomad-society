@@ -3,15 +3,16 @@ from datetime import datetime, timedelta
 from src.db import PriceObservation, insert_rows
 from src.models.history import SentHistory
 from src.services.history import (
-    BASELINE_WINDOW_WEEKS,
     FRESHNESS_WINDOW_WEEKS,
+    OBSERVATION_WINDOW_WEEKS,
     _utcnow,
-    route_baselines,
+    route_observations,
     sent_history,
 )
 from tests.conftest import observation, sent
 
 RUN_STARTED = datetime(2026, 9, 1, 6, 0)
+FIRST_DAY = datetime(2026, 8, 1, 6, 0)
 NOW = _utcnow()
 
 
@@ -20,72 +21,67 @@ def spread(prices: tuple[float, ...], **overrides) -> list[PriceObservation]:
     return [
         observation(
             price=price,
-            observed_at=datetime(2026, 8, 1, 6, 0) + timedelta(days=index),
+            observed_at=FIRST_DAY + timedelta(days=index),
             **overrides,
         )
         for index, price in enumerate(prices)
     ]
 
 
-def baselines(
+def observed(
     routes: set[tuple[str, str]] | None = None,
-) -> dict[tuple[str, str], float]:
-    return route_baselines(routes or {("FRA", "HEL")}, before=RUN_STARTED)
+) -> dict[tuple[str, str], list[tuple[datetime, float]]]:
+    return route_observations(routes or {("FRA", "HEL")}, before=RUN_STARTED)
 
 
-def test_median_over_window(sqlite_db) -> None:
-    insert_rows(spread((100, 200, 300, 400)))
-    assert baselines() == {("FRA", "HEL"): 250.0}
+def pairs(prices: tuple[float, ...]) -> list[tuple[datetime, float]]:
+    """The (observed_at, price_eur) pairs spread() produces."""
+    return [
+        (FIRST_DAY + timedelta(days=index), price) for index, price in enumerate(prices)
+    ]
 
 
-def test_single_day_of_observations_does_not_anchor(sqlite_db) -> None:
-    # Four rows, one day: a snapshot, not history.
-    insert_rows([observation(price=price) for price in (100, 200, 300, 400)])
-    assert baselines() == {}
+def test_window_observations_returned_per_route(sqlite_db) -> None:
+    insert_rows(spread((100, 200, 300)))
+    assert observed() == {("FRA", "HEL"): pairs((100, 200, 300))}
 
 
 def test_multi_origin_routes_do_not_cross_pollinate(sqlite_db) -> None:
     # FRA→TKU sits inside the IN-filter cross product of the requested
-    # routes but is neither of them; it must not mint a baseline.
+    # routes but is neither of them; its rows must not leak in.
     insert_rows(
-        spread((100, 200, 300, 400))
-        + spread((500, 600, 700, 800), origin_iata="BER", arrival_iata="TKU")
-        + spread((999, 999, 999, 999), arrival_iata="TKU")
+        spread((100, 200))
+        + spread((500, 600), origin_iata="BER", arrival_iata="TKU")
+        + spread((999, 999), arrival_iata="TKU")
     )
-    assert baselines({("FRA", "HEL"), ("BER", "TKU")}) == {
-        ("FRA", "HEL"): 250.0,
-        ("BER", "TKU"): 650.0,
+    assert observed({("FRA", "HEL"), ("BER", "TKU")}) == {
+        ("FRA", "HEL"): pairs((100, 200)),
+        ("BER", "TKU"): pairs((500, 600)),
     }
 
 
 def test_only_matching_routes_count(sqlite_db) -> None:
     insert_rows(
-        spread((100, 200, 300, 400))
-        + spread((999, 999, 999, 999), origin_iata="BER")
-        + spread((999, 999, 999, 999), arrival_iata="TKU")
+        spread((100, 200))
+        + spread((999, 999), origin_iata="BER")
+        + spread((999, 999), arrival_iata="TKU")
     )
-    assert baselines() == {("FRA", "HEL"): 250.0}
+    assert observed() == {("FRA", "HEL"): pairs((100, 200))}
 
 
-def test_baselines_pool_eur_values_across_currencies(sqlite_db) -> None:
-    # Two days observed in EUR, two in USD: the shared pool anchors on the
-    # provider's EUR conversions, so all four days count toward the median.
-    usd_days = [
-        observation(
-            price=330,
-            currency="USD",
-            price_eur=300,
-            observed_at=datetime(2026, 8, 10, 6, 0),
-        ),
-        observation(
-            price=440,
-            currency="USD",
-            price_eur=400,
-            observed_at=datetime(2026, 8, 11, 6, 0),
-        ),
-    ]
-    insert_rows(spread((100, 200)) + usd_days)
-    assert baselines() == {("FRA", "HEL"): 250.0}
+def test_observations_pool_eur_values_across_currencies(sqlite_db) -> None:
+    # EUR and USD subscribers observe the same route; the shared pool keeps
+    # the provider's EUR conversions.
+    usd_day = observation(
+        price=330,
+        currency="USD",
+        price_eur=300,
+        observed_at=datetime(2026, 8, 10, 6, 0),
+    )
+    insert_rows(spread((100, 200)) + [usd_day])
+    assert observed() == {
+        ("FRA", "HEL"): pairs((100, 200)) + [(datetime(2026, 8, 10, 6, 0), 300.0)]
+    }
 
 
 def test_sent_history_splits_recent_from_ever(sqlite_db) -> None:
@@ -110,13 +106,13 @@ def test_sent_history_is_scoped_to_the_subscriber(sqlite_db) -> None:
 
 def test_current_run_and_stale_observations_are_excluded(sqlite_db) -> None:
     insert_rows(
-        spread((100, 200, 300, 400))
+        spread((100, 200))
         + [observation(price=999, observed_at=RUN_STARTED)]
         + [
             observation(
                 price=999,
-                observed_at=RUN_STARTED - timedelta(weeks=BASELINE_WINDOW_WEEKS + 1),
+                observed_at=RUN_STARTED - timedelta(weeks=OBSERVATION_WINDOW_WEEKS + 1),
             )
         ]
     )
-    assert baselines() == {("FRA", "HEL"): 250.0}
+    assert observed() == {("FRA", "HEL"): pairs((100, 200))}

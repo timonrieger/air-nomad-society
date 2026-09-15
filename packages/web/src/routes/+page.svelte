@@ -10,8 +10,8 @@
 		deals = await fetchDeals().catch(() => []);
 	});
 
-	const foundOn = (deal: WallDeal) => {
-		const [, month, day] = deal.found_on.split('-');
+	const shortDate = (iso: string) => {
+		const [, month, day] = iso.split('-');
 		return `${day}.${month}.`;
 	};
 
@@ -36,12 +36,12 @@
 		{
 			index: '02',
 			title: 'We do the searching',
-			text: 'Every cycle we price your countries out of each of your cities, compare them against what the route usually costs and rank what is left.'
+			text: 'Every cycle we price your countries out of each of your cities, check every fare against the price history we track per route and rank what is left.'
 		},
 		{
 			index: '03',
 			title: 'One email, already sorted',
-			text: 'Weekly, every two weeks or monthly — whichever you picked. Best deals first, each with its price, its usual price and why it made the cut.'
+			text: 'Weekly, every two weeks or monthly — whichever you picked. Best deals first, each with its price, how long it has been the lowest and why it made the cut.'
 		}
 	];
 
@@ -56,7 +56,7 @@
 		},
 		{
 			title: 'A good price on sight',
-			text: 'Every deal shows what the route typically costs and outstanding fares are badged. One short email and no more comparison tabs for your flights.'
+			text: 'Every deal says how long its price has been the lowest on that route, and long-standing lows are badged. One short email and no more comparison tabs for your flights.'
 		}
 	];
 
@@ -99,7 +99,7 @@
 		},
 		{
 			q: 'Will I see the same deals every time?',
-			a: 'No. The digest remembers what you have already been sent: repeats only come back on clearly better prices and repeating countries rotate their cities.'
+			a: 'No. The digest remembers what you have already been sent: repeats only come back while a fare stays the lowest on its route and repeating countries rotate their cities.'
 		},
 		{
 			q: 'Can I depart from more than one city?',
@@ -199,13 +199,11 @@
 						<p class="mt-3 text-xl font-bold text-accent-bright">
 							{deal.price}
 							{deal.currency}
-							{#if deal.savings_percent != null && deal.usual_price != null}
-								<span class="text-sm font-normal text-ink-muted">
-									<s>usually ~{deal.usual_price} {deal.currency}</s>
-								</span>
-							{/if}
+							<span class="text-sm font-normal text-ink-muted">
+								lowest since {shortDate(deal.low_since)}
+							</span>
 						</p>
-						<p class="mt-1 text-xs text-ink-muted">found {foundOn(deal)}</p>
+						<p class="mt-1 text-xs text-ink-muted">found {shortDate(deal.found_on)}</p>
 					</div>
 				</a>
 			{/each}
@@ -261,6 +259,6 @@
 		<a class="btn" href="/subscribe">Subscribe For Free</a>
 	</p>
 	<p class="mt-5 text-sm text-ink-muted">
-		Every fare checked against its usual price
+		Every fare checked against its price history
 	</p>
 </section>

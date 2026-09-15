@@ -26,9 +26,10 @@ REASON_MAX_CHARS = 200
 SYSTEM_PROMPT = """\
 You write one short reason per flight deal for a personalized deal
 digest. Each reason tells this subscriber why their deal was picked: what it
-beat (runner-ups on the same route search), how it compares to the route's
-typical price, comfort (direct, duration, departure time), or that it's one
-of their favorite countries or a fresh discovery. Be concrete and specific,
+beat (runner-ups on the same route search), that it's the route's lowest
+price since a given date, comfort (direct, duration, departure time), or
+that it's one of their favorite countries or a fresh discovery. Be concrete
+and specific,
 warm but not salesy, at most 120 characters per reason. Never invent facts
 not present in the data.
 
@@ -55,7 +56,9 @@ def _payload(subscriber: Subscriber, digest: DigestResult) -> dict[str, object]:
                 "id": index,
                 "picked_as": ranked.source,
                 **_card(ranked.deal),
-                "typical_price": digest.baseline_for(ranked),
+                "lowest_since": (
+                    ranked.low.since.date().isoformat() if ranked.low else None
+                ),
                 "beat_these_runner_ups": [
                     _card(runner_up.deal) for runner_up in ranked.runner_ups
                 ],

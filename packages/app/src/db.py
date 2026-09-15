@@ -105,8 +105,6 @@ class SentDeal(Base):
     # freshness-inflated quality score
     score: Mapped[float] = mapped_column(Float)
     quality_score: Mapped[float] = mapped_column(Float, server_default="0")
-    savings_percent: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    usual_price: Mapped[int | None] = mapped_column(Integer, nullable=True)
     reason: Mapped[str | None] = mapped_column(String, nullable=True)
     sent_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 

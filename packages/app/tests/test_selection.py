@@ -1,11 +1,14 @@
 import random
-from datetime import datetime
+from datetime import datetime, timedelta
 
+from src.models.flights import LowClaim
 from src.models.history import SentHistory
 from src.services.refdata import Country
 from src.services.selection import (
     deal_score,
     freshness_multiplier,
+    low_badge,
+    price_low_since,
     select_gems,
 )
 from tests.conftest import deal
@@ -86,11 +89,13 @@ def test_fresh_deal_is_not_penalized() -> None:
     assert freshness_multiplier(deal(), "discovery", SentHistory(), None) == 1.0
 
 
-def test_recent_country_penalty_and_clearly_better_waiver() -> None:
+def test_recent_country_penalty_and_long_low_waiver() -> None:
     history = SentHistory(recent_countries={"Finland"})
-    assert freshness_multiplier(deal(price=140), "discovery", history, 150.0) == 1.25
-    # ≥15% below the route's typical price repeats without penalty.
-    assert freshness_multiplier(deal(price=127), "discovery", history, 150.0) == 1.0
+    week_low = LowClaim(since=datetime(2026, 8, 25), weeks=1)
+    assert freshness_multiplier(deal(), "discovery", history, week_low) == 1.25
+    # A fare that has been the route's low for two months repeats freely.
+    long_low = LowClaim(since=datetime(2026, 7, 1), weeks=8)
+    assert freshness_multiplier(deal(), "discovery", history, long_low) == 1.0
 
 
 def test_favorites_are_exempt_from_the_country_penalty() -> None:
@@ -102,26 +107,13 @@ def test_favorites_are_exempt_from_the_country_penalty() -> None:
 
 
 def test_waiver_clears_the_city_penalty_too() -> None:
-    # A clear price drop recurs in the same city; that is the point of it.
+    # A long-standing low recurs in the same city; that is the point of it.
     history = SentHistory(recent_countries={"Finland"}, recent_cities={"HEL"})
-    assert freshness_multiplier(deal(price=127), "discovery", history, 150.0) == 1.0
+    long_low = LowClaim(since=datetime(2026, 7, 1), weeks=9)
+    assert freshness_multiplier(deal(), "discovery", history, long_low) == 1.0
 
 
-def test_waiver_compares_in_euros_for_non_eur_subscribers() -> None:
-    # 1400 SEK is meaningless against the 150-EUR baseline; its EUR
-    # conversion (127, ≥15% under) is what earns the waiver.
-    history = SentHistory(recent_countries={"Finland"})
-    cheap_in_sek = deal(price=1400, currency="SEK", price_eur=127)
-    assert freshness_multiplier(cheap_in_sek, "discovery", history, 150.0) == 1.0
-
-
-def test_waiver_holds_at_exactly_15_percent_despite_float_rounding() -> None:
-    history = SentHistory(recent_countries={"Finland"})
-    # 0.85 × 18.00 is 15.299999… in doubles; 15.30 must still be waived.
-    assert freshness_multiplier(deal(price=15.30), "discovery", history, 18.0) == 1.0
-
-
-def test_recent_country_without_a_baseline_is_always_penalized() -> None:
+def test_recent_country_without_a_claim_is_always_penalized() -> None:
     history = SentHistory(recent_countries={"Finland"})
     assert freshness_multiplier(deal(price=1), "discovery", history, None) == 1.25
 
@@ -133,3 +125,49 @@ def test_recent_city_penalty_stacks_on_country() -> None:
     )
     fresh_city = deal(price=999, arrival_iata="TKU")
     assert freshness_multiplier(fresh_city, "discovery", history, None) == 1.25
+
+
+BEFORE = datetime(2026, 9, 1)
+
+
+def spread_obs(*prices: float, start: datetime = datetime(2026, 6, 1)):
+    """One observation per price, on consecutive days."""
+    return [
+        (start + timedelta(days=index), price) for index, price in enumerate(prices)
+    ]
+
+
+def test_low_since_needs_enough_distinct_days() -> None:
+    assert price_low_since(spread_obs(200, 300, 400), 100, BEFORE) is None
+    # Four prices on one day are a snapshot, not history.
+    same_day = [(datetime(2026, 6, 1, hour), 200.0) for hour in (6, 9, 12, 15)]
+    assert price_low_since(same_day, 100, BEFORE) is None
+
+
+def test_matching_an_old_price_breaks_the_streak() -> None:
+    observations = spread_obs(200, 150, 130, 180)
+    claim = price_low_since(observations, 130, BEFORE)
+    # The equal fare on Jun 3 ends the streak there: flat fares claim little.
+    assert claim == LowClaim(since=datetime(2026, 6, 3), weeks=12)
+
+
+def test_undercutting_everything_claims_the_full_data_span() -> None:
+    claim = price_low_since(spread_obs(200, 150, 130, 180), 129.99, BEFORE)
+    assert claim == LowClaim(since=datetime(2026, 6, 1), weeks=13)
+
+
+def test_observations_at_or_after_before_are_ignored() -> None:
+    # The run's own morning and anything later never anchor a claim.
+    observations = spread_obs(200, 210, 220, 230) + [
+        (BEFORE, 50.0),
+        (datetime(2026, 9, 2), 50.0),
+    ]
+    claim = price_low_since(observations, 100, BEFORE)
+    assert claim == LowClaim(since=datetime(2026, 6, 1), weeks=13)
+
+
+def test_low_badges_by_streak_length() -> None:
+    assert low_badge(30) == "🔥 lowest in 6 months"
+    assert low_badge(8) == "💸 lowest in 2 months"
+    assert low_badge(4) == "📉 lowest in a month"
+    assert low_badge(3) is None
