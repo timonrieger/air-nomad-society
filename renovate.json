@@ -1,18 +1,72 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:best-practices",
-    "schedule:monthly"
-  ],
+  "extends": ["config:best-practices", "schedule:monthly"],
+  "timezone": "Europe/Berlin",
+  "labels": ["dependencies"],
+  "configMigration": true,
   "minimumReleaseAge": "3 days",
+  "lockFileMaintenance": {
+    "enabled": true,
+    "extends": ["schedule:monthly"]
+  },
+  "vulnerabilityAlerts": {
+    "labels": ["dependencies", "security"]
+  },
+  "osvVulnerabilityAlerts": true,
+  "pre-commit": {
+    "enabled": true
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "biome is also pinned inside pre-commit additional_dependencies, which no built-in manager reads",
+      "managerFilePatterns": ["/^\\.pre-commit-config\\.yaml$/"],
+      "matchStrings": ["@biomejs/biome@(?<currentValue>[0-9.]+)"],
+      "depNameTemplate": "@biomejs/biome",
+      "datasourceTemplate": "npm"
+    }
+  ],
   "packageRules": [
     {
-      "groupName": "uv toolchain",
-      "groupSlug": "uv",
-      "matchPackageNames": [
-        "uv",
-        "astral-sh/uv-pre-commit"
-      ]
+      "description": "All GitHub Actions updates in one PR",
+      "matchManagers": ["github-actions"],
+      "groupName": "github actions"
+    },
+    {
+      "description": "Production Python dependencies",
+      "matchManagers": ["pep621"],
+      "matchDepTypes": ["project.dependencies"],
+      "groupName": "python prod dependencies"
+    },
+    {
+      "description": "The web package is a prerendered app so dependencies vs devDependencies carries no runtime meaning",
+      "matchManagers": ["npm"],
+      "groupName": "frontend dependencies"
+    },
+    {
+      "description": "Python dev deps, pre-commit hooks, and mise tools",
+      "matchManagers": ["pep621"],
+      "matchDepTypes": ["dependency-groups"],
+      "groupName": "dev tooling"
+    },
+    {
+      "matchManagers": ["pre-commit", "mise"],
+      "groupName": "dev tooling"
+    },
+    {
+      "description": "Keep biome pins in sync: package, hook rev, additional_dependencies",
+      "matchPackageNames": ["@biomejs/biome", "biomejs/pre-commit"],
+      "groupName": "biome"
+    },
+    {
+      "description": "Keep ty pins in sync: dependency-groups + hook rev",
+      "matchPackageNames": ["ty", "astral-sh/ty-pre-commit"],
+      "groupName": "ty"
+    },
+    {
+      "description": "Keep uv pins in sync: mise + hook rev",
+      "matchPackageNames": ["uv", "astral-sh/uv-pre-commit"],
+      "groupName": "uv toolchain"
     }
   ]
 }
