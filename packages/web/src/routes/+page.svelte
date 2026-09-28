@@ -87,7 +87,7 @@
 		},
 		{
 			q: 'What does "Favorite Destinations" mean?',
-			a: 'Mark certain countries as favorites and every email includes the best deal we found for each of them. They are optional — without any, your digest is all surprise discoveries.'
+			a: 'Mark countries as favorites and every email includes the best deal we found for each of them. Pick at least one when you sign up — you can change them anytime.'
 		},
 		{
 			q: 'Will I get flight deals for non-favorite destinations?',

@@ -154,7 +154,7 @@
 <p class="mt-2 max-w-2xl text-ink-muted">
 	{token
 		? 'Adjust anything below and save. Your next digest follows the new preferences.'
-		: 'Fill in the form below to get personalized flight deals in your inbox. A greeting name, your email, where you fly from and how prices are shown is all we need, everything else can be changed later.'}
+		: 'Fill in the form below to get personalized flight deals in your inbox. A greeting name, your email, where you fly from, how prices are shown and at least one favorite country is all we need, everything else can be changed later.'}
 </p>
 
 {#if resolving}
@@ -203,6 +203,24 @@
 			<Field required label="Currency" hint="Prices are shown in this currency.">
 				<SelectMenu items={currencyItems} placeholder="Select a currency" bind:value={currency} />
 			</Field>
+			<Field
+				required
+				label="Favorite destinations"
+				hint="Pick up to 10. Every digest guarantees a deal for each favorite; surprise discoveries are added on top."
+			>
+				<SelectMenu items={countryItems} placeholder="Select countries" multiple bind:value={favorites} />
+			</Field>
+			<Field
+				label="Exclude from discoveries"
+				hint="Never picked as surprise discoveries. Favorites are unaffected. Pick a region to toggle all its countries."
+			>
+				<SelectMenu
+					groups={countryGroups}
+					placeholder="Select countries or regions"
+					multiple
+					bind:value={excluded}
+				/>
+			</Field>
 		</div>
 		<details bind:open={advancedOpen} class="mb-6 overflow-hidden rounded-xl border border-line">
 			<summary
@@ -210,7 +228,7 @@
 			>
 				<span class="font-semibold">Advanced configuration</span>
 				<span class="block text-sm text-ink-muted">
-					Trip length, timing, cadence and destination preferences — all preset with sensible
+					Trip length, timing, cadence and surprise discoveries — all preset with sensible
 					defaults.
 				</span>
 			</summary>
@@ -264,23 +282,6 @@
 						</span>
 					</label>
 				</div>
-				<Field
-					label="Favorite destinations"
-					hint="Optional — pick up to 10. Every digest guarantees a deal for each favorite; without any, it is all discoveries."
-				>
-					<SelectMenu items={countryItems} placeholder="Select countries" multiple bind:value={favorites} />
-				</Field>
-				<Field
-					label="Exclude from discoveries"
-					hint="Never picked as surprise discoveries. Favorites are unaffected. Pick a region to toggle all its countries."
-				>
-					<SelectMenu
-						groups={countryGroups}
-						placeholder="Select countries or regions"
-						multiple
-						bind:value={excluded}
-					/>
-				</Field>
 			</div>
 		</details>
 		<button class="btn" type="submit" disabled={submitting}>

@@ -252,9 +252,9 @@ def test_deals_wall_normalizes_to_euros(sqlite_db) -> None:
         assert body[0]["badge"] == "💸 lowest in 2 months"
 
 
-def test_subscribe_without_favorites_is_a_pure_discovery_profile(client) -> None:
-    body = client.post("/subscribe", json={**PAYLOAD, "favorite_countries": []}).json()
-    assert body["favorites"] == []
+def test_subscribe_requires_a_favorite_country(client) -> None:
+    response = client.post("/subscribe", json={**PAYLOAD, "favorite_countries": []})
+    assert response.status_code == 422
 
 
 def test_subscribe_rejects_duplicate_countries(client) -> None:

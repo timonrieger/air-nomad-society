@@ -33,7 +33,7 @@ class SubscriptionIn(BaseModel):
     max_days_ahead: int = Field(ge=1, le=365)
     cadence: Cadence
     include_discoveries: bool
-    favorite_countries: list[str] = Field(max_length=10)
+    favorite_countries: list[str] = Field(min_length=1, max_length=10)
     excluded_countries: list[str] = []
 
     @field_validator("departure_airports")
@@ -64,11 +64,6 @@ class SubscriptionIn(BaseModel):
             raise ValueError(
                 f"max_nights ({self.max_nights}) cannot exceed the search "
                 f"range duration ({search_range} days)"
-            )
-        if not self.include_discoveries and not self.favorite_countries:
-            raise ValueError(
-                "with include_discoveries off, favorite_countries needs at "
-                "least one country — otherwise the digest has nothing to send"
             )
         return self
 
