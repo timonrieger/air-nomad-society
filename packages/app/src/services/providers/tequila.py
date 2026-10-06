@@ -33,6 +33,8 @@ class TequilaProvider:
     Picking the best candidate is the caller's job.
     """
 
+    name = "tequila"
+
     def __init__(self, endpoint: str, api_key: str) -> None:
         self.endpoint = endpoint
         self._session = httpx2.Client()
@@ -103,7 +105,7 @@ class TequilaProvider:
         reachable = {city["country"]["code"] for city in cities}
         return (
             [
-                City(city=city["name"], code=city["code"])
+                City(city=city["name"], code=city["code"], providers=[self.name])
                 for city in cities[:city_limit]
             ],
             [

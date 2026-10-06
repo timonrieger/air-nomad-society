@@ -24,6 +24,7 @@ class Country(BaseModel):
 class City(BaseModel):
     city: str
     code: str
+    providers: list[str]
 
 
 class ReferenceData(BaseModel):

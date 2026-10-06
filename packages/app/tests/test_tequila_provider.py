@@ -185,6 +185,7 @@ def test_locations_ranks_cities_and_keeps_reachable_countries(monkeypatch) -> No
     )
     cities, countries = TequilaProvider("https://t", "key").locations(2)
     assert [city.code for city in cities] == ["HEL", "MUC"]
+    assert cities[0].providers == ["tequila"]
     # FMM fell past the limit, but Germany stays reachable through MUC.
     assert [country.code for country in countries] == ["DE", "FI"]
     assert countries[0].region == "Europe"

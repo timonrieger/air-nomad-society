@@ -128,7 +128,7 @@ def main(argv: list[str] | None = None) -> int:
     settings = get_settings()
     provider = TequilaProvider(settings.tequila_endpoint, settings.tequila_api_key)
     if parsed.command == "sync-locations":
-        sync_locations(provider)
+        sync_locations([provider])
         return 0
     return run_digest(provider)
 

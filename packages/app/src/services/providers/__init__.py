@@ -14,6 +14,8 @@ class FlightProvider(Protocol):
 class LocationSource(Protocol):
     """Anything that can list the cities and countries it searches."""
 
+    name: str
+
     def locations(self, city_limit: int) -> tuple[list[City], list[Country]]:
         """Up to `city_limit` departure cities, most popular first, and the
         destination countries."""
