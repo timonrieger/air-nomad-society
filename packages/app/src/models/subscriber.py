@@ -25,7 +25,7 @@ class SubscriptionIn(BaseModel):
 
     username: str = Field(min_length=3, max_length=20)
     email: EmailStr
-    departure_airports: list[str] = Field(min_length=1, max_length=3)
+    departure_airports: list[str] = Field(min_length=1, max_length=5)
     currency: str
     min_nights: int = Field(ge=1)
     max_nights: int = Field(ge=1)
