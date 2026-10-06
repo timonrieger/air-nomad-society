@@ -50,7 +50,7 @@ def test_one_failing_subscriber_does_not_block_the_rest(sqlite_db, monkeypatch) 
     monkeypatch.setattr(cli, "load_subscribers", lambda only_id: subscribers)
     monkeypatch.setattr(cli.mailer, "send_email", fake_send)
 
-    failures = cli.run_digest(FakeProvider({("FRA", "FI"): [deal()]}))
+    failures = cli.run_digest({"tequila": FakeProvider({("FRA", "FI"): [deal()]})})
     assert failures == 1
     assert sent == ["works@example.com"]
 
@@ -66,7 +66,7 @@ def test_empty_digest_is_not_sent(sqlite_db, monkeypatch) -> None:
         lambda html, recipient, *a, **k: sent.append(recipient),
     )
     # The provider finds nothing anywhere: no email, but no failure either.
-    assert cli.run_digest(FakeProvider()) == 0
+    assert cli.run_digest({"tequila": FakeProvider()}) == 0
     assert sent == []
 
 
@@ -93,7 +93,7 @@ def test_lowest_price_claim_from_earlier_runs_reaches_the_email(
     monkeypatch.setattr(
         cli.mailer, "send_email", lambda html, *a, **k: captured.append(html)
     )
-    assert cli.run_digest(FakeProvider({("FRA", "FI"): [deal()]})) == 0
+    assert cli.run_digest({"tequila": FakeProvider({("FRA", "FI"): [deal()]})}) == 0
     assert f"lowest price since {first_seen:%b %d}" in captured[0]
     assert "💸 lowest in 2 months" in captured[0]
     with Session(get_engine()) as session:
@@ -117,7 +117,7 @@ def test_reasons_reach_the_email_and_the_history(sqlite_db, monkeypatch) -> None
     monkeypatch.setattr(
         cli.mailer, "send_email", lambda html, *a, **k: captured.append(html)
     )
-    assert cli.run_digest(FakeProvider({("FRA", "FI"): [deal()]})) == 0
+    assert cli.run_digest({"tequila": FakeProvider({("FRA", "FI"): [deal()]})}) == 0
     assert reason in captured[0]
     with Session(get_engine()) as session:
         assert session.scalars(select(SentDeal)).one().reason == reason
@@ -133,12 +133,12 @@ def test_freshness_reads_the_sent_history_between_runs(sqlite_db, monkeypatch) -
     )
     # Some history exists (Spain, once), but Finland was never sent — new for you.
     insert_rows([sent(arrival_country="Spain", arrival_iata="PMI")])
-    assert cli.run_digest(FakeProvider({("FRA", "FI"): [deal()]})) == 0
+    assert cli.run_digest({"tequila": FakeProvider({("FRA", "FI"): [deal()]})}) == 0
     assert "✨ new for you" in captured[0]
     # Second run: same deal repeats at the same price — no badge, and the
     # recorded ranking score carries the repeat penalties while the quality
     # score stays what the deal is worth.
-    assert cli.run_digest(FakeProvider({("FRA", "FI"): [deal()]})) == 0
+    assert cli.run_digest({"tequila": FakeProvider({("FRA", "FI"): [deal()]})}) == 0
     assert "✨ new for you" not in captured[1]
     with Session(get_engine()) as session:
         finland = select(SentDeal).where(SentDeal.arrival_country == "Finland")
@@ -158,7 +158,7 @@ def test_history_rows_written_for_candidates_and_sent_deals(
         cli, "load_subscribers", lambda only_id: [subscriber("a@example.com")]
     )
     monkeypatch.setattr(cli.mailer, "send_email", lambda *a, **k: None)
-    assert cli.run_digest(provider) == 0
+    assert cli.run_digest({"tequila": provider}) == 0
 
     with Session(get_engine()) as session:
         observations = session.scalars(select(PriceObservation)).all()
@@ -186,7 +186,7 @@ def test_no_sent_deals_recorded_when_email_fails(sqlite_db, monkeypatch) -> None
         raise RuntimeError("smtp exploded")
 
     monkeypatch.setattr(cli.mailer, "send_email", explode)
-    assert cli.run_digest(provider) == 1
+    assert cli.run_digest({"tequila": provider}) == 1
 
     with Session(get_engine()) as session:
         assert session.scalars(select(SentDeal)).all() == []
@@ -208,10 +208,10 @@ def test_slow_cadences_send_once_due_then_skip(
     )
     # The last digest is past this cadence's gap, so the run sends.
     insert_rows([sent(sent_at=datetime.now() - timedelta(days=stale_days))])
-    assert cli.run_digest(FakeProvider({("FRA", "FI"): [deal()]})) == 0
+    assert cli.run_digest({"tequila": FakeProvider({("FRA", "FI"): [deal()]})}) == 0
     assert sent_to == ["a@example.com"]
     # That run recorded its own sent deals; an immediate rerun is not due.
-    assert cli.run_digest(FakeProvider({("FRA", "FI"): [deal()]})) == 0
+    assert cli.run_digest({"tequila": FakeProvider({("FRA", "FI"): [deal()]})}) == 0
     assert sent_to == ["a@example.com"]
 
 
@@ -226,5 +226,5 @@ def test_monthly_is_not_due_when_biweekly_would_be(sqlite_db, monkeypatch) -> No
     )
     # Eleven days: due for biweekly, still inside the monthly gap.
     insert_rows([sent(sent_at=datetime.now() - timedelta(days=11))])
-    assert cli.run_digest(FakeProvider({("FRA", "FI"): [deal()]})) == 0
+    assert cli.run_digest({"tequila": FakeProvider({("FRA", "FI"): [deal()]})}) == 0
     assert sent_to == []

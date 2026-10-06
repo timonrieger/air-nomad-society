@@ -18,7 +18,7 @@ from src.services.history import (
 )
 from src.services.locations import sync_locations
 from src.services.reasons import deal_reasons
-from src.services.providers import FlightProvider
+from src.services.providers import FlightProvider, OriginRouter
 from src.services.providers.tequila import TequilaProvider
 from src.services.tokens import issue_token
 
@@ -28,8 +28,9 @@ logger = logging.getLogger(__name__)
 CADENCE_GAP_DAYS: dict[Cadence, int] = {"weekly": 0, "biweekly": 10, "monthly": 24}
 
 
-def run_digest(provider: FlightProvider) -> int:
+def run_digest(providers: dict[str, FlightProvider]) -> int:
     """Sends the digest to every subscriber; one failure never blocks the rest.
+    Each departure city is searched with the providers it lists.
 
     Returns the number of failed subscribers.
     """
@@ -40,7 +41,7 @@ def run_digest(provider: FlightProvider) -> int:
         logger.info("purged %d subscribers that never confirmed", purged)
     subscribers = load_subscribers(settings.digest_only_id)
     logger.info("sending digest to %d subscribers", len(subscribers))
-    recording = RecordingProvider(provider)
+    recording = RecordingProvider(OriginRouter(providers, data.cities))
     failures = 0
     for subscriber in subscribers:
         try:
@@ -130,7 +131,7 @@ def main(argv: list[str] | None = None) -> int:
     if parsed.command == "sync-locations":
         sync_locations([provider])
         return 0
-    return run_digest(provider)
+    return run_digest({provider.name: provider})
 
 
 if __name__ == "__main__":
