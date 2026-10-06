@@ -22,8 +22,8 @@
 
 	// Counts mirror packages/app/src/data.json — the reference data the search runs on.
 	const stats: Stat[] = [
-		{ value: '500+', label: 'departure cities' },
-		{ value: '197', label: 'destination countries' },
+		{ value: '1,000', label: 'departure cities' },
+		{ value: '200+', label: 'destination countries' },
 		{ value: '2 min', label: 'to set up' }
 	];
 
@@ -67,7 +67,7 @@
 		},
 		{
 			q: 'Where can I fly from?',
-			a: 'Deals depart from the cities you pick — more than 500 departure cities worldwide are supported. Start typing yours in the subscribe form to check.'
+			a: 'Deals depart from the cities you pick — 1,000 departure cities worldwide are supported. Start typing yours in the subscribe form to check.'
 		},
 		{
 			q: 'How do I book a deal?',
