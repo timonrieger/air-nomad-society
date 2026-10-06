@@ -145,3 +145,47 @@ def test_pacing_kicks_in_only_at_the_quota(monkeypatch) -> None:
     clock["now"] = 1100.0
     provider._pace()
     assert slept == [50.0]
+
+
+def kiwi_city(
+    name: str, code: str | None, country: str, rank: int, airports: int = 1
+) -> dict[str, Any]:
+    return {
+        "name": name,
+        "code": code,
+        "rank": rank,
+        "airports": airports,
+        "country": {"code": country},
+    }
+
+
+def test_locations_ranks_cities_and_keeps_reachable_countries(monkeypatch) -> None:
+    dumps = {
+        "city": [
+            kiwi_city("Munich", "MUC", "DE", 138),
+            kiwi_city("Navi Mumbai", None, "IN", 1309),
+            kiwi_city("Memmingen", "FMM", "DE", 446),
+            kiwi_city("Vaduz", "QVU", "LI", 10, airports=0),
+            kiwi_city("Helsinki", "HEL", "FI", 90),
+        ],
+        "country": [
+            {"name": name, "code": code, "continent": {"name": "Europe"}}
+            for name, code in [
+                ("Germany", "DE"),
+                ("Finland", "FI"),
+                ("Liechtenstein", "LI"),
+            ]
+        ],
+    }
+    monkeypatch.setattr(
+        "src.services.providers.tequila.httpx2.Client.get",
+        lambda self, url, params, **k: ResponseStub(
+            {"locations": dumps[params["location_types"]]}
+        ),
+    )
+    cities, countries = TequilaProvider("https://t", "key").locations(2)
+    assert [city.code for city in cities] == ["HEL", "MUC"]
+    assert cities[0].providers == ["tequila"]
+    # FMM fell past the limit, but Germany stays reachable through MUC.
+    assert [country.code for country in countries] == ["DE", "FI"]
+    assert countries[0].region == "Europe"

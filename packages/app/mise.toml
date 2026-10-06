@@ -38,6 +38,10 @@ description = "Autogenerate a migration from model changes (append: -- -m 'messa
 run = "uv run python -m src.cli digest"
 description = "Run the flight digest job once against the configured database"
 
+[tasks.sync-locations]
+run = "uv run python -m src.cli sync-locations"
+description = "Refresh the departure cities and destination countries in data.json from the flight providers"
+
 # In dev (ENVIRONMENT=dev + MY_UUID) the send is restricted to you — the
 # test-send path before a production run.
 [tasks.announce]

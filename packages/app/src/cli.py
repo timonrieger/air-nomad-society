@@ -16,8 +16,9 @@ from src.services.history import (
     route_observations,
     sent_history,
 )
+from src.services.locations import sync_locations
 from src.services.reasons import deal_reasons
-from src.services.providers import FlightProvider
+from src.services.providers import FlightProvider, OriginRouter
 from src.services.providers.tequila import TequilaProvider
 from src.services.tokens import issue_token
 
@@ -27,8 +28,9 @@ logger = logging.getLogger(__name__)
 CADENCE_GAP_DAYS: dict[Cadence, int] = {"weekly": 0, "biweekly": 10, "monthly": 24}
 
 
-def run_digest(provider: FlightProvider) -> int:
+def run_digest(providers: dict[str, FlightProvider]) -> int:
     """Sends the digest to every subscriber; one failure never blocks the rest.
+    Each departure city is searched with the providers it lists.
 
     Returns the number of failed subscribers.
     """
@@ -39,7 +41,7 @@ def run_digest(provider: FlightProvider) -> int:
         logger.info("purged %d subscribers that never confirmed", purged)
     subscribers = load_subscribers(settings.digest_only_id)
     logger.info("sending digest to %d subscribers", len(subscribers))
-    recording = RecordingProvider(provider)
+    recording = RecordingProvider(OriginRouter(providers, data.cities))
     failures = 0
     for subscriber in subscribers:
         try:
@@ -110,8 +112,9 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="ans")
     parser.add_argument(
         "command",
-        choices=["digest", "announce"],
-        help="search deals and email every subscriber, or send a product update",
+        choices=["digest", "announce", "sync-locations"],
+        help="search deals and email every subscriber, send a product update, "
+        "or refresh the cities and countries in data.json",
     )
     parser.add_argument("args", nargs="*")
     parsed = parser.parse_args(argv)
@@ -125,7 +128,10 @@ def main(argv: list[str] | None = None) -> int:
         return run_announcement(subject, body_file)
     settings = get_settings()
     provider = TequilaProvider(settings.tequila_endpoint, settings.tequila_api_key)
-    return run_digest(provider)
+    if parsed.command == "sync-locations":
+        sync_locations([provider])
+        return 0
+    return run_digest({provider.name: provider})
 
 
 if __name__ == "__main__":

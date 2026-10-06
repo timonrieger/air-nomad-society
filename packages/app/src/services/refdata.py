@@ -1,5 +1,6 @@
 """Typed access to the reference data in `packages/app/src/data.json`."""
 
+import json
 from functools import lru_cache
 from pathlib import Path
 
@@ -23,6 +24,7 @@ class Country(BaseModel):
 class City(BaseModel):
     city: str
     code: str
+    providers: list[str]
 
 
 class ReferenceData(BaseModel):
@@ -35,6 +37,13 @@ class ReferenceData(BaseModel):
 @lru_cache
 def load() -> ReferenceData:
     return ReferenceData.model_validate_json(DATA_PATH.read_text(encoding="utf-8"))
+
+
+def save(data: ReferenceData) -> None:
+    DATA_PATH.write_text(
+        json.dumps(data.model_dump(), indent="\t", ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
 
 
 def country_choices() -> list[str]:
