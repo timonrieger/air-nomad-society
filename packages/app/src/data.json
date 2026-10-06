@@ -16,11 +16,6 @@
 			"region": "Africa"
 		},
 		{
-			"country": "American Samoa",
-			"code": "AS",
-			"region": "Oceania"
-		},
-		{
 			"country": "Andorra",
 			"code": "AD",
 			"region": "Europe"
@@ -31,7 +26,12 @@
 			"region": "Africa"
 		},
 		{
-			"country": "Antigua and Barbuda",
+			"country": "Anguilla",
+			"code": "AI",
+			"region": "North America"
+		},
+		{
+			"country": "Antigua & Barbuda",
 			"code": "AG",
 			"region": "North America"
 		},
@@ -44,6 +44,11 @@
 			"country": "Armenia",
 			"code": "AM",
 			"region": "Asia"
+		},
+		{
+			"country": "Aruba",
+			"code": "AW",
+			"region": "North America"
 		},
 		{
 			"country": "Australia",
@@ -81,11 +86,6 @@
 			"region": "North America"
 		},
 		{
-			"country": "Belarus",
-			"code": "BY",
-			"region": "Europe"
-		},
-		{
 			"country": "Belgium",
 			"code": "BE",
 			"region": "Europe"
@@ -111,7 +111,7 @@
 			"region": "South America"
 		},
 		{
-			"country": "Bosnia and Herzegovina",
+			"country": "Bosnia & Herzegovina",
 			"code": "BA",
 			"region": "Europe"
 		},
@@ -124,6 +124,11 @@
 			"country": "Brazil",
 			"code": "BR",
 			"region": "South America"
+		},
+		{
+			"country": "British Virgin Islands",
+			"code": "VG",
+			"region": "North America"
 		},
 		{
 			"country": "Brunei",
@@ -166,6 +171,11 @@
 			"region": "Africa"
 		},
 		{
+			"country": "Cayman Islands",
+			"code": "KY",
+			"region": "North America"
+		},
+		{
 			"country": "Central African Republic",
 			"code": "CF",
 			"region": "Africa"
@@ -186,6 +196,16 @@
 			"region": "Asia"
 		},
 		{
+			"country": "Christmas Island",
+			"code": "CX",
+			"region": "Oceania"
+		},
+		{
+			"country": "Cocos (Keeling) Islands",
+			"code": "CC",
+			"region": "Oceania"
+		},
+		{
 			"country": "Colombia",
 			"code": "CO",
 			"region": "South America"
@@ -194,6 +214,11 @@
 			"country": "Comoros",
 			"code": "KM",
 			"region": "Africa"
+		},
+		{
+			"country": "Cook Islands",
+			"code": "CK",
+			"region": "Oceania"
 		},
 		{
 			"country": "Costa Rica",
@@ -206,19 +231,24 @@
 			"region": "Europe"
 		},
 		{
-			"country": "Cuba",
-			"code": "CU",
+			"country": "Curaçao",
+			"code": "CW",
 			"region": "North America"
 		},
 		{
 			"country": "Cyprus",
 			"code": "CY",
-			"region": "Asia"
+			"region": "Europe"
 		},
 		{
-			"country": "Czech Republic",
+			"country": "Czechia",
 			"code": "CZ",
 			"region": "Europe"
+		},
+		{
+			"country": "Côte d’Ivoire",
+			"code": "CI",
+			"region": "Africa"
 		},
 		{
 			"country": "Democratic Republic of the Congo",
@@ -244,11 +274,6 @@
 			"country": "Dominican Republic",
 			"code": "DO",
 			"region": "North America"
-		},
-		{
-			"country": "East Timor",
-			"code": "TL",
-			"region": "Asia"
 		},
 		{
 			"country": "Ecuador",
@@ -286,6 +311,16 @@
 			"region": "Africa"
 		},
 		{
+			"country": "Falkland Islands (Islas Malvinas)",
+			"code": "FK",
+			"region": "South America"
+		},
+		{
+			"country": "Faroe Islands",
+			"code": "FO",
+			"region": "Europe"
+		},
+		{
 			"country": "Fiji",
 			"code": "FJ",
 			"region": "Oceania"
@@ -299,6 +334,11 @@
 			"country": "France",
 			"code": "FR",
 			"region": "Europe"
+		},
+		{
+			"country": "French Polynesia",
+			"code": "PF",
+			"region": "Oceania"
 		},
 		{
 			"country": "Gabon",
@@ -326,9 +366,19 @@
 			"region": "Africa"
 		},
 		{
+			"country": "Gibraltar",
+			"code": "GI",
+			"region": "Europe"
+		},
+		{
 			"country": "Greece",
 			"code": "GR",
 			"region": "Europe"
+		},
+		{
+			"country": "Greenland",
+			"code": "GL",
+			"region": "North America"
 		},
 		{
 			"country": "Grenada",
@@ -339,6 +389,11 @@
 			"country": "Guatemala",
 			"code": "GT",
 			"region": "North America"
+		},
+		{
+			"country": "Guernsey",
+			"code": "GG",
+			"region": "Europe"
 		},
 		{
 			"country": "Guinea",
@@ -406,6 +461,11 @@
 			"region": "Europe"
 		},
 		{
+			"country": "Isle of Man",
+			"code": "IM",
+			"region": "Europe"
+		},
+		{
 			"country": "Israel",
 			"code": "IL",
 			"region": "Asia"
@@ -416,11 +476,6 @@
 			"region": "Europe"
 		},
 		{
-			"country": "Ivory Coast",
-			"code": "CI",
-			"region": "Africa"
-		},
-		{
 			"country": "Jamaica",
 			"code": "JM",
 			"region": "North America"
@@ -429,6 +484,11 @@
 			"country": "Japan",
 			"code": "JP",
 			"region": "Asia"
+		},
+		{
+			"country": "Jersey",
+			"code": "JE",
+			"region": "Europe"
 		},
 		{
 			"country": "Jordan",
@@ -506,6 +566,11 @@
 			"region": "Europe"
 		},
 		{
+			"country": "Macau",
+			"code": "MO",
+			"region": "Asia"
+		},
+		{
 			"country": "Madagascar",
 			"code": "MG",
 			"region": "Africa"
@@ -566,11 +631,6 @@
 			"region": "Europe"
 		},
 		{
-			"country": "Monaco",
-			"code": "MC",
-			"region": "Europe"
-		},
-		{
 			"country": "Mongolia",
 			"code": "MN",
 			"region": "Asia"
@@ -591,7 +651,7 @@
 			"region": "Africa"
 		},
 		{
-			"country": "Myanmar",
+			"country": "Myanmar (Burma)",
 			"code": "MM",
 			"region": "Asia"
 		},
@@ -616,6 +676,11 @@
 			"region": "Europe"
 		},
 		{
+			"country": "New Caledonia",
+			"code": "NC",
+			"region": "Oceania"
+		},
+		{
 			"country": "New Zealand",
 			"code": "NZ",
 			"region": "Oceania"
@@ -636,14 +701,19 @@
 			"region": "Africa"
 		},
 		{
+			"country": "Niue",
+			"code": "NU",
+			"region": "Oceania"
+		},
+		{
+			"country": "Norfolk Island",
+			"code": "NF",
+			"region": "Oceania"
+		},
+		{
 			"country": "North Korea",
 			"code": "KP",
 			"region": "Asia"
-		},
-		{
-			"country": "North Macedonia",
-			"code": "MK",
-			"region": "Europe"
 		},
 		{
 			"country": "Norway",
@@ -706,6 +776,11 @@
 			"region": "Asia"
 		},
 		{
+			"country": "Republic of North Macedonia",
+			"code": "MK",
+			"region": "Europe"
+		},
+		{
 			"country": "Republic of the Congo",
 			"code": "CG",
 			"region": "Africa"
@@ -716,39 +791,14 @@
 			"region": "Europe"
 		},
 		{
-			"country": "Russia",
-			"code": "RU",
-			"region": "Europe"
-		},
-		{
 			"country": "Rwanda",
 			"code": "RW",
 			"region": "Africa"
 		},
 		{
-			"country": "Saint Kitts and Nevis",
-			"code": "KN",
-			"region": "North America"
-		},
-		{
-			"country": "Saint Lucia",
-			"code": "LC",
-			"region": "North America"
-		},
-		{
-			"country": "Saint Vincent and the Grenadines",
-			"code": "VC",
-			"region": "North America"
-		},
-		{
 			"country": "Samoa",
 			"code": "WS",
 			"region": "Oceania"
-		},
-		{
-			"country": "Sao Tome and Principe",
-			"code": "ST",
-			"region": "Africa"
 		},
 		{
 			"country": "Saudi Arabia",
@@ -779,6 +829,11 @@
 			"country": "Singapore",
 			"code": "SG",
 			"region": "Asia"
+		},
+		{
+			"country": "Sint Maarten",
+			"code": "SX",
+			"region": "North America"
 		},
 		{
 			"country": "Slovakia",
@@ -826,6 +881,41 @@
 			"region": "Asia"
 		},
 		{
+			"country": "St. Barthélemy",
+			"code": "BL",
+			"region": "North America"
+		},
+		{
+			"country": "St. Helena",
+			"code": "SH",
+			"region": "Africa"
+		},
+		{
+			"country": "St. Kitts & Nevis",
+			"code": "KN",
+			"region": "North America"
+		},
+		{
+			"country": "St. Lucia",
+			"code": "LC",
+			"region": "North America"
+		},
+		{
+			"country": "St. Martin",
+			"code": "MF",
+			"region": "North America"
+		},
+		{
+			"country": "St. Pierre & Miquelon",
+			"code": "PM",
+			"region": "North America"
+		},
+		{
+			"country": "St. Vincent & Grenadines",
+			"code": "VC",
+			"region": "North America"
+		},
+		{
 			"country": "Sudan",
 			"code": "SD",
 			"region": "Africa"
@@ -834,6 +924,11 @@
 			"country": "Suriname",
 			"code": "SR",
 			"region": "South America"
+		},
+		{
+			"country": "Svalbard & Jan Mayen",
+			"code": "SJ",
+			"region": "Europe"
 		},
 		{
 			"country": "Swaziland",
@@ -856,6 +951,11 @@
 			"region": "Asia"
 		},
 		{
+			"country": "São Tomé & Príncipe",
+			"code": "ST",
+			"region": "Africa"
+		},
+		{
 			"country": "Taiwan",
 			"code": "TW",
 			"region": "Asia"
@@ -876,6 +976,11 @@
 			"region": "Asia"
 		},
 		{
+			"country": "Timor-Leste",
+			"code": "TL",
+			"region": "Asia"
+		},
+		{
 			"country": "Togo",
 			"code": "TG",
 			"region": "Africa"
@@ -886,7 +991,7 @@
 			"region": "Oceania"
 		},
 		{
-			"country": "Trinidad and Tobago",
+			"country": "Trinidad & Tobago",
 			"code": "TT",
 			"region": "North America"
 		},
@@ -906,6 +1011,11 @@
 			"region": "Asia"
 		},
 		{
+			"country": "Turks & Caicos Islands",
+			"code": "TC",
+			"region": "North America"
+		},
+		{
 			"country": "Tuvalu",
 			"code": "TV",
 			"region": "Oceania"
@@ -914,11 +1024,6 @@
 			"country": "Uganda",
 			"code": "UG",
 			"region": "Africa"
-		},
-		{
-			"country": "Ukraine",
-			"code": "UA",
-			"region": "Europe"
 		},
 		{
 			"country": "United Arab Emirates",
@@ -961,6 +1066,11 @@
 			"region": "Asia"
 		},
 		{
+			"country": "Wallis & Futuna",
+			"code": "WF",
+			"region": "Oceania"
+		},
+		{
 			"country": "Yemen",
 			"code": "YE",
 			"region": "Asia"
@@ -974,12 +1084,37 @@
 			"country": "Zimbabwe",
 			"code": "ZW",
 			"region": "Africa"
+		},
+		{
+			"country": "Åland Islands",
+			"code": "AX",
+			"region": "Europe"
 		}
 	],
 	"cities": [
 		{
+			"city": "A Coruña",
+			"code": "LCG"
+		},
+		{
+			"city": "Aalborg",
+			"code": "AAL"
+		},
+		{
 			"city": "Abbotsford",
 			"code": "YXX"
+		},
+		{
+			"city": "Aberdeen",
+			"code": "ABZ"
+		},
+		{
+			"city": "Abha",
+			"code": "AHB"
+		},
+		{
+			"city": "Abidjan",
+			"code": "ABJ"
 		},
 		{
 			"city": "Abu Dhabi",
@@ -990,12 +1125,12 @@
 			"code": "ABV"
 		},
 		{
-			"city": "Accra",
-			"code": "ACC"
+			"city": "Acapulco",
+			"code": "ACA"
 		},
 		{
-			"city": "Ad Dammam",
-			"code": "DMM"
+			"city": "Accra",
+			"code": "ACC"
 		},
 		{
 			"city": "Addis Ababa",
@@ -1006,12 +1141,56 @@
 			"code": "ADL"
 		},
 		{
+			"city": "Aden",
+			"code": "ADE"
+		},
+		{
 			"city": "Agadir",
 			"code": "AGA"
 		},
 		{
+			"city": "Aguadilla",
+			"code": "BQN"
+		},
+		{
+			"city": "Aguascalientes",
+			"code": "AGU"
+		},
+		{
 			"city": "Ahmedabad",
 			"code": "AMD"
+		},
+		{
+			"city": "Aitutaki",
+			"code": "AIT"
+		},
+		{
+			"city": "Akron",
+			"code": "CAK"
+		},
+		{
+			"city": "Akure",
+			"code": "AKR"
+		},
+		{
+			"city": "Al-Qassim Region",
+			"code": "ELQ"
+		},
+		{
+			"city": "Albany",
+			"code": "ALB"
+		},
+		{
+			"city": "Albuquerque",
+			"code": "ABQ"
+		},
+		{
+			"city": "Aleppo",
+			"code": "ALP"
+		},
+		{
+			"city": "Alexandria",
+			"code": "ALY"
 		},
 		{
 			"city": "Alghero",
@@ -1026,8 +1205,16 @@
 			"code": "ALC"
 		},
 		{
+			"city": "Allentown",
+			"code": "ABE"
+		},
+		{
 			"city": "Almaty",
 			"code": "ALA"
+		},
+		{
+			"city": "Almería",
+			"code": "LEI"
 		},
 		{
 			"city": "Amman",
@@ -1046,8 +1233,20 @@
 			"code": "ANC"
 		},
 		{
+			"city": "Ancona",
+			"code": "AOI"
+		},
+		{
+			"city": "Angeles",
+			"code": "CRK"
+		},
+		{
+			"city": "Anguilla",
+			"code": "AXA"
+		},
+		{
 			"city": "Ankara",
-			"code": "ESB"
+			"code": "ANK"
 		},
 		{
 			"city": "Antalya",
@@ -1058,28 +1257,96 @@
 			"code": "TNR"
 		},
 		{
-			"city": "Arnavutköy, Istanbul",
-			"code": "IST"
+			"city": "Antigua",
+			"code": "ANU"
 		},
 		{
-			"city": "Artyom",
-			"code": "VVO"
+			"city": "Apartadó",
+			"code": "APO"
+		},
+		{
+			"city": "Apia",
+			"code": "APW"
+		},
+		{
+			"city": "Appleton",
+			"code": "ATW"
+		},
+		{
+			"city": "Aqaba",
+			"code": "AQJ"
+		},
+		{
+			"city": "Aracaju",
+			"code": "AJU"
+		},
+		{
+			"city": "Arad",
+			"code": "ARW"
+		},
+		{
+			"city": "Arcata",
+			"code": "ACV"
+		},
+		{
+			"city": "Arequipa",
+			"code": "AQP"
+		},
+		{
+			"city": "Armenia",
+			"code": "AXM"
+		},
+		{
+			"city": "Aruba",
+			"code": "AUA"
+		},
+		{
+			"city": "Arusha",
+			"code": "ARK"
+		},
+		{
+			"city": "Asheville",
+			"code": "AVL"
 		},
 		{
 			"city": "Ashgabat",
 			"code": "ASB"
 		},
 		{
+			"city": "Asmara",
+			"code": "ASM"
+		},
+		{
+			"city": "Astana",
+			"code": "TSE"
+		},
+		{
+			"city": "Asturias",
+			"code": "OVD"
+		},
+		{
 			"city": "Asunción",
 			"code": "ASU"
+		},
+		{
+			"city": "Aswan",
+			"code": "ASW"
+		},
+		{
+			"city": "Asyut",
+			"code": "ATZ"
+		},
+		{
+			"city": "Athens",
+			"code": "ATH"
 		},
 		{
 			"city": "Atlanta",
 			"code": "ATL"
 		},
 		{
-			"city": "Attock",
-			"code": "ISB"
+			"city": "Atlantic City",
+			"code": "AIY"
 		},
 		{
 			"city": "Auckland",
@@ -1090,28 +1357,36 @@
 			"code": "AUS"
 		},
 		{
+			"city": "Bacolod",
+			"code": "BCD"
+		},
+		{
+			"city": "Bacău",
+			"code": "BCM"
+		},
+		{
+			"city": "Bagdogra",
+			"code": "IXB"
+		},
+		{
 			"city": "Baghdad",
 			"code": "BGW"
 		},
 		{
-			"city": "Bakırköy, Istanbul",
-			"code": "ISL"
+			"city": "Bahía Solano",
+			"code": "BSC"
 		},
 		{
 			"city": "Baku",
-			"code": "GYD"
+			"code": "BAK"
 		},
 		{
-			"city": "Balice",
-			"code": "KRK"
+			"city": "Balbala",
+			"code": "JIB"
 		},
 		{
-			"city": "Balikpapan",
-			"code": "BPN"
-		},
-		{
-			"city": "Baltimore",
-			"code": "BWI"
+			"city": "Baltra Island",
+			"code": "GPS"
 		},
 		{
 			"city": "Bamako",
@@ -1122,12 +1397,16 @@
 			"code": "BWN"
 		},
 		{
-			"city": "Bangalore",
-			"code": "BLR"
-		},
-		{
 			"city": "Bangkok",
 			"code": "BKK"
+		},
+		{
+			"city": "Bangor",
+			"code": "BGR"
+		},
+		{
+			"city": "Bangui",
+			"code": "BGF"
 		},
 		{
 			"city": "Banjul",
@@ -1138,8 +1417,36 @@
 			"code": "BCN"
 		},
 		{
+			"city": "Barcelona",
+			"code": "BLA"
+		},
+		{
 			"city": "Bari",
 			"code": "BRI"
+		},
+		{
+			"city": "Bariloche",
+			"code": "BRC"
+		},
+		{
+			"city": "Barquisimeto",
+			"code": "BRM"
+		},
+		{
+			"city": "Barranquilla",
+			"code": "BAQ"
+		},
+		{
+			"city": "Basel",
+			"code": "EAP"
+		},
+		{
+			"city": "Batam",
+			"code": "BTH"
+		},
+		{
+			"city": "Baton Rouge",
+			"code": "BTR"
 		},
 		{
 			"city": "Batumi",
@@ -1154,10 +1461,6 @@
 			"code": "BEY"
 		},
 		{
-			"city": "Belém",
-			"code": "BEL"
-		},
-		{
 			"city": "Belfast",
 			"code": "BFS"
 		},
@@ -1170,8 +1473,32 @@
 			"code": "BZE"
 		},
 		{
+			"city": "Belleville",
+			"code": "BLV"
+		},
+		{
+			"city": "Bellingham",
+			"code": "BLI"
+		},
+		{
 			"city": "Belo Horizonte",
-			"code": "CNF"
+			"code": "BHZ"
+		},
+		{
+			"city": "Belém",
+			"code": "BEL"
+		},
+		{
+			"city": "Bengaluru",
+			"code": "BLR"
+		},
+		{
+			"city": "Benghazi",
+			"code": "BEN"
+		},
+		{
+			"city": "Benin City",
+			"code": "BNI"
 		},
 		{
 			"city": "Bergen",
@@ -1182,8 +1509,28 @@
 			"code": "BER"
 		},
 		{
+			"city": "Bermuda",
+			"code": "BDA"
+		},
+		{
+			"city": "Bharatpur",
+			"code": "BHR"
+		},
+		{
+			"city": "Bhopal",
+			"code": "BHO"
+		},
+		{
+			"city": "Bhubaneswar",
+			"code": "BBI"
+		},
+		{
 			"city": "Bilbao",
 			"code": "BIO"
+		},
+		{
+			"city": "Billings",
+			"code": "BIL"
 		},
 		{
 			"city": "Billund",
@@ -1194,40 +1541,88 @@
 			"code": "BHX"
 		},
 		{
+			"city": "Birmingham",
+			"code": "BHM"
+		},
+		{
 			"city": "Bishkek",
 			"code": "FRU"
+		},
+		{
+			"city": "Bismarck",
+			"code": "BIS"
+		},
+		{
+			"city": "Bloemfontein",
+			"code": "BFN"
+		},
+		{
+			"city": "Boa Vista",
+			"code": "BVB"
+		},
+		{
+			"city": "Bocas Town, Bocas del Toro",
+			"code": "BOC"
 		},
 		{
 			"city": "Bodrum",
 			"code": "BJV"
 		},
 		{
-			"city": "Bogota",
+			"city": "Bodø",
+			"code": "BOO"
+		},
+		{
+			"city": "Bogotá",
 			"code": "BOG"
+		},
+		{
+			"city": "Boise",
+			"code": "BOI"
 		},
 		{
 			"city": "Bologna",
 			"code": "BLQ"
 		},
 		{
-			"city": "Bordeaux/Mérignac",
-			"code": "BOD"
+			"city": "Bonaire",
+			"code": "BON"
 		},
 		{
-			"city": "Boryspil",
-			"code": "KBP"
+			"city": "Bora Bora",
+			"code": "BOB"
+		},
+		{
+			"city": "Bordeaux",
+			"code": "BOD"
 		},
 		{
 			"city": "Boston",
 			"code": "BOS"
 		},
 		{
-			"city": "Bras￭lia",
+			"city": "Bozeman",
+			"code": "BZN"
+		},
+		{
+			"city": "Brasov",
+			"code": "GHV"
+		},
+		{
+			"city": "Brasília",
 			"code": "BSB"
 		},
 		{
 			"city": "Bratislava",
 			"code": "BTS"
+		},
+		{
+			"city": "Bremen",
+			"code": "BRE"
+		},
+		{
+			"city": "Bridgetown",
+			"code": "BGI"
 		},
 		{
 			"city": "Brindisi",
@@ -1242,36 +1637,92 @@
 			"code": "BRS"
 		},
 		{
+			"city": "Bristol",
+			"code": "TRI"
+		},
+		{
+			"city": "Brownsville",
+			"code": "BRO"
+		},
+		{
+			"city": "Brussels",
+			"code": "BRU"
+		},
+		{
+			"city": "Bucaramanga",
+			"code": "BGA"
+		},
+		{
+			"city": "Bucharest",
+			"code": "BUH"
+		},
+		{
 			"city": "Budapest",
 			"code": "BUD"
 		},
 		{
 			"city": "Buenos Aires",
-			"code": "AEP"
-		},
-		{
-			"city": "Buenos Aires (Ezeiza)",
-			"code": "EZE"
+			"code": "BUE"
 		},
 		{
 			"city": "Buffalo",
 			"code": "BUF"
 		},
 		{
+			"city": "Bujumbura",
+			"code": "BJM"
+		},
+		{
+			"city": "Bulawayo",
+			"code": "BUQ"
+		},
+		{
+			"city": "Burbank",
+			"code": "BUR"
+		},
+		{
 			"city": "Burgas",
 			"code": "BOJ"
+		},
+		{
+			"city": "Burlington",
+			"code": "BTV"
 		},
 		{
 			"city": "Busan",
 			"code": "PUS"
 		},
 		{
+			"city": "Busuanga, Palawan",
+			"code": "USU"
+		},
+		{
+			"city": "Butuan",
+			"code": "BXU"
+		},
+		{
+			"city": "Cagayan de Oro",
+			"code": "CGY"
+		},
+		{
 			"city": "Cagliari",
 			"code": "CAG"
 		},
 		{
+			"city": "Cairns",
+			"code": "CNS"
+		},
+		{
 			"city": "Cairo",
 			"code": "CAI"
+		},
+		{
+			"city": "Cajamarca",
+			"code": "CJA"
+		},
+		{
+			"city": "Calama",
+			"code": "CJC"
 		},
 		{
 			"city": "Calgary",
@@ -1282,8 +1733,20 @@
 			"code": "CLO"
 		},
 		{
-			"city": "Camp Springs",
-			"code": "ADW"
+			"city": "Campo Grande",
+			"code": "CGR"
+		},
+		{
+			"city": "Canberra",
+			"code": "CBR"
+		},
+		{
+			"city": "Cancún",
+			"code": "CUN"
+		},
+		{
+			"city": "Cap-Haïtien",
+			"code": "CAP"
 		},
 		{
 			"city": "Cape Town",
@@ -1294,31 +1757,47 @@
 			"code": "CCS"
 		},
 		{
+			"city": "Cardiff",
+			"code": "CWL"
+		},
+		{
 			"city": "Cartagena",
 			"code": "CTG"
 		},
 		{
 			"city": "Casablanca",
-			"code": "CMN"
+			"code": "CAS"
 		},
 		{
-			"city": "Caselle (VR)",
-			"code": "VRN"
-		},
-		{
-			"city": "Caselle Torinese (TO)",
-			"code": "TRN"
+			"city": "Cascavel",
+			"code": "CAC"
 		},
 		{
 			"city": "Catania",
 			"code": "CTA"
 		},
 		{
-			"city": "Changchun",
-			"code": "CGQ"
+			"city": "Caticlan",
+			"code": "MPH"
 		},
 		{
-			"city": "Changsha (Changsha)",
+			"city": "Cauayan, Isabela",
+			"code": "CYZ"
+		},
+		{
+			"city": "Cebu",
+			"code": "CEB"
+		},
+		{
+			"city": "Cedar Rapids",
+			"code": "CID"
+		},
+		{
+			"city": "Chandigarh",
+			"code": "IXC"
+		},
+		{
+			"city": "Changsha",
 			"code": "CSX"
 		},
 		{
@@ -1326,15 +1805,23 @@
 			"code": "CHQ"
 		},
 		{
+			"city": "Charleston",
+			"code": "CHS"
+		},
+		{
+			"city": "Charleston",
+			"code": "CRW"
+		},
+		{
 			"city": "Charlotte",
 			"code": "CLT"
 		},
 		{
-			"city": "Chengdu (Jianyang)",
-			"code": "TFU"
+			"city": "Chattanooga",
+			"code": "CHA"
 		},
 		{
-			"city": "Chengdu (Shuangliu)",
+			"city": "Chengdu",
 			"code": "CTU"
 		},
 		{
@@ -1342,16 +1829,40 @@
 			"code": "MAA"
 		},
 		{
+			"city": "Cheongju",
+			"code": "CJJ"
+		},
+		{
+			"city": "Chetumal",
+			"code": "CTM"
+		},
+		{
 			"city": "Chiang Mai",
 			"code": "CNX"
+		},
+		{
+			"city": "Chiang Rai Province",
+			"code": "CEI"
 		},
 		{
 			"city": "Chicago",
 			"code": "CHI"
 		},
 		{
+			"city": "Chiclayo",
+			"code": "CIX"
+		},
+		{
+			"city": "Chihuahua",
+			"code": "CUU"
+		},
+		{
+			"city": "Chittagong",
+			"code": "CGP"
+		},
+		{
 			"city": "Chișinău",
-			"code": "RMO"
+			"code": "KIV"
 		},
 		{
 			"city": "Chongqing",
@@ -1362,76 +1873,88 @@
 			"code": "CHC"
 		},
 		{
-			"city": "Cincinnati / Covington",
+			"city": "Cincinnati",
 			"code": "CVG"
 		},
 		{
-			"city": "Ciudad de Acapulco",
-			"code": "ACA"
+			"city": "City of Launceston",
+			"code": "LST"
 		},
 		{
-			"city": "Ciudad de Apodaca",
-			"code": "MTY"
+			"city": "Ciudad Juárez",
+			"code": "CJS"
 		},
 		{
-			"city": "Ciudad de Cancún",
-			"code": "CUN"
-		},
-		{
-			"city": "Ciudad de Cozumel",
-			"code": "CZM"
-		},
-		{
-			"city": "Ciudad de Durango",
-			"code": "DGO"
-		},
-		{
-			"city": "Ciudad de la Costa",
-			"code": "MVD"
-		},
-		{
-			"city": "Ciudad de Mazatlàn",
-			"code": "MZT"
-		},
-		{
-			"city": "Ciudad de Mérida",
-			"code": "MID"
-		},
-		{
-			"city": "Ciudad de México",
-			"code": "MEX"
-		},
-		{
-			"city": "Ciudad de Puerto Vallarta",
-			"code": "PVR"
-		},
-		{
-			"city": "Ciudad de Silao",
-			"code": "BJX"
-		},
-		{
-			"city": "Ciudad de Tijuana",
-			"code": "TIJ"
-		},
-		{
-			"city": "Ciudad de Tlajomulco de Zúñiga",
-			"code": "GDL"
-		},
-		{
-			"city": "Ciudad del Este",
-			"code": "AGT"
+			"city": "Ciudad Obregón",
+			"code": "CEN"
 		},
 		{
 			"city": "Cleveland",
 			"code": "CLE"
 		},
 		{
+			"city": "Cluj-Napoca",
+			"code": "CLJ"
+		},
+		{
+			"city": "Cobano",
+			"code": "ACO"
+		},
+		{
+			"city": "Cochabamba",
+			"code": "CBB"
+		},
+		{
+			"city": "Coimbatore",
+			"code": "CJB"
+		},
+		{
+			"city": "Colima",
+			"code": "CLQ"
+		},
+		{
+			"city": "Cologne",
+			"code": "CGN"
+		},
+		{
 			"city": "Colombo",
 			"code": "CMB"
 		},
 		{
+			"city": "Colorado Springs",
+			"code": "COS"
+		},
+		{
+			"city": "Columbia",
+			"code": "COU"
+		},
+		{
 			"city": "Columbus",
 			"code": "CMH"
+		},
+		{
+			"city": "Comayagua",
+			"code": "XPL"
+		},
+		{
+			"city": "Comox",
+			"code": "YQQ"
+		},
+		{
+			"city": "Conakry",
+			"code": "CKY"
+		},
+		{
+			"city": "Concepción",
+			"code": "CCP"
+		},
+		{
+			"city": "Concord",
+			"code": "USA"
+		},
+		{
+			"city": "Constantine",
+			"code": "CZL"
 		},
 		{
 			"city": "Copenhagen",
@@ -1442,6 +1965,42 @@
 			"code": "CFU"
 		},
 		{
+			"city": "Cork",
+			"code": "ORK"
+		},
+		{
+			"city": "Cotonou",
+			"code": "COO"
+		},
+		{
+			"city": "Cox's Bazar",
+			"code": "CXB"
+		},
+		{
+			"city": "Coxen Hole",
+			"code": "RTB"
+		},
+		{
+			"city": "Craiova",
+			"code": "CRA"
+		},
+		{
+			"city": "Cranbrook",
+			"code": "YXC"
+		},
+		{
+			"city": "Cuenca",
+			"code": "CUE"
+		},
+		{
+			"city": "Cuiabá",
+			"code": "CGB"
+		},
+		{
+			"city": "Culiacán",
+			"code": "CUL"
+		},
+		{
 			"city": "Curitiba",
 			"code": "CWB"
 		},
@@ -1450,24 +2009,52 @@
 			"code": "CUZ"
 		},
 		{
+			"city": "Córdoba",
+			"code": "COR"
+		},
+		{
+			"city": "Cúcuta",
+			"code": "CUC"
+		},
+		{
+			"city": "Da Lat",
+			"code": "DLI"
+		},
+		{
 			"city": "Da Nang",
 			"code": "DAD"
 		},
 		{
+			"city": "Daegu",
+			"code": "TAE"
+		},
+		{
 			"city": "Dakar",
-			"code": "DSS"
+			"code": "DKR"
+		},
+		{
+			"city": "Dakhla",
+			"code": "VIL"
 		},
 		{
 			"city": "Dalaman",
 			"code": "DLM"
 		},
 		{
-			"city": "Dallas-Fort Worth",
+			"city": "Dalian",
+			"code": "DLC"
+		},
+		{
+			"city": "Dallas",
 			"code": "DFW"
 		},
 		{
 			"city": "Damascus",
 			"code": "DAM"
+		},
+		{
+			"city": "Dammam",
+			"code": "DMM"
 		},
 		{
 			"city": "Dar es Salaam",
@@ -1482,6 +2069,26 @@
 			"code": "DVO"
 		},
 		{
+			"city": "David, Chiriquí",
+			"code": "DAV"
+		},
+		{
+			"city": "Dayton",
+			"code": "DAY"
+		},
+		{
+			"city": "Daytona Beach",
+			"code": "DAB"
+		},
+		{
+			"city": "Dehradun",
+			"code": "DED"
+		},
+		{
+			"city": "Del Carmen",
+			"code": "IAO"
+		},
+		{
 			"city": "Denpasar",
 			"code": "DPS"
 		},
@@ -1490,28 +2097,52 @@
 			"code": "DEN"
 		},
 		{
-			"city": "Detroit",
-			"code": "DTW"
+			"city": "Des Moines",
+			"code": "DSM"
 		},
 		{
-			"city": "Dhahran",
-			"code": "DHA"
+			"city": "Destin",
+			"code": "VPS"
+		},
+		{
+			"city": "Detroit",
+			"code": "DTT"
 		},
 		{
 			"city": "Dhaka",
 			"code": "DAC"
 		},
 		{
-			"city": "Djibouti City",
-			"code": "JIB"
+			"city": "Dili",
+			"code": "DIL"
+		},
+		{
+			"city": "Dipolog",
+			"code": "DPL"
+		},
+		{
+			"city": "Diyarbakır",
+			"code": "DIY"
+		},
+		{
+			"city": "Djerba",
+			"code": "DJE"
 		},
 		{
 			"city": "Doha",
 			"code": "DOH"
 		},
 		{
+			"city": "Donostia / San Sebastián",
+			"code": "EAS"
+		},
+		{
 			"city": "Dortmund",
 			"code": "DTM"
+		},
+		{
+			"city": "Douala",
+			"code": "DLA"
 		},
 		{
 			"city": "Dubai",
@@ -1526,20 +2157,28 @@
 			"code": "DBV"
 		},
 		{
-			"city": "Dulles",
-			"code": "IAD"
+			"city": "Dumaguete",
+			"code": "DGT"
 		},
 		{
-			"city": "Duqm",
-			"code": "DQM"
+			"city": "Durango",
+			"code": "DGO"
 		},
 		{
 			"city": "Durban",
 			"code": "DUR"
 		},
 		{
+			"city": "Dushanbe",
+			"code": "DYU"
+		},
+		{
 			"city": "Düsseldorf",
 			"code": "DUS"
+		},
+		{
+			"city": "Easter Island",
+			"code": "IPC"
 		},
 		{
 			"city": "Edinburgh",
@@ -1547,47 +2186,103 @@
 		},
 		{
 			"city": "Edmonton",
-			"code": "YEG"
+			"code": "YEA"
 		},
 		{
 			"city": "Eilat",
-			"code": "ETM"
+			"code": "ETH"
 		},
 		{
 			"city": "Eindhoven",
 			"code": "EIN"
 		},
 		{
-			"city": "El Matorral",
-			"code": "FUE"
+			"city": "El Calafate",
+			"code": "FTE"
 		},
 		{
-			"city": "Encarnación",
-			"code": "ENO"
+			"city": "El Nido, Palawan",
+			"code": "ENI"
 		},
 		{
-			"city": "Espargos",
-			"code": "SID"
+			"city": "El Paso",
+			"code": "ELP"
 		},
 		{
-			"city": "Ezhou",
-			"code": "EHU"
+			"city": "El Vigía",
+			"code": "VIG"
+		},
+		{
+			"city": "Eldoret",
+			"code": "EDL"
+		},
+		{
+			"city": "Entebbe",
+			"code": "EBB"
+		},
+		{
+			"city": "Enugu",
+			"code": "ENU"
+		},
+		{
+			"city": "Erbil",
+			"code": "EBL"
+		},
+		{
+			"city": "Erie",
+			"code": "ERI"
+		},
+		{
+			"city": "Errachidia",
+			"code": "ERH"
+		},
+		{
+			"city": "Essaouira",
+			"code": "ESU"
+		},
+		{
+			"city": "Eugene",
+			"code": "EUG"
+		},
+		{
+			"city": "Evansville",
+			"code": "EVV"
 		},
 		{
 			"city": "Fairbanks",
 			"code": "FAI"
 		},
 		{
+			"city": "Faisalabad District",
+			"code": "LYP"
+		},
+		{
+			"city": "Fargo",
+			"code": "FAR"
+		},
+		{
 			"city": "Faro",
 			"code": "FAO"
 		},
 		{
-			"city": "Ferno (VA)",
-			"code": "MXP"
+			"city": "Fayetteville",
+			"code": "FYV"
+		},
+		{
+			"city": "Fes",
+			"code": "FEZ"
+		},
+		{
+			"city": "Flint",
+			"code": "FNT"
 		},
 		{
 			"city": "Florence",
 			"code": "FLR"
+		},
+		{
+			"city": "Flores",
+			"code": "FRS"
 		},
 		{
 			"city": "Florianópolis",
@@ -1599,7 +2294,15 @@
 		},
 		{
 			"city": "Fort Myers",
-			"code": "RSW"
+			"code": "FMY"
+		},
+		{
+			"city": "Fort St. John",
+			"code": "YXJ"
+		},
+		{
+			"city": "Fort Wayne",
+			"code": "FWA"
 		},
 		{
 			"city": "Fort-de-France",
@@ -1614,12 +2317,24 @@
 			"code": "IGU"
 		},
 		{
-			"city": "Frankfurt am Main",
+			"city": "Frankfurt",
 			"code": "FRA"
 		},
 		{
-			"city": "Freetown (Lungi-Town)",
+			"city": "Freeport",
+			"code": "FPO"
+		},
+		{
+			"city": "Freetown",
 			"code": "FNA"
+		},
+		{
+			"city": "Fresno",
+			"code": "FAT"
+		},
+		{
+			"city": "Fuerteventura",
+			"code": "FUE"
 		},
 		{
 			"city": "Fukuoka",
@@ -1630,10 +2345,6 @@
 			"code": "FNC"
 		},
 		{
-			"city": "Fussa",
-			"code": "OKO"
-		},
-		{
 			"city": "Fuzhou",
 			"code": "FOC"
 		},
@@ -1642,20 +2353,24 @@
 			"code": "GBE"
 		},
 		{
-			"city": "Ganjingzi, Dalian",
-			"code": "DLC"
+			"city": "Gaya",
+			"code": "GAY"
 		},
 		{
-			"city": "Gatwick, Surrey",
-			"code": "LGW"
+			"city": "Gaziantep",
+			"code": "GZT"
 		},
 		{
-			"city": "Gaziemir",
-			"code": "ADB"
+			"city": "Gazipaşa",
+			"code": "GZP"
 		},
 		{
 			"city": "Gdańsk",
 			"code": "GDN"
+		},
+		{
+			"city": "General Santos",
+			"code": "GES"
 		},
 		{
 			"city": "Geneva",
@@ -1667,22 +2382,82 @@
 		},
 		{
 			"city": "George Town",
-			"code": "GCM"
+			"code": "GGT"
+		},
+		{
+			"city": "Georgetown",
+			"code": "GEO"
 		},
 		{
 			"city": "Girona",
 			"code": "GRO"
 		},
 		{
+			"city": "Giza",
+			"code": "SPX"
+		},
+		{
+			"city": "Glasgow",
+			"code": "GLA"
+		},
+		{
+			"city": "Goa",
+			"code": "GOI"
+		},
+		{
+			"city": "Goiânia",
+			"code": "GYN"
+		},
+		{
+			"city": "Gold Coast",
+			"code": "OOL"
+		},
+		{
+			"city": "Gorakhpur",
+			"code": "GOP"
+		},
+		{
 			"city": "Gothenburg",
 			"code": "GOT"
 		},
 		{
-			"city": "Gran Canaria Island",
-			"code": "LPA"
+			"city": "Granada",
+			"code": "GRX"
 		},
 		{
-			"city": "Guangzhou (Huadu)",
+			"city": "Grand Cayman",
+			"code": "GCM"
+		},
+		{
+			"city": "Grand Junction",
+			"code": "GJT"
+		},
+		{
+			"city": "Grand Rapids",
+			"code": "GRR"
+		},
+		{
+			"city": "Grande Prairie",
+			"code": "YQU"
+		},
+		{
+			"city": "Greensboro",
+			"code": "GSO"
+		},
+		{
+			"city": "Greenville",
+			"code": "GSP"
+		},
+		{
+			"city": "Greenville",
+			"code": "GLH"
+		},
+		{
+			"city": "Guadalajara",
+			"code": "GDL"
+		},
+		{
+			"city": "Guangzhou",
 			"code": "CAN"
 		},
 		{
@@ -1694,20 +2469,40 @@
 			"code": "GYE"
 		},
 		{
-			"city": "Guilin (Lingui)",
+			"city": "Guilin",
 			"code": "KWL"
 		},
 		{
-			"city": "Guiyang (Nanming)",
+			"city": "Guiyang",
 			"code": "KWE"
+		},
+		{
+			"city": "Gulfport",
+			"code": "GPT"
+		},
+		{
+			"city": "Guwahati",
+			"code": "GAU"
+		},
+		{
+			"city": "Ha il",
+			"code": "HAS"
 		},
 		{
 			"city": "Hagåtña",
 			"code": "GUM"
 		},
 		{
-			"city": "Haikou (Meilan)",
+			"city": "Haikou",
 			"code": "HAK"
+		},
+		{
+			"city": "Haiphong",
+			"code": "HPH"
+		},
+		{
+			"city": "Hakodate",
+			"code": "HKD"
 		},
 		{
 			"city": "Halifax",
@@ -1718,16 +2513,20 @@
 			"code": "HAM"
 		},
 		{
+			"city": "Hamilton",
+			"code": "YHM"
+		},
+		{
 			"city": "Hangzhou",
 			"code": "HGH"
 		},
 		{
-			"city": "Hannover",
-			"code": "HAJ"
+			"city": "Hanoi",
+			"code": "HAN"
 		},
 		{
-			"city": "Hanoi (Soc Son)",
-			"code": "HAN"
+			"city": "Hanover",
+			"code": "HAJ"
 		},
 		{
 			"city": "Harare",
@@ -1738,8 +2537,24 @@
 			"code": "HRB"
 		},
 		{
-			"city": "Havana",
-			"code": "HAV"
+			"city": "Hargeisa",
+			"code": "HGA"
+		},
+		{
+			"city": "Harrisburg",
+			"code": "HAR"
+		},
+		{
+			"city": "Hartford",
+			"code": "HFD"
+		},
+		{
+			"city": "Hat Yai",
+			"code": "HDY"
+		},
+		{
+			"city": "Hefei",
+			"code": "HFE"
 		},
 		{
 			"city": "Helsinki",
@@ -1754,16 +2569,28 @@
 			"code": "HMO"
 		},
 		{
+			"city": "Hilo",
+			"code": "ITO"
+		},
+		{
+			"city": "Hiroshima",
+			"code": "HIJ"
+		},
+		{
 			"city": "Ho Chi Minh City",
 			"code": "SGN"
 		},
 		{
-			"city": "Hohhot",
-			"code": "HET"
+			"city": "Hobart",
+			"code": "HBA"
 		},
 		{
-			"city": "Honiara",
-			"code": "HIR"
+			"city": "Hoedspruit, Limpopo",
+			"code": "HDS"
+		},
+		{
+			"city": "Hong Kong",
+			"code": "HKG"
 		},
 		{
 			"city": "Honolulu",
@@ -1771,55 +2598,115 @@
 		},
 		{
 			"city": "Houston",
-			"code": "IAH"
+			"code": "HOU"
 		},
 		{
 			"city": "Huatulco",
 			"code": "HUX"
 		},
 		{
-			"city": "Hunnan, Shenyang",
-			"code": "SHE"
+			"city": "Hue",
+			"code": "HUI"
+		},
+		{
+			"city": "Huntsville",
+			"code": "HSV"
 		},
 		{
 			"city": "Hurghada",
 			"code": "HRG"
 		},
 		{
+			"city": "Hyannis",
+			"code": "HYA"
+		},
+		{
 			"city": "Hyderabad",
 			"code": "HYD"
 		},
 		{
-			"city": "Ibiza (Eivissa)",
+			"city": "Iași",
+			"code": "IAS"
+		},
+		{
+			"city": "Ibagué",
+			"code": "IBE"
+		},
+		{
+			"city": "Ibiza",
 			"code": "IBZ"
 		},
 		{
-			"city": "Ilinden",
-			"code": "SKP"
+			"city": "Idaho Falls",
+			"code": "IDA"
+		},
+		{
+			"city": "Ilhéus",
+			"code": "IOS"
+		},
+		{
+			"city": "Iloilo City",
+			"code": "ILO"
+		},
+		{
+			"city": "Ilorin",
+			"code": "ILR"
 		},
 		{
 			"city": "Indianapolis",
 			"code": "IND"
 		},
 		{
-			"city": "Islands",
-			"code": "HKG"
+			"city": "Indore",
+			"code": "IDR"
+		},
+		{
+			"city": "Inverness",
+			"code": "INV"
+		},
+		{
+			"city": "Iquique",
+			"code": "IQQ"
+		},
+		{
+			"city": "Iquitos",
+			"code": "IQT"
+		},
+		{
+			"city": "Ishigaki, Okinawa",
+			"code": "ISG"
+		},
+		{
+			"city": "Islamabad",
+			"code": "ISB"
+		},
+		{
+			"city": "Islip",
+			"code": "ISP"
+		},
+		{
+			"city": "Istanbul",
+			"code": "IST"
 		},
 		{
 			"city": "Ixtapa",
 			"code": "ZIH"
 		},
 		{
+			"city": "İzmir",
+			"code": "IZM"
+		},
+		{
 			"city": "Jacksonville",
 			"code": "JAX"
 		},
 		{
-			"city": "Jakarta",
-			"code": "CGK"
+			"city": "Jaipur",
+			"code": "JAI"
 		},
 		{
-			"city": "Jebel Ali",
-			"code": "DWC"
+			"city": "Jakarta",
+			"code": "JKT"
 		},
 		{
 			"city": "Jeddah",
@@ -1830,16 +2717,12 @@
 			"code": "CJU"
 		},
 		{
-			"city": "Jiaozhou, Qingdao",
-			"code": "TAO"
+			"city": "Jerez de la Frontera",
+			"code": "XRY"
 		},
 		{
 			"city": "Jinan",
 			"code": "TNA"
-		},
-		{
-			"city": "João Pessoa",
-			"code": "JPA"
 		},
 		{
 			"city": "Johannesburg",
@@ -1850,28 +2733,60 @@
 			"code": "JHB"
 		},
 		{
+			"city": "João Pessoa, Paraíba",
+			"code": "JPA"
+		},
+		{
 			"city": "Juba",
 			"code": "JUB"
+		},
+		{
+			"city": "Juliaca",
+			"code": "JUL"
+		},
+		{
+			"city": "Kabul",
+			"code": "KBL"
 		},
 		{
 			"city": "Kagoshima",
 			"code": "KOJ"
 		},
 		{
-			"city": "Kampala",
-			"code": "EBB"
+			"city": "Kahului",
+			"code": "OGG"
+		},
+		{
+			"city": "Kailua",
+			"code": "KOA"
+		},
+		{
+			"city": "Kalibo",
+			"code": "KLO"
+		},
+		{
+			"city": "Kalispell",
+			"code": "FCA"
+		},
+		{
+			"city": "Kano",
+			"code": "KAN"
 		},
 		{
 			"city": "Kansas City",
-			"code": "MCI"
+			"code": "MKC"
 		},
 		{
-			"city": "Kaohsiung (Xiaogang)",
+			"city": "Kaohsiung",
 			"code": "KHH"
 		},
 		{
 			"city": "Karachi",
 			"code": "KHI"
+		},
+		{
+			"city": "Karlsruhe",
+			"code": "FKB"
 		},
 		{
 			"city": "Kathmandu",
@@ -1882,12 +2797,32 @@
 			"code": "KTW"
 		},
 		{
-			"city": "Kazan",
-			"code": "KZN"
+			"city": "Kauai",
+			"code": "LIH"
+		},
+		{
+			"city": "Kaunas",
+			"code": "KUN"
+		},
+		{
+			"city": "Kayseri",
+			"code": "ASR"
+		},
+		{
+			"city": "Kelowna",
+			"code": "YLW"
+		},
+		{
+			"city": "Key West",
+			"code": "EYW"
 		},
 		{
 			"city": "Khartoum",
 			"code": "KRT"
+		},
+		{
+			"city": "Khon Kaen",
+			"code": "KKC"
 		},
 		{
 			"city": "Kigali",
@@ -1902,8 +2837,24 @@
 			"code": "FIH"
 		},
 		{
+			"city": "Kiruna",
+			"code": "KRN"
+		},
+		{
+			"city": "Kisumu",
+			"code": "KIS"
+		},
+		{
+			"city": "Knoxville",
+			"code": "TYS"
+		},
+		{
 			"city": "Ko Samui",
 			"code": "USM"
+		},
+		{
+			"city": "Kobe",
+			"code": "UKB"
 		},
 		{
 			"city": "Kochi",
@@ -1914,8 +2865,8 @@
 			"code": "CCU"
 		},
 		{
-			"city": "Köln (Cologne)",
-			"code": "CGN"
+			"city": "Konya",
+			"code": "KYA"
 		},
 		{
 			"city": "Kos",
@@ -1926,20 +2877,40 @@
 			"code": "BKI"
 		},
 		{
+			"city": "Kotzebue",
+			"code": "OTZ"
+		},
+		{
+			"city": "Kozhikode",
+			"code": "CCJ"
+		},
+		{
+			"city": "Košice",
+			"code": "KSC"
+		},
+		{
 			"city": "Krabi",
 			"code": "KBV"
 		},
 		{
-			"city": "Kralendijk, Bonaire",
-			"code": "BON"
+			"city": "Kraków",
+			"code": "KRK"
 		},
 		{
-			"city": "Krasnoyarsk",
-			"code": "KJA"
+			"city": "Kuala Lumpur",
+			"code": "KUL"
 		},
 		{
 			"city": "Kuching",
 			"code": "KCH"
+		},
+		{
+			"city": "Kumamoto",
+			"code": "KMJ"
+		},
+		{
+			"city": "Kumasi",
+			"code": "KMS"
 		},
 		{
 			"city": "Kunming",
@@ -1954,6 +2925,34 @@
 			"code": "KWI"
 		},
 		{
+			"city": "La Ceiba",
+			"code": "LCE"
+		},
+		{
+			"city": "La Crosse",
+			"code": "LSE"
+		},
+		{
+			"city": "La Paz",
+			"code": "LPB"
+		},
+		{
+			"city": "La Paz",
+			"code": "LAP"
+		},
+		{
+			"city": "La Serena",
+			"code": "LSC"
+		},
+		{
+			"city": "Laayoune",
+			"code": "EUN"
+		},
+		{
+			"city": "Labuan Bajo",
+			"code": "LBJ"
+		},
+		{
 			"city": "Lagos",
 			"code": "LOS"
 		},
@@ -1966,92 +2965,224 @@
 			"code": "SUF"
 		},
 		{
+			"city": "Lamu",
+			"code": "LAU"
+		},
+		{
+			"city": "Lancaster",
+			"code": "LNS"
+		},
+		{
 			"city": "Langkawi",
 			"code": "LGK"
 		},
 		{
-			"city": "Lanzhou (Yongdeng)",
-			"code": "LHW"
+			"city": "Lanzarote",
+			"code": "ACE"
 		},
 		{
-			"city": "Lapu-Lapu City",
-			"code": "CEB"
+			"city": "Laoag",
+			"code": "LAO"
 		},
 		{
 			"city": "Larnaca",
 			"code": "LCA"
 		},
 		{
+			"city": "Las Palmas",
+			"code": "LPA"
+		},
+		{
 			"city": "Las Vegas",
 			"code": "LAS"
+		},
+		{
+			"city": "Leeds",
+			"code": "LBA"
+		},
+		{
+			"city": "Legazpi",
+			"code": "LGP"
+		},
+		{
+			"city": "Les Cayes",
+			"code": "CYA"
+		},
+		{
+			"city": "Lexington",
+			"code": "LEX"
+		},
+		{
+			"city": "León",
+			"code": "BJX"
 		},
 		{
 			"city": "Liberia",
 			"code": "LIR"
 		},
 		{
+			"city": "Libreville",
+			"code": "LBV"
+		},
+		{
+			"city": "Lijiang",
+			"code": "LJG"
+		},
+		{
+			"city": "Lille",
+			"code": "LIL"
+		},
+		{
+			"city": "Lilongwe",
+			"code": "LLW"
+		},
+		{
 			"city": "Lima",
 			"code": "LIM"
+		},
+		{
+			"city": "Lincoln",
+			"code": "LNK"
 		},
 		{
 			"city": "Lisbon",
 			"code": "LIS"
 		},
 		{
+			"city": "Little Rock",
+			"code": "LIT"
+		},
+		{
+			"city": "Liverpool",
+			"code": "LPL"
+		},
+		{
+			"city": "Ljubljana",
+			"code": "LJU"
+		},
+		{
+			"city": "Lomé",
+			"code": "LFW"
+		},
+		{
 			"city": "London",
 			"code": "LON"
+		},
+		{
+			"city": "Londrina",
+			"code": "LDB"
+		},
+		{
+			"city": "Loreto",
+			"code": "LTO"
 		},
 		{
 			"city": "Los Angeles",
 			"code": "LAX"
 		},
 		{
+			"city": "Los Mochis",
+			"code": "LMM"
+		},
+		{
 			"city": "Louisville",
 			"code": "SDF"
+		},
+		{
+			"city": "Lourdes",
+			"code": "LDE"
+		},
+		{
+			"city": "Lower Prince's Quarter",
+			"code": "SXM"
 		},
 		{
 			"city": "Luanda",
 			"code": "LAD"
 		},
 		{
-			"city": "Lusaka",
-			"code": "LUN"
+			"city": "Luang Prabang",
+			"code": "LPQ"
 		},
 		{
-			"city": "Luton, Bedfordshire",
-			"code": "LTN"
+			"city": "Lubumbashi",
+			"code": "FBM"
+		},
+		{
+			"city": "Lucknow",
+			"code": "LKO"
+		},
+		{
+			"city": "Luleå",
+			"code": "LLA"
+		},
+		{
+			"city": "Lusaka",
+			"code": "LUN"
 		},
 		{
 			"city": "Luxembourg",
 			"code": "LUX"
 		},
 		{
-			"city": "Lviv",
-			"code": "LWO"
+			"city": "Luxor",
+			"code": "LXR"
 		},
 		{
 			"city": "Lyon",
 			"code": "LYS"
 		},
 		{
+			"city": "Macau",
+			"code": "MFM"
+		},
+		{
 			"city": "Maceió",
 			"code": "MCZ"
+		},
+		{
+			"city": "Madison",
+			"code": "MSN"
 		},
 		{
 			"city": "Madrid",
 			"code": "MAD"
 		},
 		{
-			"city": "Mahe Island",
+			"city": "Madurai",
+			"code": "IXM"
+		},
+		{
+			"city": "Mahé",
 			"code": "SEZ"
 		},
 		{
-			"city": "Málaga",
-			"code": "AGP"
+			"city": "Makassar",
+			"code": "UPG"
+		},
+		{
+			"city": "Malindi",
+			"code": "MYD"
+		},
+		{
+			"city": "Malmö",
+			"code": "MMA"
+		},
+		{
+			"city": "Malta",
+			"code": "MLA"
 		},
 		{
 			"city": "Malé",
 			"code": "MLE"
+		},
+		{
+			"city": "Manado",
+			"code": "MDC"
+		},
+		{
+			"city": "Managua",
+			"code": "MGA"
 		},
 		{
 			"city": "Manama",
@@ -2066,52 +3197,96 @@
 			"code": "MAN"
 		},
 		{
-			"city": "Mandalay",
-			"code": "MDL"
+			"city": "Manchester",
+			"code": "MHT"
+		},
+		{
+			"city": "Mangalore",
+			"code": "IXE"
 		},
 		{
 			"city": "Manila",
 			"code": "MNL"
 		},
 		{
+			"city": "Manizales",
+			"code": "MZL"
+		},
+		{
+			"city": "Manta",
+			"code": "MEC"
+		},
+		{
+			"city": "Manzini",
+			"code": "MTS"
+		},
+		{
 			"city": "Maputo",
 			"code": "MPM"
 		},
 		{
-			"city": "Mariscal Estigarribia",
-			"code": "ESG"
+			"city": "Mar del Plata",
+			"code": "MDQ"
+		},
+		{
+			"city": "Maracaibo",
+			"code": "MAR"
+		},
+		{
+			"city": "Maringá",
+			"code": "MGF"
 		},
 		{
 			"city": "Marrakesh",
 			"code": "RAK"
 		},
 		{
+			"city": "Marsa Alam",
+			"code": "RMF"
+		},
+		{
 			"city": "Marseille",
 			"code": "MRS"
 		},
 		{
-			"city": "Mashhad",
-			"code": "MHD"
+			"city": "Marsh Harbour",
+			"code": "MHH"
 		},
 		{
-			"city": "Matanzas",
-			"code": "VRA"
+			"city": "Matamoros",
+			"code": "MAM"
 		},
 		{
-			"city": "Matoury",
-			"code": "CAY"
+			"city": "Maun",
+			"code": "MUB"
 		},
 		{
-			"city": "Mattala",
-			"code": "HRI"
+			"city": "Mauritius Island",
+			"code": "MRU"
+		},
+		{
+			"city": "Mazar-i-Sharif",
+			"code": "MZR"
+		},
+		{
+			"city": "Mazatlán",
+			"code": "MZT"
+		},
+		{
+			"city": "McAllen",
+			"code": "MFE"
 		},
 		{
 			"city": "Medan",
-			"code": "KNO"
+			"code": "MES"
 		},
 		{
 			"city": "Medellín",
 			"code": "MDE"
+		},
+		{
+			"city": "Medford",
+			"code": "MFR"
 		},
 		{
 			"city": "Medina",
@@ -2122,12 +3297,28 @@
 			"code": "MEL"
 		},
 		{
+			"city": "Melbourne",
+			"code": "MLB"
+		},
+		{
+			"city": "Memmingen",
+			"code": "FMM"
+		},
+		{
 			"city": "Memphis",
 			"code": "MEM"
 		},
 		{
+			"city": "Mendoza",
+			"code": "MDZ"
+		},
+		{
 			"city": "Menorca",
 			"code": "MAH"
+		},
+		{
+			"city": "Mersin",
+			"code": "COV"
 		},
 		{
 			"city": "Mexicali",
@@ -2135,11 +3326,19 @@
 		},
 		{
 			"city": "Mexico City",
-			"code": "NLU"
+			"code": "MEX"
 		},
 		{
 			"city": "Miami",
 			"code": "MIA"
+		},
+		{
+			"city": "Midland",
+			"code": "MAF"
+		},
+		{
+			"city": "Milan",
+			"code": "MIL"
 		},
 		{
 			"city": "Milwaukee",
@@ -2150,32 +3349,92 @@
 			"code": "MSP"
 		},
 		{
-			"city": "Minsk",
-			"code": "MSQ"
+			"city": "Miri",
+			"code": "MYY"
+		},
+		{
+			"city": "Misawa",
+			"code": "MSJ"
+		},
+		{
+			"city": "Missoula",
+			"code": "MSO"
+		},
+		{
+			"city": "Miyakojima",
+			"code": "MMY"
+		},
+		{
+			"city": "Mogadishu",
+			"code": "MGQ"
+		},
+		{
+			"city": "Moline",
+			"code": "MLI"
 		},
 		{
 			"city": "Mombasa",
 			"code": "MBA"
 		},
 		{
+			"city": "Monastir",
+			"code": "MIR"
+		},
+		{
+			"city": "Moncton",
+			"code": "YQM"
+		},
+		{
 			"city": "Monrovia",
-			"code": "ROB"
+			"code": "MLW"
 		},
 		{
 			"city": "Montego Bay",
 			"code": "MBJ"
 		},
 		{
-			"city": "Montréal",
-			"code": "YUL"
+			"city": "Monterrey",
+			"code": "MTY"
 		},
 		{
-			"city": "Moscow",
-			"code": "MOW"
+			"city": "Montería",
+			"code": "MTR"
 		},
 		{
-			"city": "Mpaka",
-			"code": "SHO"
+			"city": "Montevideo",
+			"code": "MVD"
+		},
+		{
+			"city": "Montgomery",
+			"code": "MGM"
+		},
+		{
+			"city": "Montpellier",
+			"code": "MPL"
+		},
+		{
+			"city": "Montreal",
+			"code": "YMQ"
+		},
+		{
+			"city": "Montrose",
+			"code": "MTJ"
+		},
+		{
+			"city": "Mopa",
+			"code": "GOX"
+		},
+		{
+			"city": "Morelia",
+			"code": "MLM"
+		},
+		{
+			"city": "Mount Kilimanjaro",
+			"code": "JRO"
+		},
+		{
+			"city": "Multan",
+			"code": "MUX"
 		},
 		{
 			"city": "Mumbai",
@@ -2190,31 +3449,75 @@
 			"code": "MCT"
 		},
 		{
+			"city": "Mwanza",
+			"code": "MWZ"
+		},
+		{
 			"city": "Mykonos",
 			"code": "JMK"
 		},
 		{
-			"city": "N'Djamena",
+			"city": "Myrtle Beach",
+			"code": "MYR"
+		},
+		{
+			"city": "Mytilene",
+			"code": "MJT"
+		},
+		{
+			"city": "Málaga",
+			"code": "AGP"
+		},
+		{
+			"city": "Mérida",
+			"code": "MID"
+		},
+		{
+			"city": "N Djamena",
 			"code": "NDJ"
 		},
 		{
-			"city": "Naha",
-			"code": "OKA"
+			"city": "Nadi",
+			"code": "NAN"
+		},
+		{
+			"city": "Nador",
+			"code": "NDR"
+		},
+		{
+			"city": "Nagasaki",
+			"code": "NGS"
+		},
+		{
+			"city": "Nagoya",
+			"code": "NGO"
+		},
+		{
+			"city": "Nagpur",
+			"code": "NAG"
 		},
 		{
 			"city": "Nairobi",
 			"code": "NBO"
 		},
 		{
+			"city": "Najaf",
+			"code": "NJF"
+		},
+		{
 			"city": "Nanchang",
 			"code": "KHN"
+		},
+		{
+			"city": "Nanded",
+			"code": "NDC"
 		},
 		{
 			"city": "Nanjing",
 			"code": "NKG"
 		},
 		{
-			"city": "Nanning (Jiangnan)",
+			"city": "Nanning",
 			"code": "NNG"
 		},
 		{
@@ -2222,12 +3525,16 @@
 			"code": "NTE"
 		},
 		{
-			"city": "Napoli",
+			"city": "Nantucket",
+			"code": "ACK"
+		},
+		{
+			"city": "Naples",
 			"code": "NAP"
 		},
 		{
-			"city": "Narita",
-			"code": "NRT"
+			"city": "Narvik",
+			"code": "EVE"
 		},
 		{
 			"city": "Nashville",
@@ -2242,12 +3549,44 @@
 			"code": "NAT"
 		},
 		{
-			"city": "Natori",
-			"code": "SDJ"
+			"city": "Navegantes",
+			"code": "NVT"
+		},
+		{
+			"city": "Naxos",
+			"code": "JNX"
+		},
+		{
+			"city": "Ndola",
+			"code": "NLA"
+		},
+		{
+			"city": "Neiva, Huila",
+			"code": "NVA"
+		},
+		{
+			"city": "Nelson",
+			"code": "NSN"
+		},
+		{
+			"city": "Nelspruit",
+			"code": "NLP"
+		},
+		{
+			"city": "Neuquén",
+			"code": "NQN"
+		},
+		{
+			"city": "Nevşehir",
+			"code": "NAV"
 		},
 		{
 			"city": "New Delhi",
 			"code": "DEL"
+		},
+		{
+			"city": "New Haven",
+			"code": "HVN"
 		},
 		{
 			"city": "New Orleans",
@@ -2258,12 +3597,16 @@
 			"code": "NYC"
 		},
 		{
-			"city": "Newark",
-			"code": "EWR"
+			"city": "Newcastle upon Tyne",
+			"code": "NCL"
+		},
+		{
+			"city": "Newquay",
+			"code": "NQY"
 		},
 		{
 			"city": "Nha Trang",
-			"code": "CXR"
+			"code": "NHA"
 		},
 		{
 			"city": "Niamey",
@@ -2274,12 +3617,24 @@
 			"code": "NCE"
 		},
 		{
-			"city": "Ningbo",
-			"code": "NGB"
+			"city": "Niš",
+			"code": "INI"
 		},
 		{
-			"city": "Nossa Senhora do Carmo",
-			"code": "MFM"
+			"city": "Norfolk",
+			"code": "ORF"
+		},
+		{
+			"city": "Northern Cyprus",
+			"code": "ECN"
+		},
+		{
+			"city": "Nosara",
+			"code": "NOB"
+		},
+		{
+			"city": "Nottingham",
+			"code": "NQT"
 		},
 		{
 			"city": "Nouakchott",
@@ -2287,15 +3642,15 @@
 		},
 		{
 			"city": "Nouméa",
-			"code": "GEA"
+			"code": "NOU"
 		},
 		{
-			"city": "Novosibirsk",
-			"code": "OVB"
+			"city": "Nuevo Laredo",
+			"code": "NLD"
 		},
 		{
-			"city": "Nur-Sultan",
-			"code": "NQZ"
+			"city": "Nukuʻalofa",
+			"code": "TBU"
 		},
 		{
 			"city": "Nuremberg",
@@ -2304,6 +3659,26 @@
 		{
 			"city": "Oakland",
 			"code": "OAK"
+		},
+		{
+			"city": "Oaxaca",
+			"code": "OAX"
+		},
+		{
+			"city": "Ocean City",
+			"code": "SBY"
+		},
+		{
+			"city": "Ogdensburg",
+			"code": "OGS"
+		},
+		{
+			"city": "Okinawa Island",
+			"code": "OKA"
+		},
+		{
+			"city": "Oklahoma City",
+			"code": "OKC"
 		},
 		{
 			"city": "Olbia",
@@ -2318,12 +3693,12 @@
 			"code": "ONT"
 		},
 		{
-			"city": "Oranjestad",
-			"code": "AUA"
+			"city": "Oradea",
+			"code": "OMR"
 		},
 		{
-			"city": "Orio al Serio (BG)",
-			"code": "BGY"
+			"city": "Oran",
+			"code": "ORN"
 		},
 		{
 			"city": "Orlando",
@@ -2338,59 +3713,123 @@
 			"code": "OSL"
 		},
 		{
-			"city": "Otopeni",
-			"code": "OTP"
-		},
-		{
 			"city": "Ottawa",
 			"code": "YOW"
 		},
 		{
-			"city": "Paisley, Renfrewshire",
-			"code": "GLA"
+			"city": "Ouagadougou",
+			"code": "OUA"
+		},
+		{
+			"city": "Oujda",
+			"code": "OUD"
+		},
+		{
+			"city": "Owerri",
+			"code": "QOW"
+		},
+		{
+			"city": "Ozamiz",
+			"code": "OZC"
+		},
+		{
+			"city": "Pagadian",
+			"code": "PAG"
 		},
 		{
 			"city": "Palermo",
 			"code": "PMO"
 		},
 		{
-			"city": "Palma de Mallorca",
+			"city": "Palm Springs",
+			"code": "PSP"
+		},
+		{
+			"city": "Palma, Majorca",
 			"code": "PMI"
 		},
 		{
-			"city": "Papeete",
-			"code": "PPT"
+			"city": "Palmas",
+			"code": "PMW"
+		},
+		{
+			"city": "Panama",
+			"code": "PTY"
+		},
+		{
+			"city": "Panglao",
+			"code": "TAG"
 		},
 		{
 			"city": "Paphos",
 			"code": "PFO"
 		},
 		{
+			"city": "Paramaribo",
+			"code": "PBM"
+		},
+		{
+			"city": "Parikia",
+			"code": "PAS"
+		},
+		{
 			"city": "Paris",
 			"code": "PAR"
 		},
 		{
-			"city": "Pedro Juan Caballero",
-			"code": "PJC"
+			"city": "Paro",
+			"code": "PBH"
+		},
+		{
+			"city": "Pasco",
+			"code": "PSC"
+		},
+		{
+			"city": "Pasto",
+			"code": "PSO"
+		},
+		{
+			"city": "Patna",
+			"code": "PAT"
+		},
+		{
+			"city": "Pattaya",
+			"code": "UTP"
 		},
 		{
 			"city": "Penang",
 			"code": "PEN"
 		},
 		{
-			"city": "Pendik, Istanbul",
-			"code": "SAW"
+			"city": "Pensacola",
+			"code": "PNS"
+		},
+		{
+			"city": "Peoria",
+			"code": "PIA"
+		},
+		{
+			"city": "Pereira",
+			"code": "PEI"
 		},
 		{
 			"city": "Perth",
 			"code": "PER"
 		},
 		{
+			"city": "Pescara",
+			"code": "PSR"
+		},
+		{
+			"city": "Peshawar",
+			"code": "PEW"
+		},
+		{
 			"city": "Philadelphia",
 			"code": "PHL"
 		},
 		{
-			"city": "Phnom Penh (Pou Senchey)",
+			"city": "Phnom Penh",
 			"code": "PNH"
 		},
 		{
@@ -2398,28 +3837,32 @@
 			"code": "PHX"
 		},
 		{
-			"city": "Phú Quốc",
-			"code": "PQC"
+			"city": "Phuket City",
+			"code": "HKT"
 		},
 		{
-			"city": "Phuket",
-			"code": "HKT"
+			"city": "Phú Quốc",
+			"code": "PQC"
 		},
 		{
 			"city": "Pisa",
 			"code": "PSA"
 		},
 		{
-			"city": "Piseo-ri (Muan)",
-			"code": "MWX"
-		},
-		{
 			"city": "Pittsburgh",
 			"code": "PIT"
 		},
 		{
-			"city": "Plaine Magnien",
-			"code": "MRU"
+			"city": "Piura",
+			"code": "PIU"
+		},
+		{
+			"city": "Plaka, Milos",
+			"code": "MLO"
+		},
+		{
+			"city": "Plattsburgh",
+			"code": "PBG"
 		},
 		{
 			"city": "Podgorica",
@@ -2430,12 +3873,44 @@
 			"code": "PTP"
 		},
 		{
+			"city": "Pokhara",
+			"code": "PKR"
+		},
+		{
+			"city": "Ponce",
+			"code": "PSE"
+		},
+		{
 			"city": "Ponta Delgada",
 			"code": "PDL"
 		},
 		{
+			"city": "Porlamar",
+			"code": "PMV"
+		},
+		{
+			"city": "Port",
+			"code": "PZU"
+		},
+		{
+			"city": "Port Elizabeth",
+			"code": "PLZ"
+		},
+		{
+			"city": "Port Harcourt",
+			"code": "PHC"
+		},
+		{
+			"city": "Port Hedland",
+			"code": "PHE"
+		},
+		{
 			"city": "Port Moresby",
 			"code": "POM"
+		},
+		{
+			"city": "Port of Spain",
+			"code": "POS"
 		},
 		{
 			"city": "Port Vila",
@@ -2450,6 +3925,10 @@
 			"code": "PDX"
 		},
 		{
+			"city": "Portland",
+			"code": "PWM"
+		},
+		{
 			"city": "Porto",
 			"code": "OPO"
 		},
@@ -2462,52 +3941,184 @@
 			"code": "BPS"
 		},
 		{
+			"city": "Portsmouth",
+			"code": "PSM"
+		},
+		{
+			"city": "Posadas",
+			"code": "PSS"
+		},
+		{
+			"city": "Poznań",
+			"code": "POZ"
+		},
+		{
 			"city": "Prague",
 			"code": "PRG"
+		},
+		{
+			"city": "Praia",
+			"code": "RAI"
+		},
+		{
+			"city": "Praya, Lombok",
+			"code": "LOP"
+		},
+		{
+			"city": "Preveza",
+			"code": "PVK"
 		},
 		{
 			"city": "Prince George",
 			"code": "YXS"
 		},
 		{
+			"city": "Pristina",
+			"code": "PRN"
+		},
+		{
+			"city": "Providence",
+			"code": "PVD"
+		},
+		{
 			"city": "Providenciales",
 			"code": "PLS"
+		},
+		{
+			"city": "Provo",
+			"code": "PVU"
+		},
+		{
+			"city": "Pucallpa",
+			"code": "PCL"
 		},
 		{
 			"city": "Puebla",
 			"code": "PBC"
 		},
 		{
+			"city": "Puerto Escondido, Oaxaca",
+			"code": "PXM"
+		},
+		{
+			"city": "Puerto Iguazú",
+			"code": "IGR"
+		},
+		{
+			"city": "Puerto Madryn",
+			"code": "PMY"
+		},
+		{
+			"city": "Puerto Montt",
+			"code": "PMC"
+		},
+		{
+			"city": "Puerto Natales",
+			"code": "PNT"
+		},
+		{
+			"city": "Puerto Plata",
+			"code": "POP"
+		},
+		{
+			"city": "Puerto Princesa",
+			"code": "PPS"
+		},
+		{
+			"city": "Puerto Vallarta",
+			"code": "PVR"
+		},
+		{
+			"city": "Pune",
+			"code": "PNQ"
+		},
+		{
+			"city": "Punta Arenas",
+			"code": "PUQ"
+		},
+		{
 			"city": "Punta Cana",
 			"code": "PUJ"
 		},
 		{
-			"city": "Quebec",
+			"city": "Punta Gorda",
+			"code": "PGD"
+		},
+		{
+			"city": "Qingdao",
+			"code": "TAO"
+		},
+		{
+			"city": "Quebec City",
 			"code": "YQB"
+		},
+		{
+			"city": "Queenstown",
+			"code": "ZQN"
+		},
+		{
+			"city": "Quetta",
+			"code": "UET"
 		},
 		{
 			"city": "Quito",
 			"code": "UIO"
 		},
 		{
-			"city": "Rajkot",
-			"code": "HSR"
+			"city": "Rabat",
+			"code": "RBA"
 		},
 		{
-			"city": "Raleigh/Durham",
+			"city": "Rajahmundry",
+			"code": "RJA"
+		},
+		{
+			"city": "Rajkot",
+			"code": "RAJ"
+		},
+		{
+			"city": "Rajshahi",
+			"code": "RJH"
+		},
+		{
+			"city": "Raleigh",
 			"code": "RDU"
+		},
+		{
+			"city": "Rarotonga",
+			"code": "RAR"
 		},
 		{
 			"city": "Recife",
 			"code": "REC"
 		},
 		{
+			"city": "Redmond",
+			"code": "RDM"
+		},
+		{
+			"city": "Reggio Calabria",
+			"code": "REG"
+		},
+		{
+			"city": "Regina",
+			"code": "YQR"
+		},
+		{
 			"city": "Reno",
 			"code": "RNO"
 		},
 		{
-			"city": "Reykjavík",
-			"code": "KEF"
+			"city": "Resistencia",
+			"code": "RES"
+		},
+		{
+			"city": "Reykjavik",
+			"code": "REK"
+		},
+		{
+			"city": "Reynosa",
+			"code": "REX"
 		},
 		{
 			"city": "Rhodes",
@@ -2522,48 +4133,104 @@
 			"code": "RIX"
 		},
 		{
-			"city": "Rinas",
-			"code": "TIA"
-		},
-		{
-			"city": "Rio De Janeiro",
-			"code": "GIG"
+			"city": "Rio de Janeiro",
+			"code": "RIO"
 		},
 		{
 			"city": "Riyadh",
 			"code": "RUH"
 		},
 		{
-			"city": "Rome",
-			"code": "FCO"
+			"city": "Roanoke",
+			"code": "ROA"
 		},
 		{
-			"city": "Rostov-on-Don",
-			"code": "ROV"
+			"city": "Rochester",
+			"code": "ROC"
+		},
+		{
+			"city": "Rome",
+			"code": "ROM"
+		},
+		{
+			"city": "Rosario",
+			"code": "ROS"
+		},
+		{
+			"city": "Rotterdam",
+			"code": "RTM"
 		},
 		{
 			"city": "Rovaniemi",
 			"code": "RVN"
 		},
 		{
+			"city": "Roxas, Capiz",
+			"code": "RXS"
+		},
+		{
+			"city": "Rzeszów",
+			"code": "RZE"
+		},
+		{
 			"city": "Sacramento",
-			"code": "SMF"
+			"code": "SAC"
 		},
 		{
-			"city": "Saint Martin",
-			"code": "SXM"
+			"city": "Saint Andrew Parish",
+			"code": "DOM"
 		},
 		{
-			"city": "Saint-Louis",
-			"code": "BSL"
+			"city": "Saint Barthélemy",
+			"code": "SBH"
 		},
 		{
-			"city": "Sainte-Marie",
+			"city": "Saint Croix",
+			"code": "STX"
+		},
+		{
+			"city": "Saint Helier",
+			"code": "JER"
+		},
+		{
+			"city": "Saint Kitts",
+			"code": "SKB"
+		},
+		{
+			"city": "Saint Lucia",
+			"code": "SLU"
+		},
+		{
+			"city": "Saint Thomas",
+			"code": "STT"
+		},
+		{
+			"city": "Saint Vincent",
+			"code": "SVD"
+		},
+		{
+			"city": "Saint-Denis",
 			"code": "RUN"
+		},
+		{
+			"city": "Saipan",
+			"code": "SPN"
+		},
+		{
+			"city": "Sal",
+			"code": "SID"
+		},
+		{
+			"city": "Salalah",
+			"code": "SLL"
 		},
 		{
 			"city": "Salt Lake City",
 			"code": "SLC"
+		},
+		{
+			"city": "Salta",
+			"code": "SLA"
 		},
 		{
 			"city": "Salvador",
@@ -2574,20 +4241,24 @@
 			"code": "SZG"
 		},
 		{
-			"city": "Samara",
-			"code": "KUF"
-		},
-		{
 			"city": "Samarkand",
 			"code": "SKD"
+		},
+		{
+			"city": "Samsun",
+			"code": "SZF"
+		},
+		{
+			"city": "San Andrés",
+			"code": "ADZ"
 		},
 		{
 			"city": "San Antonio",
 			"code": "SAT"
 		},
 		{
-			"city": "San Bartolomé",
-			"code": "ACE"
+			"city": "San Bernardino",
+			"code": "SBD"
 		},
 		{
 			"city": "San Diego",
@@ -2602,7 +4273,7 @@
 			"code": "SJC"
 		},
 		{
-			"city": "San José (Costa Rica)",
+			"city": "San José",
 			"code": "SJO"
 		},
 		{
@@ -2614,19 +4285,59 @@
 			"code": "SJU"
 		},
 		{
-			"city": "San Salvador (San Luis Talpa)",
+			"city": "San Juan",
+			"code": "UAQ"
+		},
+		{
+			"city": "San Luis Potosí",
+			"code": "SLP"
+		},
+		{
+			"city": "San Martín de los Andes",
+			"code": "CPC"
+		},
+		{
+			"city": "San Miguel de Tucumán",
+			"code": "TUC"
+		},
+		{
+			"city": "San Pedro Sula",
+			"code": "SAP"
+		},
+		{
+			"city": "San Salvador",
 			"code": "SAL"
+		},
+		{
+			"city": "San Salvador de Jujuy",
+			"code": "JUJ"
+		},
+		{
+			"city": "Sandakan",
+			"code": "SDK"
 		},
 		{
 			"city": "Santa Ana",
 			"code": "SNA"
 		},
 		{
-			"city": "Santa Cruz",
-			"code": "VVI"
+			"city": "Santa Cruz de La Palma",
+			"code": "SPC"
 		},
 		{
-			"city": "Santiago",
+			"city": "Santa Cruz de la Sierra",
+			"code": "SRZ"
+		},
+		{
+			"city": "Santa Marta",
+			"code": "SMR"
+		},
+		{
+			"city": "Santander",
+			"code": "SDR"
+		},
+		{
+			"city": "Santiago de Chile",
 			"code": "SCL"
 		},
 		{
@@ -2638,6 +4349,10 @@
 			"code": "STI"
 		},
 		{
+			"city": "Santiago de Querétaro",
+			"code": "QRO"
+		},
+		{
 			"city": "Santo Domingo",
 			"code": "SDQ"
 		},
@@ -2646,80 +4361,76 @@
 			"code": "JTR"
 		},
 		{
-			"city": "Sanya (Tianya)",
+			"city": "Sanya",
 			"code": "SYX"
 		},
 		{
-			"city": "São Paulo",
-			"code": "GRU"
-		},
-		{
 			"city": "Sapporo",
-			"code": "CTS"
+			"code": "SPK"
 		},
 		{
 			"city": "Sarajevo",
 			"code": "SJJ"
 		},
 		{
-			"city": "Saratov",
-			"code": "GSV"
+			"city": "Sarasota",
+			"code": "SRQ"
+		},
+		{
+			"city": "Saskatoon",
+			"code": "YXE"
 		},
 		{
 			"city": "Savannah",
 			"code": "SAV"
 		},
 		{
-			"city": "Schkeuditz",
-			"code": "LEJ"
-		},
-		{
 			"city": "Seattle",
 			"code": "SEA"
 		},
 		{
-			"city": "Sentani",
-			"code": "DJJ"
+			"city": "Sendai",
+			"code": "SDJ"
 		},
 		{
 			"city": "Seoul",
 			"code": "SEL"
 		},
 		{
-			"city": "Sepang",
-			"code": "KUL"
-		},
-		{
 			"city": "Seville",
 			"code": "SVQ"
 		},
 		{
-			"city": "Shanghai (Minhang)",
+			"city": "Shanghai",
 			"code": "SHA"
 		},
 		{
-			"city": "Shanghai (Pudong)",
-			"code": "PVG"
-		},
-		{
-			"city": "Shannon",
+			"city": "Shannon, County Clare",
 			"code": "SNN"
-		},
-		{
-			"city": "Sharjah",
-			"code": "SHJ"
 		},
 		{
 			"city": "Sharm El Sheikh",
 			"code": "SSH"
 		},
 		{
-			"city": "Shenzhen (Bao'an)",
+			"city": "Shenyang",
+			"code": "SHE"
+		},
+		{
+			"city": "Shenzhen",
 			"code": "SZX"
 		},
 		{
-			"city": "Shiraz",
-			"code": "SYZ"
+			"city": "Sialkot",
+			"code": "SKT"
+		},
+		{
+			"city": "Sibiu",
+			"code": "SBZ"
+		},
+		{
+			"city": "Siddharthanagar",
+			"code": "BWA"
 		},
 		{
 			"city": "Siem Reap",
@@ -2730,32 +4441,68 @@
 			"code": "SIN"
 		},
 		{
-			"city": "Sochi",
-			"code": "AER"
+			"city": "Sint Eustatius",
+			"code": "EUX"
+		},
+		{
+			"city": "Sioux Falls",
+			"code": "FSD"
+		},
+		{
+			"city": "Skardu",
+			"code": "KDU"
+		},
+		{
+			"city": "Skopje",
+			"code": "SKP"
 		},
 		{
 			"city": "Sofia",
 			"code": "SOF"
 		},
 		{
-			"city": "Spata-Artemida",
-			"code": "ATH"
+			"city": "Sohag",
+			"code": "HMB"
+		},
+		{
+			"city": "Sorong",
+			"code": "SOQ"
+		},
+		{
+			"city": "South Bend",
+			"code": "SBN"
 		},
 		{
 			"city": "Split",
 			"code": "SPU"
 		},
 		{
-			"city": "St Louis",
-			"code": "STL"
+			"city": "Spokane",
+			"code": "GEG"
 		},
 		{
-			"city": "St. John's",
+			"city": "Springfield",
+			"code": "SGF"
+		},
+		{
+			"city": "Springfield",
+			"code": "SPI"
+		},
+		{
+			"city": "Srinagar",
+			"code": "SXR"
+		},
+		{
+			"city": "St George's",
+			"code": "GND"
+		},
+		{
+			"city": "St. John s",
 			"code": "YYT"
 		},
 		{
-			"city": "St. Petersburg",
-			"code": "LED"
+			"city": "St. Louis",
+			"code": "STL"
 		},
 		{
 			"city": "Stavanger",
@@ -2763,27 +4510,99 @@
 		},
 		{
 			"city": "Stockholm",
-			"code": "ARN"
+			"code": "STO"
+		},
+		{
+			"city": "Stockton",
+			"code": "SCK"
+		},
+		{
+			"city": "Strasbourg",
+			"code": "SXB"
 		},
 		{
 			"city": "Stuttgart",
 			"code": "STR"
 		},
 		{
+			"city": "Suceava",
+			"code": "SCV"
+		},
+		{
+			"city": "Sucre",
+			"code": "SRE"
+		},
+		{
+			"city": "Sulaymaniyah",
+			"code": "ISU"
+		},
+		{
 			"city": "Surabaya",
 			"code": "SUB"
+		},
+		{
+			"city": "Surat",
+			"code": "STV"
+		},
+		{
+			"city": "Surat Thani Province",
+			"code": "URT"
 		},
 		{
 			"city": "Sydney",
 			"code": "SYD"
 		},
 		{
+			"city": "Sylhet",
+			"code": "ZYL"
+		},
+		{
 			"city": "Syracuse",
 			"code": "SYR"
 		},
 		{
-			"city": "Taiyuan",
-			"code": "TYN"
+			"city": "São Luís",
+			"code": "SLZ"
+		},
+		{
+			"city": "São Paulo",
+			"code": "SAO"
+		},
+		{
+			"city": "São Vicente",
+			"code": "VXE"
+		},
+		{
+			"city": "Ta if",
+			"code": "TIF"
+		},
+		{
+			"city": "Tabuk",
+			"code": "TUU"
+		},
+		{
+			"city": "Tacloban",
+			"code": "TAC"
+		},
+		{
+			"city": "Tacna",
+			"code": "TCQ"
+		},
+		{
+			"city": "Tahiti",
+			"code": "PPT"
+		},
+		{
+			"city": "Taichung",
+			"code": "RMQ"
+		},
+		{
+			"city": "Taipei",
+			"code": "TPE"
+		},
+		{
+			"city": "Tallahassee",
+			"code": "TLH"
 		},
 		{
 			"city": "Tallinn",
@@ -2794,36 +4613,60 @@
 			"code": "TPA"
 		},
 		{
+			"city": "Tampico",
+			"code": "TAM"
+		},
+		{
 			"city": "Tangier",
 			"code": "TNG"
 		},
 		{
-			"city": "Taoyuan (Dayuan)",
-			"code": "TPE"
+			"city": "Tapachula",
+			"code": "TAP"
+		},
+		{
+			"city": "Tarapoto",
+			"code": "TPP"
+		},
+		{
+			"city": "Tarija",
+			"code": "TJA"
 		},
 		{
 			"city": "Tashkent",
 			"code": "TAS"
 		},
 		{
+			"city": "Tawau",
+			"code": "TWU"
+		},
+		{
 			"city": "Tbilisi",
 			"code": "TBS"
 		},
 		{
-			"city": "Tehran",
-			"code": "THR"
+			"city": "Tegucigalpa",
+			"code": "TGU"
 		},
 		{
 			"city": "Tel Aviv",
 			"code": "TLV"
 		},
 		{
-			"city": "Temixco",
-			"code": "CVJ"
+			"city": "Temuco",
+			"code": "ZCO"
 		},
 		{
 			"city": "Tenerife",
-			"code": "TFS"
+			"code": "TCI"
+		},
+		{
+			"city": "Tepic",
+			"code": "TPQ"
+		},
+		{
+			"city": "Teresina",
+			"code": "THE"
 		},
 		{
 			"city": "Thessaloniki",
@@ -2834,44 +4677,92 @@
 			"code": "TRV"
 		},
 		{
+			"city": "Thunder Bay",
+			"code": "YQT"
+		},
+		{
 			"city": "Tianjin",
 			"code": "TSN"
+		},
+		{
+			"city": "Tijuana",
+			"code": "TIJ"
+		},
+		{
+			"city": "Timișoara",
+			"code": "TSR"
+		},
+		{
+			"city": "Tirana",
+			"code": "TIA"
+		},
+		{
+			"city": "Tiruchirappalli",
+			"code": "TRZ"
 		},
 		{
 			"city": "Tivat",
 			"code": "TIV"
 		},
 		{
-			"city": "Tocumen",
-			"code": "PTY"
-		},
-		{
-			"city": "Tokoname",
-			"code": "NGO"
+			"city": "Tobago",
+			"code": "TAB"
 		},
 		{
 			"city": "Tokyo",
-			"code": "HND"
+			"code": "TYO"
 		},
 		{
 			"city": "Toluca",
 			"code": "TLC"
 		},
 		{
-			"city": "Toronto",
-			"code": "YYZ"
+			"city": "Tolú",
+			"code": "TLU"
 		},
 		{
-			"city": "Toulouse/Blagnac",
+			"city": "Toronto",
+			"code": "YTO"
+		},
+		{
+			"city": "Torreón",
+			"code": "TRC"
+		},
+		{
+			"city": "Tortola",
+			"code": "EIS"
+		},
+		{
+			"city": "Toulouse",
 			"code": "TLS"
+		},
+		{
+			"city": "Townsville",
+			"code": "TSV"
 		},
 		{
 			"city": "Trabzon",
 			"code": "TZX"
 		},
 		{
+			"city": "Traverse City",
+			"code": "TVC"
+		},
+		{
+			"city": "Trelew",
+			"code": "REL"
+		},
+		{
+			"city": "Trenton",
+			"code": "TTN"
+		},
+		{
+			"city": "Trieste",
+			"code": "TRS"
+		},
+		{
 			"city": "Tripoli",
-			"code": "MJI"
+			"code": "TIP"
 		},
 		{
 			"city": "Tromsø",
@@ -2882,75 +4773,175 @@
 			"code": "TRD"
 		},
 		{
+			"city": "Trujillo",
+			"code": "TRU"
+		},
+		{
+			"city": "Tucson",
+			"code": "TUS"
+		},
+		{
+			"city": "Tuguegarao",
+			"code": "TUG"
+		},
+		{
 			"city": "Tulsa",
 			"code": "TUL"
+		},
+		{
+			"city": "Tulum",
+			"code": "TUY"
+		},
+		{
+			"city": "Tumbes",
+			"code": "TBP"
 		},
 		{
 			"city": "Tunis",
 			"code": "TUN"
 		},
 		{
-			"city": "Turkıstan",
-			"code": "HSA"
+			"city": "Turin",
+			"code": "TRN"
 		},
 		{
-			"city": "Ufa",
-			"code": "UFA"
+			"city": "Tuxtla Gutiérrez",
+			"code": "TGZ"
 		},
 		{
-			"city": "Ujung Pandang",
-			"code": "UPG"
+			"city": "Twin Falls",
+			"code": "TWF"
 		},
 		{
-			"city": "Ulaanbaatar (Sergelen)",
-			"code": "UBN"
+			"city": "Tétouan",
+			"code": "TTU"
 		},
 		{
-			"city": "Ürümqi",
-			"code": "URC"
+			"city": "Uberlândia",
+			"code": "UDI"
+		},
+		{
+			"city": "Ubon Ratchathani Province",
+			"code": "UBP"
+		},
+		{
+			"city": "Udaipur",
+			"code": "UDR"
+		},
+		{
+			"city": "Udon Thani",
+			"code": "UTH"
+		},
+		{
+			"city": "Ukunda",
+			"code": "UKA"
+		},
+		{
+			"city": "Ulaanbaatar",
+			"code": "ULN"
+		},
+		{
+			"city": "Uluru",
+			"code": "AYQ"
+		},
+		{
+			"city": "Umeå",
+			"code": "UME"
+		},
+		{
+			"city": "Uruapan",
+			"code": "UPN"
+		},
+		{
+			"city": "Ushuaia",
+			"code": "USH"
+		},
+		{
+			"city": "Vadodara",
+			"code": "BDQ"
 		},
 		{
 			"city": "Valencia",
 			"code": "VLC"
 		},
 		{
-			"city": "Valletta",
-			"code": "MLA"
+			"city": "Valencia",
+			"code": "VLN"
+		},
+		{
+			"city": "Van",
+			"code": "VAN"
 		},
 		{
 			"city": "Vancouver",
 			"code": "YVR"
 		},
 		{
+			"city": "Varanasi",
+			"code": "VNS"
+		},
+		{
 			"city": "Varna",
 			"code": "VAR"
 		},
 		{
-			"city": "Vasco da Gama",
-			"code": "GOI"
+			"city": "Venice",
+			"code": "VCE"
 		},
 		{
-			"city": "Venezia (VE)",
-			"code": "VCE"
+			"city": "Veracruz",
+			"code": "VER"
+		},
+		{
+			"city": "Vero Beach",
+			"code": "VRB"
+		},
+		{
+			"city": "Verona",
+			"code": "VRN"
 		},
 		{
 			"city": "Victoria",
 			"code": "YYJ"
 		},
 		{
+			"city": "Victoria Falls",
+			"code": "VFA"
+		},
+		{
 			"city": "Vienna",
 			"code": "VIE"
 		},
 		{
-			"city": "Vieux Fort",
-			"code": "UVF"
+			"city": "Vientiane",
+			"code": "VTE"
+		},
+		{
+			"city": "Vigo",
+			"code": "VGO"
+		},
+		{
+			"city": "Vijayawada",
+			"code": "VGA"
+		},
+		{
+			"city": "Villahermosa",
+			"code": "VSA"
 		},
 		{
 			"city": "Vilnius",
 			"code": "VNO"
 		},
 		{
-			"city": "Vitória",
+			"city": "Vinh",
+			"code": "VII"
+		},
+		{
+			"city": "Visakhapatnam",
+			"code": "VTZ"
+		},
+		{
+			"city": "Vitória, Espírito Santo",
 			"code": "VIX"
 		},
 		{
@@ -2958,12 +4949,8 @@
 			"code": "WAW"
 		},
 		{
-			"city": "Warwick",
-			"code": "PVD"
-		},
-		{
-			"city": "Washington",
-			"code": "DCA"
+			"city": "Washington, D.C.",
+			"code": "WAS"
 		},
 		{
 			"city": "Wellington",
@@ -2978,8 +4965,28 @@
 			"code": "PBI"
 		},
 		{
+			"city": "Westchester County",
+			"code": "HPN"
+		},
+		{
+			"city": "Whitehorse",
+			"code": "YXY"
+		},
+		{
+			"city": "Wichita",
+			"code": "ICT"
+		},
+		{
+			"city": "Wilkes-Barre",
+			"code": "AVP"
+		},
+		{
 			"city": "Willemstad",
 			"code": "CUR"
+		},
+		{
+			"city": "Wilmington",
+			"code": "ILM"
 		},
 		{
 			"city": "Windhoek",
@@ -2994,16 +5001,24 @@
 			"code": "WRO"
 		},
 		{
-			"city": "Wuhan (Huangpi)",
+			"city": "Wuhan",
 			"code": "WUH"
+		},
+		{
+			"city": "Wuxi",
+			"code": "WUX"
+		},
+		{
+			"city": "Xi'an",
+			"code": "SIA"
 		},
 		{
 			"city": "Xiamen",
 			"code": "XMN"
 		},
 		{
-			"city": "Xianyang (Weicheng)",
-			"code": "XIY"
+			"city": "Yakushima, Kagoshima",
+			"code": "KUM"
 		},
 		{
 			"city": "Yangon",
@@ -3014,12 +5029,28 @@
 			"code": "YNT"
 		},
 		{
-			"city": "Yekaterinburg",
-			"code": "SVX"
+			"city": "Yaoundé",
+			"code": "YAO"
 		},
 		{
 			"city": "Yerevan",
 			"code": "EVN"
+		},
+		{
+			"city": "Yiwu",
+			"code": "YIW"
+		},
+		{
+			"city": "Yogyakarta",
+			"code": "JOG"
+		},
+		{
+			"city": "Yopal",
+			"code": "EYP"
+		},
+		{
+			"city": "Zacatecas",
+			"code": "ZCL"
 		},
 		{
 			"city": "Zadar",
@@ -3030,32 +5061,36 @@
 			"code": "ZAG"
 		},
 		{
-			"city": "Zakynthos",
+			"city": "Zakynthos Island",
 			"code": "ZTH"
 		},
 		{
-			"city": "Zandery",
-			"code": "PBM"
+			"city": "Zamboanga City",
+			"code": "ZAM"
 		},
 		{
 			"city": "Zanzibar",
 			"code": "ZNZ"
 		},
 		{
-			"city": "Zaventem",
-			"code": "BRU"
-		},
-		{
-			"city": "Zgornji Brnik",
-			"code": "LJU"
+			"city": "Zhangjiajie",
+			"code": "DYG"
 		},
 		{
 			"city": "Zhengzhou",
 			"code": "CGO"
 		},
 		{
-			"city": "Zurich",
+			"city": "Zhuhai",
+			"code": "ZUH"
+		},
+		{
+			"city": "Zürich",
 			"code": "ZRH"
+		},
+		{
+			"city": "Ürümqi",
+			"code": "URC"
 		}
 	],
 	"currencies": [
@@ -3243,11 +5278,6 @@
 			"https://images.unsplash.com/photo-1535585538107-e457d37fbde5?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxBbGdlcmlhfGVufDB8MHx8fDE3MTQ2NDc2MDV8MA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1558628697-b62c1e51b2fb?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxBbGdlcmlhfGVufDB8MHx8fDE3MTQ2NDc2MDV8MA&ixlib=rb-4.0.3"
 		],
-		"American Samoa": [
-			"https://images.unsplash.com/photo-1567696176949-396c415ec914?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxBbWVyaWNhbiUyMFNhbW9hfGVufDB8MHx8fDE3MTQ2NDc2MDZ8MA&ixlib=rb-4.0.3",
-			"https://images.unsplash.com/photo-1533105045747-b9d71a0955f9?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxBbWVyaWNhbiUyMFNhbW9hfGVufDB8MHx8fDE3MTQ2NDc2MDZ8MA&ixlib=rb-4.0.3",
-			"https://images.unsplash.com/photo-1625224588780-57c68aedcc7e?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxBbWVyaWNhbiUyMFNhbW9hfGVufDB8MHx8fDE3MTQ2NDc2MDZ8MA&ixlib=rb-4.0.3"
-		],
 		"Andorra": [
 			"https://images.unsplash.com/photo-1614678096587-0ad50faf1603?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxBbmRvcnJhfGVufDB8MHx8fDE3MTQ2NDc2MDZ8MA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1611917438110-62aafafa28bc?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxBbmRvcnJhfGVufDB8MHx8fDE3MTQ2NDc2MDZ8MA&ixlib=rb-4.0.3",
@@ -3258,7 +5288,7 @@
 			"https://images.unsplash.com/photo-1543163181-25b5600dabb9?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxBbmdvbGF8ZW58MHwwfHx8MTcxNDY0NzYwN3ww&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1520709087497-0749666fe1d2?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxBbmdvbGF8ZW58MHwwfHx8MTcxNDY0NzYwN3ww&ixlib=rb-4.0.3"
 		],
-		"Antigua and Barbuda": [
+		"Antigua & Barbuda": [
 			"https://images.unsplash.com/photo-1582300857444-5ddd87c86797?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxBbnRpZ3VhJTIwYW5kJTIwQmFyYnVkYXxlbnwwfDB8fHwxNzE0NjQ3NjA4fDA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1583860168269-5d0b9e9131b2?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxBbnRpZ3VhJTIwYW5kJTIwQmFyYnVkYXxlbnwwfDB8fHwxNzE0NjQ3NjA4fDA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1580163489852-7304adad7770?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxBbnRpZ3VhJTIwYW5kJTIwQmFyYnVkYXxlbnwwfDB8fHwxNzE0NjQ3NjA4fDA&ixlib=rb-4.0.3"
@@ -3308,11 +5338,6 @@
 			"https://images.unsplash.com/photo-1633847016580-b7a15cc813d7?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxCYXJiYWRvc3xlbnwwfDB8fHwxNzE0NjQ3NjE2fDA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1633847017573-fa07b1bddc07?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxCYXJiYWRvc3xlbnwwfDB8fHwxNzE0NjQ3NjE2fDA&ixlib=rb-4.0.3"
 		],
-		"Belarus": [
-			"https://images.unsplash.com/photo-1604739835169-46f1d28fd3b6?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxCZWxhcnVzfGVufDB8MHx8fDE3MTQ2NDc2MTZ8MA&ixlib=rb-4.0.3",
-			"https://images.unsplash.com/photo-1559387188-d5cebb21de5e?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxCZWxhcnVzfGVufDB8MHx8fDE3MTQ2NDc2MTZ8MA&ixlib=rb-4.0.3",
-			"https://images.unsplash.com/photo-1597954626735-77c9f75707f9?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxCZWxhcnVzfGVufDB8MHx8fDE3MTQ2NDc2MTZ8MA&ixlib=rb-4.0.3"
-		],
 		"Belgium": [
 			"https://images.unsplash.com/photo-1491557345352-5929e343eb89?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxCZWxnaXVtfGVufDB8MHx8fDE3MTQ2NDc2MTd8MA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1547057951-61fcf322bb1e?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxCZWxnaXVtfGVufDB8MHx8fDE3MTQ2NDc2MTd8MA&ixlib=rb-4.0.3",
@@ -3338,7 +5363,7 @@
 			"https://images.unsplash.com/photo-1544142447-e43d0fe04bf2?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxCb2xpdmlhfGVufDB8MHx8fDE3MTQ2NDc2MjB8MA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1540294437416-5ac3b561d896?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxCb2xpdmlhfGVufDB8MHx8fDE3MTQ2NDc2MjB8MA&ixlib=rb-4.0.3"
 		],
-		"Bosnia and Herzegovina": [
+		"Bosnia & Herzegovina": [
 			"https://images.unsplash.com/photo-1526997237335-45a11b46ecb3?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxCb3NuaWElMjBhbmQlMjBIZXJ6ZWdvdmluYXxlbnwwfDB8fHwxNzE0NjQ3NjIyfDA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1546402956-b698857acdc1?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxCb3NuaWElMjBhbmQlMjBIZXJ6ZWdvdmluYXxlbnwwfDB8fHwxNzE0NjQ3NjIyfDA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1535627565086-13f55c100c0d?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxCb3NuaWElMjBhbmQlMjBIZXJ6ZWdvdmluYXxlbnwwfDB8fHwxNzE0NjQ3NjIyfDA&ixlib=rb-4.0.3"
@@ -3432,20 +5457,20 @@
 			"https://images.unsplash.com/photo-1555990793-da11153b2473?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxDcm9hdGlhfGVufDB8MHx8fDE3MTQ2NDgyNjh8MA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1554585343-acd99e31977b?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxDcm9hdGlhfGVufDB8MHx8fDE3MTQ2NDgyNjh8MA&ixlib=rb-4.0.3"
 		],
-		"Cuba": [
-			"https://images.unsplash.com/photo-1570299437488-d430e1e677c7?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxDdWJhfGVufDB8MHx8fDE3MTQ2NTcyNzd8MA&ixlib=rb-4.0.3",
-			"https://images.unsplash.com/photo-1500759285222-a95626b934cb?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxDdWJhfGVufDB8MHx8fDE3MTQ2NTcyNzd8MA&ixlib=rb-4.0.3",
-			"https://images.unsplash.com/photo-1541690304182-f3a2987f7582?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxDdWJhfGVufDB8MHx8fDE3MTQ2NTcyNzd8MA&ixlib=rb-4.0.3"
-		],
 		"Cyprus": [
 			"https://images.unsplash.com/photo-1560860446-c821e910a0a7?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxDeXBydXN8ZW58MHwwfHx8MTcxNDY1NzI4MHww&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1622615821403-5364ad6e25d1?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxDeXBydXN8ZW58MHwwfHx8MTcxNDY1NzI4MHww&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1617870544224-039877fd68fa?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxDeXBydXN8ZW58MHwwfHx8MTcxNDY1NzI4MHww&ixlib=rb-4.0.3"
 		],
-		"Czech Republic": [
+		"Czechia": [
 			"https://images.unsplash.com/photo-1458150945447-7fb764c11a92?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxDemVjaCUyMFJlcHVibGljfGVufDB8MHx8fDE3MTQ2NTcyODJ8MA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1592906209472-a36b1f3782ef?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxDemVjaCUyMFJlcHVibGljfGVufDB8MHx8fDE3MTQ2NTcyODJ8MA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1596811311317-c948dd4382dd?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxDemVjaCUyMFJlcHVibGljfGVufDB8MHx8fDE3MTQ2NTcyODJ8MA&ixlib=rb-4.0.3"
+		],
+		"Côte d’Ivoire": [
+			"https://images.unsplash.com/photo-1552709586-d1aefe5d04b4?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxJdm9yeSUyMENvYXN0fGVufDB8MHx8fDE3MTQ2NjEwMTF8MA&ixlib=rb-4.0.3",
+			"https://images.unsplash.com/photo-1552710307-537199cd41c0?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxJdm9yeSUyMENvYXN0fGVufDB8MHx8fDE3MTQ2NjEwMTF8MA&ixlib=rb-4.0.3",
+			"https://images.unsplash.com/photo-1552710307-8d1c604d6319?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxJdm9yeSUyMENvYXN0fGVufDB8MHx8fDE3MTQ2NjEwMTF8MA&ixlib=rb-4.0.3"
 		],
 		"Democratic Republic of the Congo": [
 			"https://images.unsplash.com/photo-1623930180584-1b14bc584169?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxEZW1vY3JhdGljJTIwUmVwdWJsaWMlMjBvZiUyMHRoZSUyMENvbmdvfGVufDB8MHx8fDE3MTQ2NTcyODN8MA&ixlib=rb-4.0.3",
@@ -3471,11 +5496,6 @@
 			"https://images.unsplash.com/photo-1611952961634-349806683d73?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxEb21pbmljYW4lMjBSZXB1YmxpY3xlbnwwfDB8fHwxNzE0NjU3MjkwfDA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1602608099803-96718a589bb3?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxEb21pbmljYW4lMjBSZXB1YmxpY3xlbnwwfDB8fHwxNzE0NjU3MjkwfDA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1615305182074-29b3a07b9954?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxEb21pbmljYW4lMjBSZXB1YmxpY3xlbnwwfDB8fHwxNzE0NjU3MjkwfDA&ixlib=rb-4.0.3"
-		],
-		"East Timor": [
-			"https://images.unsplash.com/photo-1528093945414-ed85cfe03705?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxFYXN0JTIwVGltb3J8ZW58MHwwfHx8MTcxNDY1NzI5MXww&ixlib=rb-4.0.3",
-			"https://images.unsplash.com/photo-1591325408953-ef9298125f96?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxFYXN0JTIwVGltb3J8ZW58MHwwfHx8MTcxNDY1NzI5MXww&ixlib=rb-4.0.3",
-			"https://images.unsplash.com/photo-1582523755457-8f62e0f302b1?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxFYXN0JTIwVGltb3J8ZW58MHwwfHx8MTcxNDY1NzI5MXww&ixlib=rb-4.0.3"
 		],
 		"Ecuador": [
 			"https://images.unsplash.com/photo-1610226977124-9fd2755d09f2?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxFY3VhZG9yfGVufDB8MHx8fDE3MTQ2NTcyOTJ8MA&ixlib=rb-4.0.3",
@@ -3640,11 +5660,6 @@
 			"https://images.unsplash.com/photo-1515859005217-8a1f08870f59?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxJdGFseXxlbnwwfDB8fHwxNzE0NjYxMDA5fDA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1525874684015-58379d421a52?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxJdGFseXxlbnwwfDB8fHwxNzE0NjYxMDA5fDA&ixlib=rb-4.0.3"
 		],
-		"Ivory Coast": [
-			"https://images.unsplash.com/photo-1552709586-d1aefe5d04b4?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxJdm9yeSUyMENvYXN0fGVufDB8MHx8fDE3MTQ2NjEwMTF8MA&ixlib=rb-4.0.3",
-			"https://images.unsplash.com/photo-1552710307-537199cd41c0?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxJdm9yeSUyMENvYXN0fGVufDB8MHx8fDE3MTQ2NjEwMTF8MA&ixlib=rb-4.0.3",
-			"https://images.unsplash.com/photo-1552710307-8d1c604d6319?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxJdm9yeSUyMENvYXN0fGVufDB8MHx8fDE3MTQ2NjEwMTF8MA&ixlib=rb-4.0.3"
-		],
 		"Jamaica": [
 			"https://images.unsplash.com/photo-1606466123170-d39e5346aa76?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxKYW1haWNhfGVufDB8MHx8fDE3MTQ2NjEwMTN8MA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1437719417032-8595fd9e9dc6?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxKYW1haWNhfGVufDB8MHx8fDE3MTQ2NjEwMTN8MA&ixlib=rb-4.0.3",
@@ -3788,11 +5803,6 @@
 			"https://images.unsplash.com/photo-1629045951640-fb182dba0a33?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxNb2xkb3ZhfGVufDB8MHx8fDE3MTQ2NjEwNjh8MA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1593340646418-af8bc7d03b2e?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxNb2xkb3ZhfGVufDB8MHx8fDE3MTQ2NjEwNjh8MA&ixlib=rb-4.0.3"
 		],
-		"Monaco": [
-			"https://images.unsplash.com/photo-1595138320174-a64d168e9970?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxNb25hY298ZW58MHwwfHx8MTcxNDY2MTA3MHww&ixlib=rb-4.0.3",
-			"https://images.unsplash.com/photo-1518123522418-a0c837fd10ca?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxNb25hY298ZW58MHwwfHx8MTcxNDY2MTA3MHww&ixlib=rb-4.0.3",
-			"https://images.unsplash.com/photo-1575540121783-60f174302cc2?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxNb25hY298ZW58MHwwfHx8MTcxNDY2MTA3MHww&ixlib=rb-4.0.3"
-		],
 		"Mongolia": [
 			"https://images.unsplash.com/photo-1589654615616-6756a5653100?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxNb25nb2xpYXxlbnwwfDB8fHwxNzE0NjYxMDczfDA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1589654888866-4b717275499f?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxNb25nb2xpYXxlbnwwfDB8fHwxNzE0NjYxMDczfDA&ixlib=rb-4.0.3",
@@ -3813,7 +5823,7 @@
 			"https://images.unsplash.com/photo-1544298903-35eee5a95b4d?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxNb3phbWJpcXVlfGVufDB8MHx8fDE3MTQ2NjEwNzl8MA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1565104165703-0777aab1b278?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxNb3phbWJpcXVlfGVufDB8MHx8fDE3MTQ2NjEwNzl8MA&ixlib=rb-4.0.3"
 		],
-		"Myanmar": [
+		"Myanmar (Burma)": [
 			"https://images.unsplash.com/photo-1584897356466-858d9b6c53d1?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxNeWFubWFyfGVufDB8MHx8fDE3MTQ2NjEwODF8MA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1490077476659-095159692ab5?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxNeWFubWFyfGVufDB8MHx8fDE3MTQ2NjEwODF8MA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1583435292794-4803a56c5043?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxNeWFubWFyfGVufDB8MHx8fDE3MTQ2NjEwODF8MA&ixlib=rb-4.0.3"
@@ -3860,11 +5870,6 @@
 			"https://images.unsplash.com/photo-1604399158527-4c802e850b5c?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxOb3J0aCUyMEtvcmVhfGVufDB8MHx8fDE3MTQ2NjQ3OTl8MA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1584890309466-272e6fffb487?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxOb3J0aCUyMEtvcmVhfGVufDB8MHx8fDE3MTQ2NjQ3OTl8MA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1604359896927-0610b7a3a2be?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxOb3J0aCUyMEtvcmVhfGVufDB8MHx8fDE3MTQ2NjQ3OTl8MA&ixlib=rb-4.0.3"
-		],
-		"North Macedonia": [
-			"https://images.unsplash.com/photo-1619371620133-1c4b489a0569?ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0",
-			"https://images.unsplash.com/photo-1588519068423-28a88a32ee69?ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0",
-			"https://images.unsplash.com/photo-1603554894262-5fe6dab441ed?ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0"
 		],
 		"Norway": [
 			"https://images.unsplash.com/photo-1544085311-11a028465b03?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxOb3J3YXl8ZW58MHwwfHx8MTcxNDY2NDgwMnww&ixlib=rb-4.0.3",
@@ -3926,6 +5931,11 @@
 			"https://images.unsplash.com/photo-1539475314840-751cecc1dacd?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxRYXRhcnxlbnwwfDB8fHwxNzE0NjY0ODIwfDA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1604433203862-93bc73b0f1e9?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxRYXRhcnxlbnwwfDB8fHwxNzE0NjY0ODIwfDA&ixlib=rb-4.0.3"
 		],
+		"Republic of North Macedonia": [
+			"https://images.unsplash.com/photo-1619371620133-1c4b489a0569?ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0",
+			"https://images.unsplash.com/photo-1588519068423-28a88a32ee69?ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0",
+			"https://images.unsplash.com/photo-1603554894262-5fe6dab441ed?ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0"
+		],
 		"Republic of the Congo": [
 			"https://images.unsplash.com/photo-1579547056948-3bc828faf558?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxSZXB1YmxpYyUyMG9mJTIwdGhlJTIwQ29uZ298ZW58MHwwfHx8MTcxNDY2NDgyMXww&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1579547056746-16b54ded5745?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxSZXB1YmxpYyUyMG9mJTIwdGhlJTIwQ29uZ298ZW58MHwwfHx8MTcxNDY2NDgyMXww&ixlib=rb-4.0.3",
@@ -3936,40 +5946,15 @@
 			"https://images.unsplash.com/photo-1526112982068-f899a62e118e?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxSb21hbmlhfGVufDB8MHx8fDE3MTQ2NjQ4MjV8MA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1531497825193-b208e39d008f?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxSb21hbmlhfGVufDB8MHx8fDE3MTQ2NjQ4MjV8MA&ixlib=rb-4.0.3"
 		],
-		"Russia": [
-			"https://images.unsplash.com/photo-1547448415-e9f5b28e570d?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxSdXNzaWF8ZW58MHwwfHx8MTcxNDY2NDgyNnww&ixlib=rb-4.0.3",
-			"https://images.unsplash.com/photo-1563451201592-10dd888363ad?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxSdXNzaWF8ZW58MHwwfHx8MTcxNDY2NDgyNnww&ixlib=rb-4.0.3",
-			"https://images.unsplash.com/photo-1580837119756-563d608dd119?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxSdXNzaWF8ZW58MHwwfHx8MTcxNDY2NDgyNnww&ixlib=rb-4.0.3"
-		],
 		"Rwanda": [
 			"https://images.unsplash.com/photo-1511283878565-0833bf39de9d?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxSd2FuZGF8ZW58MHwwfHx8MTcxNDY2NDgyOHww&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1489640818597-89b1edc97db5?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxSd2FuZGF8ZW58MHwwfHx8MTcxNDY2NDgyOHww&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1514548383638-cef9251a73ec?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxSd2FuZGF8ZW58MHwwfHx8MTcxNDY2NDgyOHww&ixlib=rb-4.0.3"
 		],
-		"Saint Kitts and Nevis": [
-			"https://images.unsplash.com/photo-1633107782766-bd7c8507ce41?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxTYWludCUyMEtpdHRzJTIwYW5kJTIwTmV2aXN8ZW58MHwwfHx8MTcxNDY2NDgzM3ww&ixlib=rb-4.0.3",
-			"https://images.unsplash.com/photo-1590083948630-a760024aee3a?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxTYWludCUyMEtpdHRzJTIwYW5kJTIwTmV2aXN8ZW58MHwwfHx8MTcxNDY2NDgzM3ww&ixlib=rb-4.0.3",
-			"https://images.unsplash.com/photo-1591490317525-25f27ba216a0?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxTYWludCUyMEtpdHRzJTIwYW5kJTIwTmV2aXN8ZW58MHwwfHx8MTcxNDY2NDgzM3ww&ixlib=rb-4.0.3"
-		],
-		"Saint Lucia": [
-			"https://images.unsplash.com/photo-1617280325974-f9c5721a4862?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxTYWludCUyMEx1Y2lhfGVufDB8MHx8fDE3MTQ2NjQ4MzR8MA&ixlib=rb-4.0.3",
-			"https://images.unsplash.com/photo-1622896900858-99ad8da7b8d9?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxTYWludCUyMEx1Y2lhfGVufDB8MHx8fDE3MTQ2NjQ4MzR8MA&ixlib=rb-4.0.3",
-			"https://images.unsplash.com/photo-1520115736066-2190b58a4b9e?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxTYWludCUyMEx1Y2lhfGVufDB8MHx8fDE3MTQ2NjQ4MzR8MA&ixlib=rb-4.0.3"
-		],
-		"Saint Vincent and the Grenadines": [
-			"https://images.unsplash.com/photo-1535517898918-bcc1f3997adb?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxTYWludCUyMFZpbmNlbnQlMjBhbmQlMjB0aGUlMjBHcmVuYWRpbmVzfGVufDB8MHx8fDE3MTQ2NjQ4Mzl8MA&ixlib=rb-4.0.3",
-			"https://images.unsplash.com/photo-1616848849671-f3e18ca9f6ec?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxTYWludCUyMFZpbmNlbnQlMjBhbmQlMjB0aGUlMjBHcmVuYWRpbmVzfGVufDB8MHx8fDE3MTQ2NjQ4Mzl8MA&ixlib=rb-4.0.3",
-			"https://images.unsplash.com/photo-1616464592706-f39e5b192451?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxTYWludCUyMFZpbmNlbnQlMjBhbmQlMjB0aGUlMjBHcmVuYWRpbmVzfGVufDB8MHx8fDE3MTQ2NjQ4Mzl8MA&ixlib=rb-4.0.3"
-		],
 		"Samoa": [
 			"https://images.unsplash.com/photo-1533105045747-b9d71a0955f9?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxTYW1vYXxlbnwwfDB8fHwxNzE0NjY0ODQxfDA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1625224588813-cc8d5055493f?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxTYW1vYXxlbnwwfDB8fHwxNzE0NjY0ODQxfDA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1529977213785-feeaa9cda921?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxTYW1vYXxlbnwwfDB8fHwxNzE0NjY0ODQxfDA&ixlib=rb-4.0.3"
-		],
-		"Sao Tome and Principe": [
-			"https://images.unsplash.com/photo-1540821432409-1736d504f2f6?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxTYW8lMjBUb21lJTIwYW5kJTIwUHJpbmNpcGV8ZW58MHwwfHx8MTcxNDY2NDg0Mnww&ixlib=rb-4.0.3",
-			"https://images.unsplash.com/photo-1672951468738-553ac2125a7d?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxTYW8lMjBUb21lJTIwYW5kJTIwUHJpbmNpcGV8ZW58MHwwfHx8MTcxNDY2NDg0Mnww&ixlib=rb-4.0.3",
-			"https://images.unsplash.com/photo-1672951469778-2cdf615278c5?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxTYW8lMjBUb21lJTIwYW5kJTIwUHJpbmNpcGV8ZW58MHwwfHx8MTcxNDY2NDg0Mnww&ixlib=rb-4.0.3"
 		],
 		"Saudi Arabia": [
 			"https://images.unsplash.com/photo-1586724237569-f3d0c1dee8c6?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxTYXVkaSUyMEFyYWJpYXxlbnwwfDB8fHwxNzE0NjY0ODQ0fDA&ixlib=rb-4.0.3",
@@ -4046,6 +6031,21 @@
 			"https://images.unsplash.com/photo-1580794749460-76f97b7180d8?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxTcmklMjBMYW5rYXxlbnwwfDB8fHwxNzE0NjY2MzA2fDA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1580910527739-556eb89f9d65?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxTcmklMjBMYW5rYXxlbnwwfDB8fHwxNzE0NjY2MzA2fDA&ixlib=rb-4.0.3"
 		],
+		"St. Kitts & Nevis": [
+			"https://images.unsplash.com/photo-1633107782766-bd7c8507ce41?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxTYWludCUyMEtpdHRzJTIwYW5kJTIwTmV2aXN8ZW58MHwwfHx8MTcxNDY2NDgzM3ww&ixlib=rb-4.0.3",
+			"https://images.unsplash.com/photo-1590083948630-a760024aee3a?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxTYWludCUyMEtpdHRzJTIwYW5kJTIwTmV2aXN8ZW58MHwwfHx8MTcxNDY2NDgzM3ww&ixlib=rb-4.0.3",
+			"https://images.unsplash.com/photo-1591490317525-25f27ba216a0?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxTYWludCUyMEtpdHRzJTIwYW5kJTIwTmV2aXN8ZW58MHwwfHx8MTcxNDY2NDgzM3ww&ixlib=rb-4.0.3"
+		],
+		"St. Lucia": [
+			"https://images.unsplash.com/photo-1617280325974-f9c5721a4862?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxTYWludCUyMEx1Y2lhfGVufDB8MHx8fDE3MTQ2NjQ4MzR8MA&ixlib=rb-4.0.3",
+			"https://images.unsplash.com/photo-1622896900858-99ad8da7b8d9?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxTYWludCUyMEx1Y2lhfGVufDB8MHx8fDE3MTQ2NjQ4MzR8MA&ixlib=rb-4.0.3",
+			"https://images.unsplash.com/photo-1520115736066-2190b58a4b9e?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxTYWludCUyMEx1Y2lhfGVufDB8MHx8fDE3MTQ2NjQ4MzR8MA&ixlib=rb-4.0.3"
+		],
+		"St. Vincent & Grenadines": [
+			"https://images.unsplash.com/photo-1535517898918-bcc1f3997adb?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxTYWludCUyMFZpbmNlbnQlMjBhbmQlMjB0aGUlMjBHcmVuYWRpbmVzfGVufDB8MHx8fDE3MTQ2NjQ4Mzl8MA&ixlib=rb-4.0.3",
+			"https://images.unsplash.com/photo-1616848849671-f3e18ca9f6ec?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxTYWludCUyMFZpbmNlbnQlMjBhbmQlMjB0aGUlMjBHcmVuYWRpbmVzfGVufDB8MHx8fDE3MTQ2NjQ4Mzl8MA&ixlib=rb-4.0.3",
+			"https://images.unsplash.com/photo-1616464592706-f39e5b192451?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxTYWludCUyMFZpbmNlbnQlMjBhbmQlMjB0aGUlMjBHcmVuYWRpbmVzfGVufDB8MHx8fDE3MTQ2NjQ4Mzl8MA&ixlib=rb-4.0.3"
+		],
 		"Sudan": [
 			"https://images.unsplash.com/photo-1608666052855-a7431e7f7c52?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxTdWRhbnxlbnwwfDB8fHwxNzE0NjY2MzA3fDA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1610377324734-6465d1f15c32?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxTdWRhbnxlbnwwfDB8fHwxNzE0NjY2MzA3fDA&ixlib=rb-4.0.3",
@@ -4076,6 +6076,11 @@
 			"https://images.unsplash.com/photo-1602674471917-2f5fbd54535e?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxTeXJpYXxlbnwwfDB8fHwxNzE0NjY2MzE2fDA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1602021007294-6c4ac6901d97?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxTeXJpYXxlbnwwfDB8fHwxNzE0NjY2MzE2fDA&ixlib=rb-4.0.3"
 		],
+		"São Tomé & Príncipe": [
+			"https://images.unsplash.com/photo-1540821432409-1736d504f2f6?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxTYW8lMjBUb21lJTIwYW5kJTIwUHJpbmNpcGV8ZW58MHwwfHx8MTcxNDY2NDg0Mnww&ixlib=rb-4.0.3",
+			"https://images.unsplash.com/photo-1672951468738-553ac2125a7d?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxTYW8lMjBUb21lJTIwYW5kJTIwUHJpbmNpcGV8ZW58MHwwfHx8MTcxNDY2NDg0Mnww&ixlib=rb-4.0.3",
+			"https://images.unsplash.com/photo-1672951469778-2cdf615278c5?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxTYW8lMjBUb21lJTIwYW5kJTIwUHJpbmNpcGV8ZW58MHwwfHx8MTcxNDY2NDg0Mnww&ixlib=rb-4.0.3"
+		],
 		"Taiwan": [
 			"https://images.unsplash.com/photo-1470004914212-05527e49370b?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxUYWl3YW58ZW58MHwwfHx8MTcxNDY2NjMxN3ww&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1552993873-0dd1110e025f?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxUYWl3YW58ZW58MHwwfHx8MTcxNDY2NjMxN3ww&ixlib=rb-4.0.3",
@@ -4096,6 +6101,11 @@
 			"https://images.unsplash.com/photo-1506665531195-3566af2b4dfa?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxUaGFpbGFuZHxlbnwwfDB8fHwxNzE0NjY2MzIyfDA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxUaGFpbGFuZHxlbnwwfDB8fHwxNzE0NjY2MzIyfDA&ixlib=rb-4.0.3"
 		],
+		"Timor-Leste": [
+			"https://images.unsplash.com/photo-1528093945414-ed85cfe03705?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxFYXN0JTIwVGltb3J8ZW58MHwwfHx8MTcxNDY1NzI5MXww&ixlib=rb-4.0.3",
+			"https://images.unsplash.com/photo-1591325408953-ef9298125f96?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxFYXN0JTIwVGltb3J8ZW58MHwwfHx8MTcxNDY1NzI5MXww&ixlib=rb-4.0.3",
+			"https://images.unsplash.com/photo-1582523755457-8f62e0f302b1?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxFYXN0JTIwVGltb3J8ZW58MHwwfHx8MTcxNDY1NzI5MXww&ixlib=rb-4.0.3"
+		],
 		"Togo": [
 			"https://images.unsplash.com/photo-1580470846411-b0e734c5ffd6?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxUb2dvfGVufDB8MHx8fDE3MTQ2NjYzMjN8MA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1602788484247-5c1190ca914c?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxUb2dvfGVufDB8MHx8fDE3MTQ2NjYzMjN8MA&ixlib=rb-4.0.3",
@@ -4106,7 +6116,7 @@
 			"https://images.unsplash.com/photo-1483800003689-8cb7c233dfbf?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxUb25nYXxlbnwwfDB8fHwxNzE0NjY2MzI0fDA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1576380021180-4b60fb58e7ea?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxUb25nYXxlbnwwfDB8fHwxNzE0NjY2MzI0fDA&ixlib=rb-4.0.3"
 		],
-		"Trinidad and Tobago": [
+		"Trinidad & Tobago": [
 			"https://images.unsplash.com/photo-1621794506088-c73be12e36e6?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxUcmluaWRhZCUyMGFuZCUyMFRvYmFnb3xlbnwwfDB8fHwxNzE0NjY2MzI2fDA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1594005039392-53c38b667641?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxUcmluaWRhZCUyMGFuZCUyMFRvYmFnb3xlbnwwfDB8fHwxNzE0NjY2MzI2fDA&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1617653202545-931490e8d7e7?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxUcmluaWRhZCUyMGFuZCUyMFRvYmFnb3xlbnwwfDB8fHwxNzE0NjY2MzI2fDA&ixlib=rb-4.0.3"
@@ -4135,11 +6145,6 @@
 			"https://images.unsplash.com/photo-1521493959102-bdd6677fdd81?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxVZ2FuZGF8ZW58MHwwfHx8MTcxNDY2NjMzNnww&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1557849582-5875ac6dee83?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxVZ2FuZGF8ZW58MHwwfHx8MTcxNDY2NjMzNnww&ixlib=rb-4.0.3",
 			"https://images.unsplash.com/photo-1551357141-f73a8402ceb3?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxVZ2FuZGF8ZW58MHwwfHx8MTcxNDY2NjMzNnww&ixlib=rb-4.0.3"
-		],
-		"Ukraine": [
-			"https://images.unsplash.com/photo-1565711561500-49678a10a63f?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxVa3JhaW5lfGVufDB8MHx8fDE3MTQ2NjYzMzd8MA&ixlib=rb-4.0.3",
-			"https://images.unsplash.com/photo-1561542320-9a18cd340469?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwyfHxVa3JhaW5lfGVufDB8MHx8fDE3MTQ2NjYzMzd8MA&ixlib=rb-4.0.3",
-			"https://images.unsplash.com/photo-1529511582893-2d7e684dd128?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwzfHxVa3JhaW5lfGVufDB8MHx8fDE3MTQ2NjYzMzd8MA&ixlib=rb-4.0.3"
 		],
 		"United Arab Emirates": [
 			"https://images.unsplash.com/flagged/photo-1559717865-a99cac1c95d8?ixid=M3w1OTY0NTR8MHwxfHNlYXJjaHwxfHxVbml0ZWQlMjBBcmFiJTIwRW1pcmF0ZXN8ZW58MHwwfHx8MTcxNDY2NjMzOHww&ixlib=rb-4.0.3",

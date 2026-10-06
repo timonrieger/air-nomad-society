@@ -7,6 +7,7 @@ from typing import Any
 import httpx2
 
 from src.models.flights import FlightDeal, SearchQuery
+from src.services.refdata import City, Country
 
 logger = logging.getLogger(__name__)
 
@@ -14,6 +15,8 @@ REQUEST_TIMEOUT = 30
 RATE_LIMIT_ATTEMPTS = 2
 RATE_LIMIT_WAIT = 10
 RATE_LIMIT_PER_MINUTE = 30
+# Above Kiwi's ~3k active cities and ~250 countries, so one page holds a dump.
+LOCATIONS_LIMIT = 10_000
 
 
 def _local(epoch: int) -> datetime:
@@ -88,6 +91,46 @@ class TequilaProvider:
                 )
                 time.sleep(RATE_LIMIT_WAIT)
         return []
+
+    def locations(self, city_limit: int) -> tuple[list[City], list[Country]]:
+        """The `city_limit` most popular active cities with an airport, and
+        every country holding one — destinations are searched by country code,
+        so a country without an airport can never return a deal."""
+        cities = sorted(
+            (city for city in self._dump("city") if city["code"] and city["airports"]),
+            key=lambda city: city["rank"],
+        )
+        reachable = {city["country"]["code"] for city in cities}
+        return (
+            [
+                City(city=city["name"], code=city["code"])
+                for city in cities[:city_limit]
+            ],
+            [
+                Country(
+                    country=country["name"],
+                    code=country["code"],
+                    region=country["continent"]["name"],
+                )
+                for country in self._dump("country")
+                if country["code"] in reachable
+            ],
+        )
+
+    def _dump(self, location_type: str) -> list[dict[str, Any]]:
+        self._pace()
+        response = self._session.get(
+            f"{self.endpoint}/locations/dump",
+            params={
+                "locale": "en-US",
+                "location_types": location_type,
+                "limit": LOCATIONS_LIMIT,
+                "active_only": "true",
+            },
+            timeout=REQUEST_TIMEOUT,
+        )
+        response.raise_for_status()
+        return response.json()["locations"]
 
     @staticmethod
     def _to_deal(data: dict[str, Any], currency: str) -> FlightDeal:

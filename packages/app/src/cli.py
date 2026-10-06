@@ -16,6 +16,7 @@ from src.services.history import (
     route_observations,
     sent_history,
 )
+from src.services.locations import sync_locations
 from src.services.reasons import deal_reasons
 from src.services.providers import FlightProvider
 from src.services.providers.tequila import TequilaProvider
@@ -110,8 +111,9 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="ans")
     parser.add_argument(
         "command",
-        choices=["digest", "announce"],
-        help="search deals and email every subscriber, or send a product update",
+        choices=["digest", "announce", "sync-locations"],
+        help="search deals and email every subscriber, send a product update, "
+        "or refresh the cities and countries in data.json",
     )
     parser.add_argument("args", nargs="*")
     parsed = parser.parse_args(argv)
@@ -125,6 +127,9 @@ def main(argv: list[str] | None = None) -> int:
         return run_announcement(subject, body_file)
     settings = get_settings()
     provider = TequilaProvider(settings.tequila_endpoint, settings.tequila_api_key)
+    if parsed.command == "sync-locations":
+        sync_locations(provider)
+        return 0
     return run_digest(provider)
 
 
