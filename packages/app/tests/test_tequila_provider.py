@@ -1,4 +1,4 @@
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from typing import Any
 
 from src.models.flights import SearchQuery
@@ -41,7 +41,7 @@ def itinerary(
 
 def ts(day: int, hour: int = 12) -> int:
     """Tequila encodes local wall time as a UTC epoch."""
-    return int(datetime(2026, 9, day, hour, tzinfo=timezone.utc).timestamp())
+    return int(datetime(2026, 9, day, hour, tzinfo=UTC).timestamp())
 
 
 def leg(city: str, iata: str, day: int, hour: int, ret: int) -> dict[str, Any]:

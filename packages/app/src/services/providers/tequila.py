@@ -1,7 +1,7 @@
 import logging
 import time
 from collections import deque
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 import httpx2
@@ -22,7 +22,7 @@ LOCATIONS_LIMIT = 10_000
 def _local(epoch: int) -> datetime:
     """Tequila's dTime/aTime are local wall times encoded as UTC epochs, so
     decoding must be UTC-fixed — the host timezone would shift the clock."""
-    return datetime.fromtimestamp(epoch, tz=timezone.utc).replace(tzinfo=None)
+    return datetime.fromtimestamp(epoch, tz=UTC).replace(tzinfo=None)
 
 
 class TequilaProvider:

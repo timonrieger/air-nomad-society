@@ -1,5 +1,4 @@
 import pytest
-
 from src.services import locations, refdata
 from src.services.refdata import City, Country, ReferenceData
 

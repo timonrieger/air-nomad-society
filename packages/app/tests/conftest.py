@@ -2,7 +2,6 @@ import os
 from datetime import datetime, timedelta
 
 import pytest
-
 from src.config import Settings, get_settings
 from src.db import Base, PriceObservation, SentDeal, get_engine
 from src.models.flights import FlightDeal

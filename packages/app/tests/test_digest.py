@@ -2,11 +2,11 @@ import random
 from datetime import date, datetime, timedelta
 
 from src.models.flights import LowClaim, RankedDeal
+from src.models.history import SentHistory
 from src.models.subscriber import Subscriber
 from src.services.digest import build_digest
-from src.models.history import SentHistory
-from src.services.selection import Observation, deal_score
 from src.services.refdata import Country
+from src.services.selection import Observation, deal_score
 from tests.conftest import deal, price_series
 from tests.fakes import FakeProvider
 

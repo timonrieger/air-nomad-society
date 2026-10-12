@@ -1,6 +1,6 @@
 """Database access: schema, engine, and session plumbing for `air_nomads`."""
 
-from collections.abc import Iterator, Sequence
+from collections.abc import Generator, Iterator, Sequence
 from contextlib import contextmanager
 from datetime import datetime, timedelta
 from functools import lru_cache
@@ -121,7 +121,7 @@ def get_engine() -> Engine:
 
 
 @contextmanager
-def session_scope() -> Iterator[Session]:
+def session_scope() -> Generator[Session]:
     # expire_on_commit=False: attribute reads after commit stay in memory
     # instead of re-SELECTing — one round trip saved per write endpoint.
     with Session(get_engine(), expire_on_commit=False) as session:

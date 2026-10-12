@@ -1,6 +1,5 @@
 from alembic import context
 from sqlalchemy import create_engine
-
 from src.config import get_settings
 from src.db import Base
 

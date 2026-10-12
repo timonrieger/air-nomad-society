@@ -7,9 +7,9 @@ import random
 from collections.abc import Callable
 from datetime import date, datetime, time, timedelta
 
-from src.models.subscriber import Subscriber
 from src.models.flights import DealSource, FlightDeal, LowClaim, RankedDeal, SearchQuery
 from src.models.history import SentHistory
+from src.models.subscriber import Subscriber
 from src.services.providers import FlightProvider
 from src.services.refdata import Country
 from src.services.selection import (

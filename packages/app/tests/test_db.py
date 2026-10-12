@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-
 from src.db import AirNomads, get_engine, load_subscribers, purge_unconfirmed
 
 

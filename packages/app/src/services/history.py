@@ -4,7 +4,7 @@ Written silently from the digest job; read back for lowest-price claims and
 freshness features. No aggregation at write time."""
 
 from collections import defaultdict
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from uuid import uuid4
 
 from sqlalchemy import func, select, tuple_
@@ -21,7 +21,7 @@ FRESHNESS_WINDOW_WEEKS = 8
 
 def _utcnow() -> datetime:
     """UTC-fixed like tequila's epoch decoding: immune to host TZ and DST."""
-    return datetime.now(timezone.utc).replace(tzinfo=None)
+    return datetime.now(UTC).replace(tzinfo=None)
 
 
 OBSERVED_FIELDS = {

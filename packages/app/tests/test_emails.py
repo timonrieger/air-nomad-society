@@ -2,7 +2,6 @@ import random
 from datetime import datetime
 
 from markupsafe import escape
-
 from src.models.flights import DealSource, FlightDeal, LowClaim, RankedDeal
 from src.services.emails import render_digest
 from src.services.refdata import FALLBACK_IMAGE

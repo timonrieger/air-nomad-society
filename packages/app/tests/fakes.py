@@ -1,7 +1,6 @@
 from typing import Any
 
 import httpx2
-
 from src.models.flights import FlightDeal, SearchQuery
 
 

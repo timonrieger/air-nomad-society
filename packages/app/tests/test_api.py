@@ -6,7 +6,6 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 from sqlalchemy.pool import StaticPool
-
 from src.db import AirNomads, Base, get_engine, get_session, insert_rows
 from src.main import app
 from src.services import mailer

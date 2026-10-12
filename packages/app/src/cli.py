@@ -4,10 +4,10 @@ import sys
 from datetime import timedelta
 from pathlib import Path
 
-from src.services import emails, mailer, refdata
 from src.config import get_settings
 from src.db import load_subscribers, purge_unconfirmed
 from src.models.subscriber import Cadence
+from src.services import emails, mailer, refdata
 from src.services.digest import build_digest
 from src.services.history import (
     RecordingProvider,
@@ -17,9 +17,9 @@ from src.services.history import (
     sent_history,
 )
 from src.services.locations import sync_locations
-from src.services.reasons import deal_reasons
 from src.services.providers import FlightProvider, OriginRouter
 from src.services.providers.tequila import TequilaProvider
+from src.services.reasons import deal_reasons
 from src.services.tokens import issue_token
 
 logger = logging.getLogger(__name__)

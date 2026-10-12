@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 import pytest
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-
 from src import cli
 from src.db import PriceObservation, SentDeal, get_engine, insert_rows
 from src.models.subscriber import Subscriber
