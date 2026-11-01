@@ -7,9 +7,9 @@ config_roots = ["packages/*"]
 experimental = true # required for [deps]
 
 [tools]
-pnpm = "11.22.0"
-python = "3.14.6"
-uv = "0.11.25"
+pnpm = "11.28.9"
+python = "3.15.2"
+uv = "0.13.6"
 
 [tasks.install]
 depends = ["//packages/app:install", "//packages/web:install"]

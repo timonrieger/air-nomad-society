@@ -27,7 +27,7 @@ Repository = "https://github.com/timonrieger/air-nomad-society"
 dev = [
     "pytest>=9.0.0,<10.0.0",
     "ty>=0.0.55,<0.0.56",
-    "uvicorn>=0.52.4,<0.53.0",
+    "uvicorn>=0.54.0,<0.55.0",
 ]
 
 [tool.uv]
