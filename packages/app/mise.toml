@@ -1,5 +1,8 @@
+[settings]
+python.uv_venv_auto = "create|source"
+
 [env]
-_.python.venv = { path = ".venv" }
+UV_PYTHON = { value = "{{ tools.python.path }}", tools = true }
 
 [deps.uv]
 auto = true
