@@ -1,21 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:best-practices", "schedule:monthly"],
-  "timezone": "Europe/Berlin",
-  "labels": ["dependencies"],
-  "configMigration": true,
-  "minimumReleaseAge": "3 days",
-  "lockFileMaintenance": {
-    "enabled": true,
-    "extends": ["schedule:monthly"]
-  },
-  "vulnerabilityAlerts": {
-    "labels": ["dependencies", "security"]
-  },
-  "osvVulnerabilityAlerts": true,
-  "pre-commit": {
-    "enabled": true
-  },
+  "extends": ["github>timonrieger/dotfiles//.github/renovate-base"],
   "customManagers": [
     {
       "customType": "regex",
@@ -28,11 +13,6 @@
   ],
   "packageRules": [
     {
-      "description": "All GitHub Actions updates in one PR",
-      "matchManagers": ["github-actions"],
-      "groupName": "github actions"
-    },
-    {
       "description": "Production Python dependencies",
       "matchManagers": ["pep621"],
       "matchDepTypes": ["project.dependencies"],
@@ -44,13 +24,9 @@
       "groupName": "frontend dependencies"
     },
     {
-      "description": "Python dev deps, pre-commit hooks, and mise tools",
+      "description": "Python dev deps join the base dev tooling group (pre-commit hooks, mise tools)",
       "matchManagers": ["pep621"],
       "matchDepTypes": ["dependency-groups"],
-      "groupName": "dev tooling"
-    },
-    {
-      "matchManagers": ["pre-commit", "mise"],
       "groupName": "dev tooling"
     },
     {
