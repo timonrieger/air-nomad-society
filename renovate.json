@@ -38,11 +38,6 @@
       "description": "Keep ty pins in sync: dependency-groups + hook rev",
       "matchPackageNames": ["ty", "astral-sh/ty-pre-commit"],
       "groupName": "ty"
-    },
-    {
-      "description": "Keep uv pins in sync: mise + hook rev",
-      "matchPackageNames": ["uv", "astral-sh/uv-pre-commit"],
-      "groupName": "uv toolchain"
     }
   ]
 }
